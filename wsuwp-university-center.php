@@ -58,6 +58,7 @@ class WSUWP_University_Center {
 
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
 	}
 
@@ -257,6 +258,10 @@ class WSUWP_University_Center {
 
 	}
 
+	public function admin_enqueue_scripts() {
+		wp_enqueue_script( 'jquery-ui-autocomplete' );
+	}
+
 	/**
 	 * Add the meta boxes used to maintain relationships between our content types.
 	 *
@@ -286,6 +291,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_projects_meta_box( $post ) {
+		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_projects_ids', true );
 		$all_projects = $this->_get_all_object_data( 'projects' );
 	}
 
@@ -295,6 +301,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_entities_meta_box( $post ) {
+		$current_entities = get_post_meta( $post->ID, '_wsuwp_uc_entities_ids', true );
 		$all_entities = $this->_get_all_object_data( 'entities' );
 	}
 
@@ -304,7 +311,51 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_people_meta_box( $post ) {
+		$current_people = get_post_meta( $post->ID, '_wsuwp_uc_people_ids', true );
 		$all_people = $this->_get_all_object_data( 'people' );
+
+		if ( $current_people ) {
+			$people_for_adding = array_diff_key( $all_people, $current_people );
+		} else {
+			$people_for_adding = $all_people;
+		}
+
+		$people = array();
+		foreach ( $people_for_adding as $id => $person ) {
+			$people[] = array(
+				'value' => $id,
+				'label' => $person['name'],
+			);
+		}
+
+		$people = json_encode( $people );
+		?>
+		<script>
+			(function($){
+				var people = <?php echo $people; ?>;
+
+				$(document ).ready(function() {
+					$('#people-assign' ).autocomplete({
+						appendTo: '#people-results',
+						minLength: 0,
+						source: people,
+						focus: function( event, ui ) {
+							$( '#people-assign' ).val( ui.item.label );
+							return false;
+						},
+						select: function( event, ui ) {
+							$('#people-assign' ).val(ui.item.label);
+							$('#people-assign-id' ).val(ui.item.value);
+							return false;
+						}
+					});
+				});
+			}(jQuery));
+		</script>
+		<input id="people-assign">
+		<input type="hidden" id="people-assign-id">
+		<div id="people-results"></div>
+		<?php
 	}
 
 	/**
