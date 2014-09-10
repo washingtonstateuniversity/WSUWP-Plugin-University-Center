@@ -26,11 +26,19 @@ class WSUWP_University_Center {
 	var $people_content_type = 'wsuwp_uc_people';
 
 	/**
+	 * The slug used to register the entity custom content type.
+	 *
+	 * @var string
+	 */
+	var $entity_content_type = 'wsuwp_uc_entity';
+
+	/**
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_project_content_type' ) );
 		add_action( 'init', array( $this, 'register_people_content_type' ) );
+		add_action( 'init', array( $this, 'register_entity_content_type' ) );
 	}
 
 	/**
@@ -102,6 +110,42 @@ class WSUWP_University_Center {
 		);
 
 		register_post_type( $this->people_content_type, $args );
+	}
+
+	/**
+	 * Register the entity content type.
+	 */
+	public function register_entity_content_type() {
+		$args = array(
+			'labels' => array(
+				'name' => __( 'Entities', 'wsuwp_uc' ),
+				'singular_name' => __( 'Entity', 'wsuwp_uc' ),
+				'all_items' => __( 'All Entities', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add Entity', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Entity', 'wsuwp_uc' ),
+				'new_item' => __( 'New Entity', 'wsuwp_uc' ),
+				'view_item' => __( 'View Entity', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Entities', 'wsuwp_uc' ),
+				'not_found' => __( 'No Entities found', 'wsuwp_uc' ),
+				'not_found_in_trash' => __( 'No Entities found in trash', 'wsuwp_uc' ),
+			),
+			'description' => __( 'Entities involved with the center.', 'wsuwp_uc' ),
+			'public' => true,
+			'hierarchical' => false,
+			'supports' => array (
+				'title',
+				'editor',
+				'revisions',
+				'thumbnail',
+			),
+			'has_archive' => true,
+			'rewrite' => array(
+				'slug' => 'entity',
+				'with_front' => false
+			),
+		);
+
+		register_post_type( $this->entity_content_type, $args );
 	}
 }
 new WSUWP_University_Center();
