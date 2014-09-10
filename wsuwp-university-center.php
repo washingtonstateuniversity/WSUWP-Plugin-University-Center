@@ -286,7 +286,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_projects_meta_box( $post ) {
-
+		$all_projects = $this->_get_all_object_data( 'projects' );
 	}
 
 	/**
@@ -295,7 +295,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_entities_meta_box( $post ) {
-
+		$all_entities = $this->_get_all_object_data( 'entities' );
 	}
 
 	/**
@@ -304,7 +304,49 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_people_meta_box( $post ) {
+		$all_people = $this->_get_all_object_data( 'people' );
+	}
 
+	/**
+	 * Retrieve all of the items from a specified content type with their unique ID,
+	 * current post ID, and name.
+	 *
+	 * @param string $object One of 'projects', 'entities', or 'people'
+	 *
+	 * @return array|bool Array of results or false if incorrectly called.
+	 */
+	private function _get_all_object_data( $object ) {
+		$all_object_data = wp_cache_get( 'wsuwp_uc_all_' . $object );
+
+		if ( ! $all_object_data ) {
+
+			if ( 'people' === $object ) {
+				$post_type = $this->people_content_type;
+			} elseif ( 'entities' === $object ) {
+				$post_type = $this->entity_content_type;
+			} elseif ( 'projects' === $object ) {
+				$post_type = $this->project_content_type;
+			} else {
+				return false;
+			}
+
+			$all_object_data = array();
+			$all_data = get_posts( array( 'post_type' => $post_type, 'posts_per_page' => 1000 ) );
+
+			foreach( $all_data as $data ) {
+				$unique_data_id = get_post_meta( $data->ID, '_wsuwp_uc_unique_id', true );
+				if ( $unique_data_id ) {
+					$all_object_data[ $unique_data_id ]['id'] = $data->ID;
+					$all_object_data[ $unique_data_id ]['name'] = $data->post_title;
+				}
+			}
+
+			if ( ! empty( $all_object_data ) ) {
+				wp_cache_add( 'wsuwp_uc_all_people', $all_object_data, '', 7200 );
+			}
+		}
+
+		return $all_object_data;
 	}
 }
 new WSUWP_University_Center();
