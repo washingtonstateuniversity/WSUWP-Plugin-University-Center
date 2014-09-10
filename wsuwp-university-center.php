@@ -55,6 +55,8 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_entity_content_type' ) );
 		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ) );
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
+
+		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 	}
 
 	/**
@@ -221,6 +223,36 @@ class WSUWP_University_Center {
 		);
 
 		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ), $args );
+	}
+
+	/**
+	 * Assign the object a unique ID to be used for maintaining relationships.
+	 *
+	 * @param int     $post_id The ID of the post being saved.
+	 * @param WP_Post $post    The full post object being saved.
+	 */
+	public function assign_unique_id( $post_id, $post ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Only assign a unique id to content from our registered types - projects, people, and entities.
+		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+			return;
+		}
+
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		$unique_id = get_post_meta( $post_id, '_wsuwp_uc_unique_id', true );
+
+		// Generate an ID if it does not yet exist.
+		if ( empty( $unique_id ) ) {
+			$unique_id = uniqid( 'wsuwp_uc_id_' );
+			update_post_meta( $post_id, '_wsuwp_uc_unique_id', $unique_id );
+		}
+
 	}
 }
 new WSUWP_University_Center();
