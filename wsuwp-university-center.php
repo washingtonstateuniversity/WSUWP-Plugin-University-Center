@@ -19,10 +19,18 @@ class WSUWP_University_Center {
 	var $project_content_type = 'wsuwp_uc_project';
 
 	/**
+	 * The slug used to register the people custom content type.
+	 *
+	 * @var string
+	 */
+	var $people_content_type = 'wsuwp_uc_people';
+
+	/**
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_project_content_type' ) );
+		add_action( 'init', array( $this, 'register_people_content_type' ) );
 	}
 
 	/**
@@ -60,6 +68,42 @@ class WSUWP_University_Center {
 			),
 		);
 		register_post_type( $this->project_content_type, $args );
+	}
+
+	/**
+	 * Register the people content type.
+	 */
+	public function register_people_content_type() {
+		$args = array(
+			'labels' => array(
+				'name' => __( 'People', 'wsuwp_uc' ),
+				'singular_name' => __( 'Person', 'wsuwp_uc' ),
+				'all_items' => __( 'All People', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add Person', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Person', 'wsuwp_uc' ),
+				'new_item' => __( 'New Person', 'wsuwp_uc' ),
+				'view_item' => __( 'View Person', 'wsuwp_uc' ),
+				'search_items' => __( 'Search People', 'wsuwp_uc' ),
+				'not_found' => __( 'No People found', 'wsuwp_uc' ),
+				'not_found_in_trash' => __( 'No People found in trash', 'wsuwp_uc' ),
+			),
+			'description' => __( 'People involved with the center.', 'wsuwp_uc' ),
+			'public' => true,
+			'hierarchical' => false,
+			'supports' => array (
+				'title',
+				'editor',
+				'revisions',
+				'thumbnail',
+			),
+			'has_archive' => true,
+			'rewrite' => array(
+				'slug' => 'people',
+				'with_front' => false
+			),
+		);
+
+		register_post_type( $this->people_content_type, $args );
 	}
 }
 new WSUWP_University_Center();
