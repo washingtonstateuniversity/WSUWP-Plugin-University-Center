@@ -10,8 +10,56 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 class WSUWP_University_Center {
-	public function __construct() {
 
+	/**
+	 * The slug used to register the project custom content type.
+	 *
+	 * @var string
+	 */
+	var $project_content_type = 'wsuwp_uc_project';
+
+	/**
+	 * Setup the hooks used by the plugin.
+	 */
+	public function __construct() {
+		add_action( 'init', array( $this, 'register_project_content_type' ) );
+	}
+
+	/**
+	 * Register the project content type.
+	 */
+	public function register_project_content_type() {
+		$args = array(
+			'labels' => array(
+				'name' => __( 'Projects', 'wsuwp_uc' ),
+				'singular_name' => __( 'Project', 'wsuwp_uc' ),
+				'all_items' => __( 'All Projects', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add Project', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Project', 'wsuwp_uc' ),
+				'new_item' => __( 'New Project', 'wsuwp_uc' ),
+				'view_item' => __( 'View Project', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Projects', 'wsuwp_uc' ),
+				'not_found' => __( 'No Projects found', 'wsuwp_uc' ),
+				'not_found_in_trash' => __( 'No Projects found in trash', 'wsuwp_uc' ),
+			),
+			'description' => __( 'Projects belonging to the center.', 'wsuwp_uc' ),
+			'public' => true,
+			'hierarchical' => false,
+			'supports' => array (
+				'title',
+				'editor',
+				'author',
+				'comments',
+				'revisions',
+				'thumbnail',
+			),
+			'has_archive' => true,
+			'rewrite' => array(
+				'slug' => 'project',
+				'with_front' => false
+			),
+		);
+		register_post_type( $this->project_content_type, $args );
 	}
 }
 new WSUWP_University_Center();
