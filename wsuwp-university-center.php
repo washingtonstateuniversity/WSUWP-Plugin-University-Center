@@ -56,8 +56,6 @@ class WSUWP_University_Center {
 			'supports' => array (
 				'title',
 				'editor',
-				'author',
-				'comments',
 				'revisions',
 				'thumbnail',
 			),
