@@ -40,6 +40,13 @@ class WSUWP_University_Center {
 	var $entity_type_taxonomy = 'wsuwp_uc_entity_type';
 
 	/**
+	 * The slug used to register a taxonomy for center topics.
+	 *
+	 * @var string
+	 */
+	var $topics_taxonomy = 'wsuwp_uc_topics';
+
+	/**
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
@@ -47,6 +54,7 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_people_content_type' ) );
 		add_action( 'init', array( $this, 'register_entity_content_type' ) );
 		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ) );
+		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
 	}
 
 	/**
@@ -182,6 +190,34 @@ class WSUWP_University_Center {
 		);
 
 		register_taxonomy( $this->entity_type_taxonomy, $this->entity_content_type, $args );
+	}
+
+	/**
+	 * Register a taxonomy to track topics for projects, people, and entities.
+	 */
+	public function register_topic_taxonomy() {
+		$args = array(
+			'labels' => array(
+				'name' => __( 'Topics', 'wsuwp_uc' ),
+				'singular_name' => __( 'Topic', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Topics', 'wsuwp_uc' ),
+				'all_items' => __( 'All Topics', 'wsuwp_uc' ),
+				'parent_item' => __( 'Parent Topic', 'wsuwp_uc' ),
+				'parent_item_colon' => __( 'Parent Topic:', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Topic', 'wsuwp_uc' ),
+				'update_item' => __( 'Update Topic', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add New Topic', 'wsuwp_uc' ),
+				'new_item_name' => __( 'New Topic Name', 'wsuwp_uc' ),
+				'menu_name' => __( 'Topic', 'wsuwp_uc' ),
+			),
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'rewrite' => array( 'slug' => 'topic' ),
+		);
+
+		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ), $args );
 	}
 }
 new WSUWP_University_Center();
