@@ -33,12 +33,20 @@ class WSUWP_University_Center {
 	var $entity_content_type = 'wsuwp_uc_entity';
 
 	/**
+	 * The slug used to register the entity type taxonomy.
+	 *
+	 * @var string
+	 */
+	var $entity_type_taxonomy = 'wsuwp_uc_entity_type';
+
+	/**
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_project_content_type' ) );
 		add_action( 'init', array( $this, 'register_people_content_type' ) );
 		add_action( 'init', array( $this, 'register_entity_content_type' ) );
+		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ) );
 	}
 
 	/**
@@ -146,6 +154,34 @@ class WSUWP_University_Center {
 		);
 
 		register_post_type( $this->entity_content_type, $args );
+	}
+
+	/**
+	 * Register a taxonomy to track types of entities.
+	 */
+	public function register_entity_type_taxonomy() {
+		$args = array(
+			'labels' => array(
+				'name' => __( 'Entity Types', 'wsuwp_uc' ),
+				'singular_name' => __( 'Entity Type', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Entity Types', 'wsuwp_uc' ),
+				'all_items' => __( 'All Entity Types', 'wsuwp_uc' ),
+				'parent_item' => __( 'Parent Entity Type', 'wsuwp_uc' ),
+				'parent_item_colon' => __( 'Parent Entity Type:', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Entity Type', 'wsuwp_uc' ),
+				'update_item' => __( 'Update Entity Type', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add New Entity Type', 'wsuwp_uc' ),
+				'new_item_name' => __( 'New Entity Type Name', 'wsuwp_uc' ),
+				'menu_name' => __( 'Entity Type', 'wsuwp_uc' ),
+			),
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'rewrite' => array( 'slug' => 'entity-type' ),
+		);
+
+		register_taxonomy( $this->entity_type_taxonomy, $this->entity_content_type, $args );
 	}
 }
 new WSUWP_University_Center();
