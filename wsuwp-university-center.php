@@ -77,6 +77,7 @@ class WSUWP_University_Center {
 			'description' => __( 'Projects belonging to the center.', 'wsuwp_uc' ),
 			'public' => true,
 			'hierarchical' => false,
+			'menu_icon' => 'dashicons-analytics',
 			'supports' => array (
 				'title',
 				'editor',
@@ -112,6 +113,7 @@ class WSUWP_University_Center {
 			'description' => __( 'People involved with the center.', 'wsuwp_uc' ),
 			'public' => true,
 			'hierarchical' => false,
+			'menu_icon' => 'dashicons-id-alt',
 			'supports' => array (
 				'title',
 				'editor',
@@ -148,6 +150,7 @@ class WSUWP_University_Center {
 			'description' => __( 'Entities involved with the center.', 'wsuwp_uc' ),
 			'public' => true,
 			'hierarchical' => false,
+			'menu_icon' => 'dashicons-groups',
 			'supports' => array (
 				'title',
 				'editor',
