@@ -57,6 +57,8 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
 
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
+
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
 	}
 
 	/**
@@ -252,6 +254,56 @@ class WSUWP_University_Center {
 			$unique_id = uniqid( 'wsuwp_uc_id_' );
 			update_post_meta( $post_id, '_wsuwp_uc_unique_id', $unique_id );
 		}
+
+	}
+
+	/**
+	 * Add the meta boxes used to maintain relationships between our content types.
+	 *
+	 * @param string $post_type The slug of the current post type.
+	 */
+	public function add_meta_boxes( $post_type) {
+		if ( ! in_array( $post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+			return;
+		}
+
+		if ( $this->project_content_type !== $post_type ) {
+			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign Projects', array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
+		}
+
+		if ( $this->entity_content_type !== $post_type ) {
+			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign Entities', array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
+		}
+
+		if ( $this->people_content_type !== $post_type ) {
+			add_meta_box( 'wsuwp_uc_assign_people', 'Assign People', array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
+		}
+	}
+
+	/**
+	 * Display a meta box used to assign projects to other content types.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_projects_meta_box( $post ) {
+
+	}
+
+	/**
+	 * Display a meta box used to assign entities to other content types.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_entities_meta_box( $post ) {
+
+	}
+
+	/**
+	 * Display a meta box used to assign people to other content types.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_people_meta_box( $post ) {
 
 	}
 }
