@@ -256,6 +256,7 @@ class WSUWP_University_Center {
 			update_post_meta( $post_id, '_wsuwp_uc_unique_id', $unique_id );
 		}
 
+		$this->_flush_all_object_data_cache( $post->post_type );
 	}
 
 	public function admin_enqueue_scripts() {
@@ -413,6 +414,17 @@ class WSUWP_University_Center {
 		}
 
 		return $all_object_data;
+	}
+
+	/**
+	 * Clear the "all data" cache associated with this content type so that any autocomplete
+	 * lists are populated correctly.
+	 *
+	 * @param string $post_type Slug for the post type being saved.
+	 */
+	private function _flush_all_object_data_cache( $post_type ) {
+		wp_cache_delete( 'wsuwp_uc_all_' . $post_type );
+		$this->_get_all_object_data( $post_type );
 	}
 }
 new WSUWP_University_Center();
