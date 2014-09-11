@@ -290,6 +290,7 @@ class WSUWP_University_Center {
 
 	public function admin_enqueue_scripts() {
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
+		wp_enqueue_style( 'wsuwp-uc-admin-style', plugins_url( 'css/admin-style.css', __FILE__ ) );
 	}
 
 	/**
@@ -416,7 +417,7 @@ class WSUWP_University_Center {
 
 							// Check to see if this item's ID is already in the list of added people before adding it.
 							if ( 0 >= $('#' + ui.item.value ).length ) {
-								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="person-close">x</span></div>');
+								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="person-close dashicons-no-alt"></span></div>');
 
 								var current_ids = people_assign_ids.val();
 								if ( '' === current_ids ) {
@@ -441,12 +442,11 @@ class WSUWP_University_Center {
 		$current_people_html = '';
 		$current_people_ids = implode( ',', array_keys( $people_to_display ) );
 		foreach( $people_to_display as $key => $current_person ) {
-			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="person-close">x</span></div>';
+			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="person-close dashicons-no-alt"></span></div>';
 		}
 		?>
 		<input id="people-assign">
 		<input type="hidden" id="people-assign-ids" name="assign_people_ids" value="<?php echo $current_people_ids; ?>">
-		<style>.added-person { height: 20px; width: 100px; float: left; padding: 5px; text-align: center; margin-right: 10px; border: 1px solid #ccc;} #people-results { margin-top: 25px; width: 100%;}</style>
 		<div id="people-results"><?php echo $current_people_html; ?></div>
 		<div class="clear"></div>
 		<?php
