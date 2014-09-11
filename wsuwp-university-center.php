@@ -380,7 +380,7 @@ class WSUWP_University_Center {
 					var remove_name = remove_element.data('name');
 					var people_assign_ids = $('#people-assign-ids' ).val().split(',');
 
-					var new_people_assign_ids = Array();
+					var new_people_assign_ids = [];
 
 					for ( var k in people_assign_ids ) {
 						if ( remove_id !== people_assign_ids[k] ) {
