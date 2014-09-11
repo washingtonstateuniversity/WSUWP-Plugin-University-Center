@@ -292,7 +292,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_projects_meta_box( $post ) {
 		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_projects_ids', true );
-		$all_projects = $this->_get_all_object_data( 'projects' );
+		$all_projects = $this->_get_all_object_data( $this->project_content_type );
 	}
 
 	/**
@@ -302,7 +302,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_entities_meta_box( $post ) {
 		$current_entities = get_post_meta( $post->ID, '_wsuwp_uc_entities_ids', true );
-		$all_entities = $this->_get_all_object_data( 'entities' );
+		$all_entities = $this->_get_all_object_data( $this->entity_content_type );
 	}
 
 	/**
@@ -312,7 +312,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_people_meta_box( $post ) {
 		$current_people = get_post_meta( $post->ID, '_wsuwp_uc_people_ids', true );
-		$all_people = $this->_get_all_object_data( 'people' );
+		$all_people = $this->_get_all_object_data( $this->people_content_type );
 
 		if ( $current_people ) {
 			$people_for_adding = array_diff_key( $all_people, $current_people );
@@ -371,22 +371,16 @@ class WSUWP_University_Center {
 	 * Retrieve all of the items from a specified content type with their unique ID,
 	 * current post ID, and name.
 	 *
-	 * @param string $object One of 'projects', 'entities', or 'people'
+	 * @param string $post_type The custom post type slug.
 	 *
 	 * @return array|bool Array of results or false if incorrectly called.
 	 */
-	private function _get_all_object_data( $object ) {
-		$all_object_data = wp_cache_get( 'wsuwp_uc_all_' . $object );
+	private function _get_all_object_data( $post_type ) {
+		$all_object_data = wp_cache_get( 'wsuwp_uc_all_' . $post_type );
 
 		if ( ! $all_object_data ) {
 
-			if ( 'people' === $object ) {
-				$post_type = $this->people_content_type;
-			} elseif ( 'entities' === $object ) {
-				$post_type = $this->entity_content_type;
-			} elseif ( 'projects' === $object ) {
-				$post_type = $this->project_content_type;
-			} else {
+			if ( ! in_array( $post_type, array( $this->entity_content_type, $this->people_content_type, $this->project_content_type ) ) ) {
 				return false;
 			}
 
@@ -402,7 +396,7 @@ class WSUWP_University_Center {
 			}
 
 			if ( ! empty( $all_object_data ) ) {
-				wp_cache_add( 'wsuwp_uc_all_people', $all_object_data, '', 7200 );
+				wp_cache_add( 'wsuwp_uc_all_' . $post_type, $all_object_data, '', 7200 );
 			}
 		}
 
