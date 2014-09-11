@@ -57,6 +57,7 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
 
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'save_associated_data' ), 10, 2 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
@@ -259,6 +260,34 @@ class WSUWP_University_Center {
 		$this->_flush_all_object_data_cache( $post->post_type );
 	}
 
+	/**
+	 * Save data to an individual post type object about the other objects that are being
+	 * associated with it.
+	 *
+	 * @param int     $post_id ID of the post being saved.
+	 * @param WP_Post $post    Post object being saved.
+	 */
+	public function save_associated_data( $post_id, $post ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Only assign a unique id to content from our registered types - projects, people, and entities.
+		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+			return;
+		}
+
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( isset( $_POST['assign_people_ids'] ) ) {
+			$people_ids = explode( ',', $_POST['assign_people_ids'] );
+			array_map( 'sanitize_key', $people_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_people_ids', $people_ids );
+		}
+	}
+
 	public function admin_enqueue_scripts() {
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 	}
@@ -316,9 +345,15 @@ class WSUWP_University_Center {
 		$all_people = $this->_get_all_object_data( $this->people_content_type );
 
 		if ( $current_people ) {
-			$people_for_adding = array_diff_key( $all_people, $current_people );
+			$match_people = array();
+			foreach( $current_people as $person ) {
+				$match_people[ $person ] = true;
+			}
+			$people_for_adding = array_diff_key( $all_people, $match_people );
+			$people_to_display = array_intersect_key( $all_people, $match_people );
 		} else {
 			$people_for_adding = $all_people;
+			$people_to_display = array();
 		}
 
 		$people = array();
@@ -372,10 +407,17 @@ class WSUWP_University_Center {
 				});
 			}(jQuery));
 		</script>
+		<?php
+		$current_people_html = '';
+		$current_people_ids = implode( ',', array_keys( $people_to_display ) );
+		foreach( $people_to_display as $key => $current_person ) {
+			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '</div>';
+		}
+		?>
 		<input id="people-assign">
-		<input type="hidden" id="people-assign-ids">
+		<input type="hidden" id="people-assign-ids" name="assign_people_ids" value="<?php echo $current_people_ids; ?>">
 		<style>.added-person { height: 20px; width: 100px; float: left; padding: 5px; text-align: center; margin-right: 10px; border: 1px solid #ccc;} #people-results { margin-top: 25px; width: 100%;}</style>
-		<div id="people-results"></div>
+		<div id="people-results"><?php echo $current_people_html; ?></div>
 		<div class="clear"></div>
 		<?php
 	}
