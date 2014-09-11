@@ -370,6 +370,34 @@ class WSUWP_University_Center {
 			(function($){
 				var people = <?php echo $people; ?>;
 
+				/**
+				 * Remove an associated person from a list of people.
+				 */
+				function remove_person() {
+					var remove_id = $(this).parent().get(0).id;
+					var remove_element = $('#' + remove_id );
+					var remove_name = remove_element.data('name');
+					var people_assign_ids = $('#people-assign-ids' ).val().split(',');
+
+					var new_people_assign_ids = Array();
+
+					for ( var k in people_assign_ids ) {
+						if ( remove_id !== people_assign_ids[k] ) {
+							new_people_assign_ids.push(people_assign_ids[k]);
+						}
+					}
+
+					people_assign_ids = new_people_assign_ids.join(',');
+
+					$('#people-assign-ids' ).val(people_assign_ids);
+
+					// Update the autocomplete source data with the removed item.
+					people.push( { 'value' : remove_id, 'label' : remove_name } );
+
+					// Remove the actual item from the associated list.
+					remove_element.remove();
+				}
+
 				$(document ).ready(function() {
 					var people_assign_ids = $('#people-assign-ids');
 					var people_assign = $('#people-assign');
@@ -388,7 +416,7 @@ class WSUWP_University_Center {
 
 							// Check to see if this item's ID is already in the list of added people before adding it.
 							if ( 0 >= $('#' + ui.item.value ).length ) {
-								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '</div>');
+								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="person-close">x</span></div>');
 
 								var current_ids = people_assign_ids.val();
 								if ( '' === current_ids ) {
@@ -404,6 +432,8 @@ class WSUWP_University_Center {
 							return false;
 						}
 					});
+
+					$('#people-results').on( 'click', '.person-close', remove_person );
 				});
 			}(jQuery));
 		</script>
@@ -411,7 +441,7 @@ class WSUWP_University_Center {
 		$current_people_html = '';
 		$current_people_ids = implode( ',', array_keys( $people_to_display ) );
 		foreach( $people_to_display as $key => $current_person ) {
-			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '</div>';
+			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="person-close">x</span></div>';
 		}
 		?>
 		<input id="people-assign">
