@@ -344,8 +344,15 @@ class WSUWP_University_Center {
 							return false;
 						},
 						select: function( event, ui ) {
-							$('#people-assign' ).val(ui.item.label);
-							$('#people-assign-id' ).val(ui.item.value);
+							// Once an option is selected, clear the input box.
+							$('#people-assign' ).val('');
+
+							// Check to see if this item's ID is already in the list of added people before adding it.
+							if ( 0 >= $('#' + ui.item.value ).length ) {
+								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '</div>');
+								delete people[0][ ui.item.value ];
+							}
+
 							return false;
 						}
 					});
@@ -354,7 +361,9 @@ class WSUWP_University_Center {
 		</script>
 		<input id="people-assign">
 		<input type="hidden" id="people-assign-id">
+		<style>.added-person { height: 20px; width: 100px; float: left; padding: 5px; text-align: center; margin-right: 10px; border: 1px solid #ccc;} #people-results { margin-top: 25px; width: 100%;}</style>
 		<div id="people-results"></div>
+		<div class="clear"></div>
 		<?php
 	}
 
