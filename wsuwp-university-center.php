@@ -335,21 +335,33 @@ class WSUWP_University_Center {
 				var people = <?php echo $people; ?>;
 
 				$(document ).ready(function() {
-					$('#people-assign' ).autocomplete({
+					var people_assign_ids = $('#people-assign-ids');
+					var people_assign = $('#people-assign');
+
+					people_assign.autocomplete({
 						appendTo: '#people-results',
 						minLength: 0,
 						source: people,
 						focus: function( event, ui ) {
-							$( '#people-assign' ).val( ui.item.label );
+							people_assign.val( ui.item.label );
 							return false;
 						},
 						select: function( event, ui ) {
 							// Once an option is selected, clear the input box.
-							$('#people-assign' ).val('');
+							people_assign.val('');
 
 							// Check to see if this item's ID is already in the list of added people before adding it.
 							if ( 0 >= $('#' + ui.item.value ).length ) {
 								$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '</div>');
+
+								var current_ids = people_assign_ids.val();
+								if ( '' === current_ids ) {
+									current_ids = ui.item.value;
+								} else {
+									current_ids += ',' + ui.item.value;
+								}
+								people_assign_ids.val(current_ids);
+
 								delete people[0][ ui.item.value ];
 							}
 
@@ -360,7 +372,7 @@ class WSUWP_University_Center {
 			}(jQuery));
 		</script>
 		<input id="people-assign">
-		<input type="hidden" id="people-assign-id">
+		<input type="hidden" id="people-assign-ids">
 		<style>.added-person { height: 20px; width: 100px; float: left; padding: 5px; text-align: center; margin-right: 10px; border: 1px solid #ccc;} #people-results { margin-top: 25px; width: 100%;}</style>
 		<div id="people-results"></div>
 		<div class="clear"></div>
