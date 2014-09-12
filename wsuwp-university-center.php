@@ -368,7 +368,7 @@ class WSUWP_University_Center {
 		$people = json_encode( $people );
 		?>
 
-		<script> var wsu_uc = []; wsu_uc.people = <?php echo $people; ?>; </script>
+		<script> var wsu_uc = wsu_uc || {}; wsu_uc.people = <?php echo $people; ?>; </script>
 
 		<?php
 		$current_people_html = '';
