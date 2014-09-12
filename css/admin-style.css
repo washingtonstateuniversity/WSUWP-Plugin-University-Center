@@ -1,9 +1,11 @@
-#people-results {
+#people-results,
+#projects-results {
 	margin-top: 25px;
 	width: 100%;
 }
 
-.added-people {
+.added-people,
+.added-projects {
 	position: relative;
 	height: 20px;
 	width: auto;

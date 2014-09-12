@@ -2,7 +2,7 @@
 	var people = wsu_uc.people;
 
 	/**
-	* Remove an associated person from a list of people.
+	* Remove an associated objectperson from a list of people.
 	*/
 	function remove_person() {
 		var remove_id = $(this).parent().get(0).id;
@@ -69,6 +69,10 @@
 		if ( 0 !== $('#wsuwp_uc_assign_people' ).length ) {
 			autocomplete_object( 'people' );
 			$('#people-results').on( 'click', '.uc-object-close', remove_person );
+		}
+
+		if ( 0 !== $('#wsuwp_uc_assign_projects' ).length ) {
+			autocomplete_object( 'projects' );
 		}
 	});
 }(jQuery));

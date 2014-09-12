@@ -324,6 +324,42 @@ class WSUWP_University_Center {
 	public function display_assign_projects_meta_box( $post ) {
 		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_projects_ids', true );
 		$all_projects = $this->_get_all_object_data( $this->project_content_type );
+
+		if ( $current_projects ) {
+			$match_projects = array();
+			foreach( $current_projects as $project ) {
+				$match_projects[ $project ] = true;
+			}
+			$projects_for_adding = array_diff_key( $all_projects, $match_projects );
+			$projects_to_display = array_intersect_key( $all_projects, $match_projects );
+		} else {
+			$projects_for_adding = $all_projects;
+			$projects_to_display = array();
+		}
+
+		$projects = array();
+		foreach( $projects_for_adding as $id => $project ) {
+			$projects[] = array(
+				'value' => $id,
+				'label' => $project['name'],
+			);
+		}
+
+		$projects = json_encode( $projects );
+		?>
+		<script> var wsu_uc = wsu_uc || {}; wsu_uc.projects = <?php echo $projects; ?>; </script>
+		<?php
+		$current_projects_html = '';
+		$current_projects_ids = implode( ',', array_keys( $projects_to_display ) );
+		foreach( $projects_to_display as $key => $current_project ) {
+			$current_projects_html .= '<div class="added-project" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_project['name'] ) . '">' . esc_html( $current_project['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
+		}
+		?>
+		<input id="projects-assign">
+		<input type="hidden" id="projects-assign-ids" name="assign_projects_ids" value="<?php echo $current_projects_ids; ?>">
+		<div id="projects-results"><?php echo $current_projects_html; ?></div>
+		<div class="clear"></div>
+	<?php
 	}
 
 	/**
