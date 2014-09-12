@@ -286,6 +286,19 @@ class WSUWP_University_Center {
 			array_map( 'sanitize_key', $people_ids );
 			update_post_meta( $post_id, '_wsuwp_uc_people_ids', $people_ids );
 		}
+
+		if ( isset( $_POST['assign_projects_ids'] ) ) {
+			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
+			array_map( 'sanitize_key', $projects_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_projects_ids', $projects_ids );
+		}
+
+		if ( isset( $_POST['assign_entities_ids'] ) ) {
+			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
+			array_map( 'sanitize_key', $entities_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_entities_ids', $entities_ids );
+		}
+
 	}
 
 	public function admin_enqueue_scripts() {
