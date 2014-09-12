@@ -1,29 +1,30 @@
 (function($){
-	var people = wsu_uc.people;
-
 	/**
-	* Remove an associated objectperson from a list of people.
-	*/
-	function remove_person() {
+	 * Remove a previously associated object and update the list of objects
+	 * that are now associated with the primary post object.
+	 *
+	 * @param event
+	 */
+	function remove_object( event ) {
 		var remove_id = $(this).parent().get(0).id;
 		var remove_element = $('#' + remove_id );
 		var remove_name = remove_element.data('name');
-		var people_assign_ids = $('#people-assign-ids' ).val().split(',');
+		var objects_assign_ids = $('#' + event.data + '-assign-ids' ).val().split(',');
 
-		var new_people_assign_ids = [];
+		var new_objects_assign_ids = [];
 
-		for ( var k in people_assign_ids ) {
-			if ( remove_id !== people_assign_ids[k] ) {
-				new_people_assign_ids.push(people_assign_ids[k]);
+		for ( var k in objects_assign_ids ) {
+			if ( remove_id !== objects_assign_ids[k] ) {
+				new_objects_assign_ids.push(objects_assign_ids[k]);
 			}
 		}
 
-		people_assign_ids = new_people_assign_ids.join(',');
+		objects_assign_ids = new_objects_assign_ids.join(',');
 
-		$('#people-assign-ids' ).val(people_assign_ids);
+		$('#' + event.data + '-assign-ids' ).val(objects_assign_ids);
 
 		// Update the autocomplete source data with the removed item.
-		people.push( { 'value' : remove_id, 'label' : remove_name } );
+		wsu_uc[event.data].push( { 'value' : remove_id, 'label' : remove_name } );
 
 		// Remove the actual item from the associated list.
 		remove_element.remove();
@@ -68,15 +69,17 @@
 	$(document ).ready(function() {
 		if ( 0 !== $('#wsuwp_uc_assign_people' ).length ) {
 			autocomplete_object( 'people' );
-			$('#people-results').on( 'click', '.uc-object-close', remove_person );
+			$('#people-results').on( 'click', '.uc-object-close','people', remove_object );
 		}
 
 		if ( 0 !== $('#wsuwp_uc_assign_projects' ).length ) {
 			autocomplete_object( 'projects' );
+			$('#projects-results' ).on('click', '.uc-object-close', 'projects', remove_object );
 		}
 
 		if ( 0 !== $('#wsuwp_uc_assign_entities' ).length ) {
 			autocomplete_object( 'entities' );
+			$('#entities-results' ).on('click', '.uc-object-close', 'entities', remove_object );
 		}
 	});
 }(jQuery));
