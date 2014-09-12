@@ -1,5 +1,6 @@
 (function($){
 	var people = wsu_uc.people;
+
 	/**
 	* Remove an associated person from a list of people.
 	*/
@@ -28,41 +29,46 @@
 		remove_element.remove();
 	}
 
-	$(document ).ready(function() {
-		var people_assign_ids = $('#people-assign-ids');
-		var people_assign = $('#people-assign');
+	function autocomplete_object( object_type ) {
+		var assign_ids = $('#' + object_type + '-assign-ids');
+		var assign = $('#' + object_type + '-assign');
 
-		people_assign.autocomplete({
-			appendTo: '#people-results',
+		assign.autocomplete({
+			appendTo: '#' + object_type + '-results',
 			minLength: 0,
-			source: people,
+			source: wsu_uc[ object_type ],
 			focus: function( event, ui ) {
-				people_assign.val( ui.item.label );
+				assign.val( ui.item.label );
 				return false;
 			},
 			select: function( event, ui ) {
 				// Once an option is selected, clear the input box.
-				people_assign.val('');
+				assign.val('');
 
 				// Check to see if this item's ID is already in the list of added people before adding it.
 				if ( 0 >= $('#' + ui.item.value ).length ) {
-					$('#people-results' ).append('<div class="added-person" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="person-close dashicons-no-alt"></span></div>');
+					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + '" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
 
-					var current_ids = people_assign_ids.val();
+					var current_ids = assign_ids.val();
 					if ( '' === current_ids ) {
 						current_ids = ui.item.value;
 					} else {
 						current_ids += ',' + ui.item.value;
 					}
-					people_assign_ids.val(current_ids);
+					assign_ids.val(current_ids);
 
-					delete people[0][ ui.item.value ];
+					delete wsu_uc[ object_type ][0][ ui.item.value ];
 				}
 
 				return false;
 			}
 		});
+	}
 
-		$('#people-results').on( 'click', '.person-close', remove_person );
+	$(document ).ready(function() {
+		if ( 0 !== $('#wsuwp_uc_assign_people' ).length ) {
+			autocomplete_object( 'people' );
+			$('#people-results').on( 'click', '.uc-object-close', remove_person );
+		}
 	});
 }(jQuery));

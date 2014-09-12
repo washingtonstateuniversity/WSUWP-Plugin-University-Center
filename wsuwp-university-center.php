@@ -374,7 +374,7 @@ class WSUWP_University_Center {
 		$current_people_html = '';
 		$current_people_ids = implode( ',', array_keys( $people_to_display ) );
 		foreach( $people_to_display as $key => $current_person ) {
-			$current_people_html .= '<div class="added-person" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="person-close dashicons-no-alt"></span></div>';
+			$current_people_html .= '<div class="added-people" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
 		?>
 		<input id="people-assign">

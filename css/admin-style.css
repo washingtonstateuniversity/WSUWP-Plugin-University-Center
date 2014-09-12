@@ -3,7 +3,7 @@
 	width: 100%;
 }
 
-.added-person {
+.added-people {
 	position: relative;
 	height: 20px;
 	width: auto;
@@ -14,7 +14,7 @@
 	border: 1px solid #ccc;
 }
 
-.person-close {
+.uc-object-close {
 	position: absolute;
 	display: block;
 	top: 7px;
@@ -24,7 +24,7 @@
 	font-family: "Dashicons";
 }
 
-.person-close:hover {
+.uc-object-close:hover {
 	cursor: pointer;
 	color: #9d1e15;
 }
