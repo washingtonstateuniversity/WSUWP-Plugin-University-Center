@@ -301,6 +301,9 @@ class WSUWP_University_Center {
 
 	}
 
+	/**
+	 * Enqueue the scripts and styles used in the admin interface.
+	 */
 	public function admin_enqueue_scripts() {
 		wp_enqueue_script( 'wsuwp-uc-admin', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery-ui-autocomplete' ), false, true );
 		wp_enqueue_style( 'wsuwp-uc-admin-style', plugins_url( 'css/admin-style.css', __FILE__ ) );
@@ -362,6 +365,14 @@ class WSUWP_University_Center {
 		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
 	}
 
+	/**
+	 * Display the HTML used for the autocomplete area when associated objects with
+	 * other objects in a meta box.
+	 *
+	 * @param array  $all_object_data     All objects of this object type.
+	 * @param array  $current_object_data Objects of this object type currently associated with this post.
+	 * @param string $object_type         The object type.
+	 */
 	public function display_autocomplete_input( $all_object_data, $current_object_data, $object_type ) {
 		if ( $current_object_data ) {
 			$match_objects = array();
@@ -401,6 +412,7 @@ class WSUWP_University_Center {
 		<div class="clear"></div>
 	<?php
 	}
+
 	/**
 	 * Retrieve all of the items from a specified content type with their unique ID,
 	 * current post ID, and name.
