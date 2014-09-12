@@ -1,11 +1,9 @@
-#people-results,
-#projects-results {
+.wsu-uc-objects-results {
 	margin-top: 25px;
 	width: 100%;
 }
 
-.added-people,
-.added-projects {
+.added-object {
 	position: relative;
 	height: 20px;
 	width: auto;
@@ -13,6 +11,7 @@
 	float: left;
 	padding: 5px 20px 5px 5px;
 	margin-right: 10px;
+	margin-bottom: 10px;
 	border: 1px solid #ccc;
 }
 

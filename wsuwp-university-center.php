@@ -324,42 +324,7 @@ class WSUWP_University_Center {
 	public function display_assign_projects_meta_box( $post ) {
 		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_projects_ids', true );
 		$all_projects = $this->_get_all_object_data( $this->project_content_type );
-
-		if ( $current_projects ) {
-			$match_projects = array();
-			foreach( $current_projects as $project ) {
-				$match_projects[ $project ] = true;
-			}
-			$projects_for_adding = array_diff_key( $all_projects, $match_projects );
-			$projects_to_display = array_intersect_key( $all_projects, $match_projects );
-		} else {
-			$projects_for_adding = $all_projects;
-			$projects_to_display = array();
-		}
-
-		$projects = array();
-		foreach( $projects_for_adding as $id => $project ) {
-			$projects[] = array(
-				'value' => $id,
-				'label' => $project['name'],
-			);
-		}
-
-		$projects = json_encode( $projects );
-		?>
-		<script> var wsu_uc = wsu_uc || {}; wsu_uc.projects = <?php echo $projects; ?>; </script>
-		<?php
-		$current_projects_html = '';
-		$current_projects_ids = implode( ',', array_keys( $projects_to_display ) );
-		foreach( $projects_to_display as $key => $current_project ) {
-			$current_projects_html .= '<div class="added-project" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_project['name'] ) . '">' . esc_html( $current_project['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
-		}
-		?>
-		<input id="projects-assign">
-		<input type="hidden" id="projects-assign-ids" name="assign_projects_ids" value="<?php echo $current_projects_ids; ?>">
-		<div id="projects-results"><?php echo $current_projects_html; ?></div>
-		<div class="clear"></div>
-	<?php
+		$this->display_autocomplete_input( $all_projects, $current_projects, 'projects' );
 	}
 
 	/**
@@ -370,6 +335,7 @@ class WSUWP_University_Center {
 	public function display_assign_entities_meta_box( $post ) {
 		$current_entities = get_post_meta( $post->ID, '_wsuwp_uc_entities_ids', true );
 		$all_entities = $this->_get_all_object_data( $this->entity_content_type );
+		$this->display_autocomplete_input( $all_entities, $current_entities, 'entities' );
 	}
 
 	/**
@@ -380,46 +346,48 @@ class WSUWP_University_Center {
 	public function display_assign_people_meta_box( $post ) {
 		$current_people = get_post_meta( $post->ID, '_wsuwp_uc_people_ids', true );
 		$all_people = $this->_get_all_object_data( $this->people_content_type );
+		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
+	}
 
-		if ( $current_people ) {
-			$match_people = array();
-			foreach( $current_people as $person ) {
-				$match_people[ $person ] = true;
+	public function display_autocomplete_input( $all_object_data, $current_object_data, $object_type ) {
+		if ( $current_object_data ) {
+			$match_objects = array();
+			foreach( $current_object_data as $current_object ) {
+				$match_objects[ $current_object ] = true;
 			}
-			$people_for_adding = array_diff_key( $all_people, $match_people );
-			$people_to_display = array_intersect_key( $all_people, $match_people );
+			$objects_for_adding = array_diff_key( $all_object_data, $match_objects );
+			$objects_to_display = array_intersect_key( $all_object_data, $match_objects );
 		} else {
-			$people_for_adding = $all_people;
-			$people_to_display = array();
+			$objects_for_adding = $all_object_data;
+			$objects_to_display = array();
 		}
 
-		$people = array();
-		foreach ( $people_for_adding as $id => $person ) {
-			$people[] = array(
+		$objects = array();
+		foreach ( $objects_for_adding as $id => $object ) {
+			$objects[] = array(
 				'value' => $id,
-				'label' => $person['name'],
+				'label' => $object['name'],
 			);
 		}
 
-		$people = json_encode( $people );
+		$objects = json_encode( $objects );
 		?>
 
-		<script> var wsu_uc = wsu_uc || {}; wsu_uc.people = <?php echo $people; ?>; </script>
+		<script> var wsu_uc = wsu_uc || {}; wsu_uc.<?php echo esc_js( $object_type ); ?> = <?php echo $objects; ?>; </script>
 
 		<?php
-		$current_people_html = '';
-		$current_people_ids = implode( ',', array_keys( $people_to_display ) );
-		foreach( $people_to_display as $key => $current_person ) {
-			$current_people_html .= '<div class="added-people" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_person['name'] ) . '">' . esc_html( $current_person['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
+		$current_objects_html = '';
+		$current_objects_ids = implode( ',', array_keys( $objects_to_display ) );
+		foreach( $objects_to_display as $key => $current_object ) {
+			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
 		?>
-		<input id="people-assign">
-		<input type="hidden" id="people-assign-ids" name="assign_people_ids" value="<?php echo $current_people_ids; ?>">
-		<div id="people-results"><?php echo $current_people_html; ?></div>
+		<input id="<?php echo esc_attr( $object_type ); ?>-assign">
+		<input type="hidden" id="<?php echo esc_attr( $object_type ); ?>-assign-ids" name="assign_<?php echo esc_attr( $object_type ); ?>_ids" value="<?php echo $current_objects_ids; ?>">
+		<div id="<?php echo esc_attr( $object_type ); ?>-results" class="wsu-uc-objects-results"><?php echo $current_objects_html; ?></div>
 		<div class="clear"></div>
-		<?php
+	<?php
 	}
-
 	/**
 	 * Retrieve all of the items from a specified content type with their unique ID,
 	 * current post ID, and name.

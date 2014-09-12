@@ -47,7 +47,7 @@
 
 				// Check to see if this item's ID is already in the list of added people before adding it.
 				if ( 0 >= $('#' + ui.item.value ).length ) {
-					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + '" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
+					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + ' added-object" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
 
 					var current_ids = assign_ids.val();
 					if ( '' === current_ids ) {
@@ -73,6 +73,10 @@
 
 		if ( 0 !== $('#wsuwp_uc_assign_projects' ).length ) {
 			autocomplete_object( 'projects' );
+		}
+
+		if ( 0 !== $('#wsuwp_uc_assign_entities' ).length ) {
+			autocomplete_object( 'entities' );
 		}
 	});
 }(jQuery));
