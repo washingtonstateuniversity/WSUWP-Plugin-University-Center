@@ -30,6 +30,12 @@
 		remove_element.remove();
 	}
 
+	/**
+	 * Hook into jQuery UI's autocomplete for providing a list of possible objects to
+	 * be associated with this object.
+	 *
+	 * @param object_type
+	 */
 	function autocomplete_object( object_type ) {
 		var assign_ids = $('#' + object_type + '-assign-ids');
 		var assign = $('#' + object_type + '-assign');
@@ -46,7 +52,7 @@
 				// Once an option is selected, clear the input box.
 				assign.val('');
 
-				// Check to see if this item's ID is already in the list of added people before adding it.
+				// Check to see if this object's ID is already in the list of added objects before adding it.
 				if ( 0 >= $('#' + ui.item.value ).length ) {
 					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + ' added-object" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
 
