@@ -286,9 +286,8 @@ class WSUWP_University_Center {
 		if ( isset( $_POST['assign_people_ids'] ) ) {
 			$people_ids = explode( ',', $_POST['assign_people_ids'] );
 			$people_ids = $this->clean_posted_ids( $people_ids );
-			$current_people_ids = get_post_meta( $post_id, '_' . $this->people_content_type . '_ids', true );
 
-			$this->_maintain_object_association( $people_ids, $current_people_ids, $this->people_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $people_ids, $this->people_content_type, $post, $this_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->people_content_type . '_ids', $people_ids );
 			$this->_flush_all_object_data_cache( $this->people_content_type );
@@ -297,9 +296,8 @@ class WSUWP_University_Center {
 		if ( isset( $_POST['assign_projects_ids'] ) ) {
 			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
 			$projects_ids = $this->clean_posted_ids( $projects_ids );
-			$current_projects_ids = get_post_meta( $post_id, '_' . $this->project_content_type . '_ids', true );
 
-			$this->_maintain_object_association( $projects_ids, $current_projects_ids, $this->project_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $projects_ids, $this->project_content_type, $post, $this_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->project_content_type . '_ids', $projects_ids );
 			$this->_flush_all_object_data_cache( $this->project_content_type );
@@ -308,9 +306,8 @@ class WSUWP_University_Center {
 		if ( isset( $_POST['assign_entities_ids'] ) ) {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
 			$entities_ids = $this->clean_posted_ids( $entities_ids );
-			$current_entities_ids = get_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', true );
 
-			$this->_maintain_object_association( $entities_ids, $current_entities_ids, $this->entity_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $entities_ids, $this->entity_content_type, $post, $this_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', $entities_ids );
 			$this->_flush_all_object_data_cache( $this->entity_content_type );
@@ -350,15 +347,16 @@ class WSUWP_University_Center {
 	 * original type of object.
 	 *
 	 * @param $object_ids
-	 * @param $current_object_ids
 	 * @param $object_content_type
 	 * @param $post
 	 * @param $post_unique_id
 	 */
-	private function _maintain_object_association( $object_ids, $current_object_ids, $object_content_type, $post, $post_unique_id ) {
+	private function _maintain_object_association( $object_ids, $object_content_type, $post, $post_unique_id ) {
 		if ( empty( $object_ids ) ) {
 			$object_ids = array();
 		}
+
+		$current_object_ids = get_post_meta( $post->ID, '_' . $object_content_type . '_ids', true );
 
 		if ( $current_object_ids ) {
 			$added_object_ids = array_diff( $object_ids, $current_object_ids );
