@@ -392,9 +392,12 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
-			if ( $key = array_search( $remove_object, $objects ) ) {
-				unset( $objects [ $key ] );
+			$key = array_search( $post_unique_id, $objects );
+
+			if ( false !== $key ) {
+				unset( $objects[ $key ] );
 			}
+
 			update_post_meta( $object_post_id, '_' . $post->post_type . '_ids', $objects );
 		}
 	}
