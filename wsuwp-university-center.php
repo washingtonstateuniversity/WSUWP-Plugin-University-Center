@@ -61,6 +61,8 @@ class WSUWP_University_Center {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
+
+		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
 	}
 
 	/**
@@ -537,6 +539,7 @@ class WSUWP_University_Center {
 				if ( $unique_data_id ) {
 					$all_object_data[ $unique_data_id ]['id'] = $data->ID;
 					$all_object_data[ $unique_data_id ]['name'] = $data->post_title;
+					$all_object_data[ $unique_data_id ]['url'] = esc_url_raw( get_permalink( $data->ID ) );
 				}
 			}
 
@@ -590,6 +593,53 @@ class WSUWP_University_Center {
 		}
 
 		return $objects;
+	}
+
+	/**
+	 * Add content areas for entities, projects, and people by default when a piece of
+	 * content of these types is being displayed.
+	 *
+	 * @param string $content Current object content.
+	 *
+	 * @return string Modified content.
+	 */
+	public function add_object_content( $content ) {
+		if ( false === is_singular( array( $this->entity_content_type, $this->project_content_type, $this->people_content_type ) ) ) {
+			return $content;
+		}
+
+		$entities = $this->get_object_objects( get_the_ID(), $this->entity_content_type );
+		$projects = $this->get_object_objects( get_the_ID(), $this->project_content_type );
+		$people = $this->get_object_objects( get_the_ID(), $this->people_content_type );
+
+		$added_html = '';
+
+		if ( false !== $entities ) {
+			$added_html .= '<div class="wsuwp-uc-entities"><h3>Organizations:</h3><ul>';
+			foreach( $entities as $entity ) {
+				$added_html .= '<li><a href="' . esc_url( $entity['url'] ) . '">' . esc_html( $entity['name'] ) . '</a></li>';
+			}
+			$added_html .= '</ul></div>';
+
+		}
+
+		if ( false !== $projects ) {
+			$added_html .= '<div class="wsuwp-uc-projects"><h3>Projects:</h3><ul>';
+			foreach ( $projects as $project ) {
+				$added_html .= '<li><a href="' . esc_url( $project['url'] ) . '">' . esc_html( $project['name'] ) . '</a></li>';
+			}
+			$added_html .= '</ul></div>';
+		}
+
+		if ( false !== $people ) {
+			$added_html .= '<div class="wsuwp-uc-people"><h3>People:</h3><ul>';
+			foreach( $people as  $person ) {
+				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
+			}
+			$added_html .= '<ul></div>';
+		}
+
+		return $content . $added_html;
 	}
 }
 $wsuwp_university_center = new WSUWP_University_Center();
