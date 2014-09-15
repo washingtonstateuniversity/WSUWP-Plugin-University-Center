@@ -23,7 +23,7 @@ class WSUWP_University_Center {
 	 *
 	 * @var string
 	 */
-	var $people_content_type = 'wsuwp_uc_people';
+	var $people_content_type = 'wsuwp_uc_person';
 
 	/**
 	 * The slug used to register the entity custom content type.
