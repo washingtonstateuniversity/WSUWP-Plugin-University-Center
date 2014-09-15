@@ -286,7 +286,7 @@ class WSUWP_University_Center {
 		if ( isset( $_POST['assign_people_ids'] ) ) {
 			$people_ids = explode( ',', $_POST['assign_people_ids'] );
 			array_map( 'sanitize_key', $people_ids );
-			$current_people_ids = get_post_meta( $post_id, '_wsuwp_uc_people_ids', true );
+			$current_people_ids = get_post_meta( $post_id, '_wsuwp_uc_' . $this->people_content_type . '_ids', true );
 
 			if ( empty( $people_ids ) ) {
 				$people_ids = array();
@@ -304,7 +304,7 @@ class WSUWP_University_Center {
 
 			foreach( $added_people_ids as $add_person ) {
 				$person_post_id = $all_people_objects[ $add_person ]['id'];
-				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', true );
+				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . $post->post_type . '_ids', true );
 
 				if ( empty( $person_objects ) ) {
 					$person_objects = array();
@@ -313,12 +313,12 @@ class WSUWP_University_Center {
 				if ( ! in_array( $add_person, $person_objects ) ) {
 					$person_objects[] = $this_unique_id;
 				}
-				update_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', $person_objects );
+				update_post_meta( $person_post_id, '_wsuwp_uc_' . $post->post_type . '_ids', $person_objects );
 			}
 
 			foreach( $removed_people_ids as $remove_person ) {
 				$person_post_id = $all_people_objects[ $remove_person ]['id'];
-				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', true );
+				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . $post->post_type . '_ids', true );
 
 				if ( empty( $person_objects ) ) {
 					$person_objects = array();
@@ -327,24 +327,24 @@ class WSUWP_University_Center {
 				if ( $key = array_search( $remove_person, $person_objects ) ) {
 					unset( $person_objects [ $key ] );
 				}
-				update_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', $person_objects );
+				update_post_meta( $person_post_id, '_wsuwp_uc_' . $post->post_type . '_ids', $person_objects );
 			}
 
-			update_post_meta( $post_id, '_wsuwp_uc_people_ids', $people_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_' . $post->post_type . '_ids', $people_ids );
 			$this->_flush_all_object_data_cache( $this->people_content_type );
 		}
 
 		if ( isset( $_POST['assign_projects_ids'] ) ) {
 			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
 			array_map( 'sanitize_key', $projects_ids );
-			update_post_meta( $post_id, '_wsuwp_uc_projects_ids', $projects_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_' . $this->project_content_type . '_ids', $projects_ids );
 			$this->_flush_all_object_data_cache( $this->project_content_type );
 		}
 
 		if ( isset( $_POST['assign_entities_ids'] ) ) {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
 			array_map( 'sanitize_key', $entities_ids );
-			update_post_meta( $post_id, '_wsuwp_uc_entities_ids', $entities_ids );
+			update_post_meta( $post_id, '_wsuwp_uc_' . $this->entity_content_type . '_ids', $entities_ids );
 			$this->_flush_all_object_data_cache( $this->entity_content_type );
 		}
 
@@ -388,7 +388,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_projects_meta_box( $post ) {
-		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_projects_ids', true );
+		$current_projects = get_post_meta( $post->ID, '_wsuwp_uc_' . $this->project_content_type . '_ids', true );
 		$all_projects = $this->_get_all_object_data( $this->project_content_type );
 		$this->display_autocomplete_input( $all_projects, $current_projects, 'projects' );
 	}
@@ -399,7 +399,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_entities_meta_box( $post ) {
-		$current_entities = get_post_meta( $post->ID, '_wsuwp_uc_entities_ids', true );
+		$current_entities = get_post_meta( $post->ID, '_wsuwp_uc_' . $this->entity_content_type . '_ids', true );
 		$all_entities = $this->_get_all_object_data( $this->entity_content_type );
 		$this->display_autocomplete_input( $all_entities, $current_entities, 'entities' );
 	}
@@ -410,7 +410,7 @@ class WSUWP_University_Center {
 	 * @param WP_Post $post Currently displayed post object.
 	 */
 	public function display_assign_people_meta_box( $post ) {
-		$current_people = get_post_meta( $post->ID, '_wsuwp_uc_people_ids', true );
+		$current_people = get_post_meta( $post->ID, '_wsuwp_uc_' . $this->people_content_type . '_ids', true );
 		$all_people = $this->_get_all_object_data( $this->people_content_type );
 		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
 	}
