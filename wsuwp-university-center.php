@@ -539,6 +539,7 @@ class WSUWP_University_Center {
 				if ( $unique_data_id ) {
 					$all_object_data[ $unique_data_id ]['id'] = $data->ID;
 					$all_object_data[ $unique_data_id ]['name'] = $data->post_title;
+					$all_object_data[ $unique_data_id ]['url'] = esc_url_raw( get_permalink( $data->ID ) );
 				}
 			}
 
@@ -616,7 +617,7 @@ class WSUWP_University_Center {
 		if ( false !== $entities ) {
 			$added_html .= '<div class="wsuwp-uc-entities"><h3>Organizations:</h3><ul>';
 			foreach( $entities as $entity ) {
-				$added_html .= '<li>' . esc_html( $entity['name'] ) . '</li>';
+				$added_html .= '<li><a href="' . esc_url( $entity['url'] ) . '">' . esc_html( $entity['name'] ) . '</a></li>';
 			}
 			$added_html .= '</ul></div>';
 
@@ -625,7 +626,7 @@ class WSUWP_University_Center {
 		if ( false !== $projects ) {
 			$added_html .= '<div class="wsuwp-uc-projects"><h3>Projects:</h3><ul>';
 			foreach ( $projects as $project ) {
-				$added_html .= '<li>' . esc_html( $project['name'] ) . '</li>';
+				$added_html .= '<li><a href="' . esc_url( $project['url'] ) . '">' . esc_html( $project['name'] ) . '</a></li>';
 			}
 			$added_html .= '</ul></div>';
 		}
@@ -633,7 +634,7 @@ class WSUWP_University_Center {
 		if ( false !== $people ) {
 			$added_html .= '<div class="wsuwp-uc-people"><h3>People:</h3><ul>';
 			foreach( $people as  $person ) {
-				$added_html .= '<li>' . esc_html( $person['name'] ) . '</li>';
+				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
 			}
 			$added_html .= '<ul></div>';
 		}
