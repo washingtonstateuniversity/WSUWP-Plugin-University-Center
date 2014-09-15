@@ -57,7 +57,7 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
 
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
-		add_action( 'save_post', array( $this, 'save_associated_data' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
@@ -281,24 +281,74 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$this_unique_id = get_post_meta( $post_id, '_wsuwp_uc_unique_id', true );
+
 		if ( isset( $_POST['assign_people_ids'] ) ) {
 			$people_ids = explode( ',', $_POST['assign_people_ids'] );
 			array_map( 'sanitize_key', $people_ids );
+			$current_people_ids = get_post_meta( $post_id, '_wsuwp_uc_people_ids', true );
+
+			if ( empty( $people_ids ) ) {
+				$people_ids = array();
+			}
+
+			if ( $current_people_ids ) {
+				$added_people_ids = array_diff( $people_ids, $current_people_ids );
+				$removed_people_ids = array_diff( $current_people_ids, $people_ids );
+			} else {
+				$added_people_ids = $people_ids;
+				$removed_people_ids = array();
+			}
+
+			$all_people_objects = $this->_get_all_object_data( $this->people_content_type );
+
+			foreach( $added_people_ids as $add_person ) {
+				$person_post_id = $all_people_objects[ $add_person ]['id'];
+				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', true );
+
+				if ( empty( $person_objects ) ) {
+					$person_objects = array();
+				}
+
+				if ( ! in_array( $add_person, $person_objects ) ) {
+					$person_objects[] = $this_unique_id;
+				}
+				update_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', $person_objects );
+			}
+
+			foreach( $removed_people_ids as $remove_person ) {
+				$person_post_id = $all_people_objects[ $remove_person ]['id'];
+				$person_objects = get_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', true );
+
+				if ( empty( $person_objects ) ) {
+					$person_objects = array();
+				}
+
+				if ( $key = array_search( $remove_person, $person_objects ) ) {
+					unset( $person_objects [ $key ] );
+				}
+				update_post_meta( $person_post_id, '_wsuwp_uc_' . 'projects' . '_ids', $person_objects );
+			}
+
 			update_post_meta( $post_id, '_wsuwp_uc_people_ids', $people_ids );
+			$this->_flush_all_object_data_cache( $this->people_content_type );
 		}
 
 		if ( isset( $_POST['assign_projects_ids'] ) ) {
 			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
 			array_map( 'sanitize_key', $projects_ids );
 			update_post_meta( $post_id, '_wsuwp_uc_projects_ids', $projects_ids );
+			$this->_flush_all_object_data_cache( $this->project_content_type );
 		}
 
 		if ( isset( $_POST['assign_entities_ids'] ) ) {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
 			array_map( 'sanitize_key', $entities_ids );
 			update_post_meta( $post_id, '_wsuwp_uc_entities_ids', $entities_ids );
+			$this->_flush_all_object_data_cache( $this->entity_content_type );
 		}
 
+		$this->_flush_all_object_data_cache( $post->post_type );
 	}
 
 	/**
