@@ -285,50 +285,10 @@ class WSUWP_University_Center {
 
 		if ( isset( $_POST['assign_people_ids'] ) ) {
 			$people_ids = explode( ',', $_POST['assign_people_ids'] );
-			array_map( 'sanitize_key', $people_ids );
+			$people_ids = $this->clean_posted_ids( $people_ids );
 			$current_people_ids = get_post_meta( $post_id, '_' . $this->people_content_type . '_ids', true );
 
-			if ( empty( $people_ids ) ) {
-				$people_ids = array();
-			}
-
-			if ( $current_people_ids ) {
-				$added_people_ids = array_diff( $people_ids, $current_people_ids );
-				$removed_people_ids = array_diff( $current_people_ids, $people_ids );
-			} else {
-				$added_people_ids = $people_ids;
-				$removed_people_ids = array();
-			}
-
-			$all_people_objects = $this->_get_all_object_data( $this->people_content_type );
-
-			foreach( $added_people_ids as $add_person ) {
-				$person_post_id = $all_people_objects[ $add_person ]['id'];
-				$person_objects = get_post_meta( $person_post_id, '_' . $post->post_type . '_ids', true );
-
-				if ( empty( $person_objects ) ) {
-					$person_objects = array();
-				}
-
-				if ( ! in_array( $add_person, $person_objects ) ) {
-					$person_objects[] = $this_unique_id;
-				}
-				update_post_meta( $person_post_id, '_' . $post->post_type . '_ids', $person_objects );
-			}
-
-			foreach( $removed_people_ids as $remove_person ) {
-				$person_post_id = $all_people_objects[ $remove_person ]['id'];
-				$person_objects = get_post_meta( $person_post_id, '_' . $post->post_type . '_ids', true );
-
-				if ( empty( $person_objects ) ) {
-					$person_objects = array();
-				}
-
-				if ( $key = array_search( $remove_person, $person_objects ) ) {
-					unset( $person_objects [ $key ] );
-				}
-				update_post_meta( $person_post_id, '_' . $post->post_type . '_ids', $person_objects );
-			}
+			$this->_maintain_object_association( $people_ids, $current_people_ids, $this->people_content_type, $post, $this_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->people_content_type . '_ids', $people_ids );
 			$this->_flush_all_object_data_cache( $this->people_content_type );
@@ -336,19 +296,107 @@ class WSUWP_University_Center {
 
 		if ( isset( $_POST['assign_projects_ids'] ) ) {
 			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
-			array_map( 'sanitize_key', $projects_ids );
+			$projects_ids = $this->clean_posted_ids( $projects_ids );
+			$current_projects_ids = get_post_meta( $post_id, '_' . $this->project_content_type . '_ids', true );
+
+			$this->_maintain_object_association( $projects_ids, $current_projects_ids, $this->project_content_type, $post, $this_unique_id );
+
 			update_post_meta( $post_id, '_' . $this->project_content_type . '_ids', $projects_ids );
 			$this->_flush_all_object_data_cache( $this->project_content_type );
 		}
 
 		if ( isset( $_POST['assign_entities_ids'] ) ) {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
-			array_map( 'sanitize_key', $entities_ids );
+			$entities_ids = $this->clean_posted_ids( $entities_ids );
+			$current_entities_ids = get_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', true );
+
+			$this->_maintain_object_association( $entities_ids, $current_entities_ids, $this->entity_content_type, $post, $this_unique_id );
+
 			update_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', $entities_ids );
 			$this->_flush_all_object_data_cache( $this->entity_content_type );
 		}
 
 		$this->_flush_all_object_data_cache( $post->post_type );
+	}
+
+	/**
+	 * Clean posted object ID data so that any IDs passed are sanitized and validated as not empty.
+	 *
+	 * @param array $object_ids List of object IDs being associated.
+	 *
+	 * @return array Cleaned list of object IDs.
+	 */
+	public function clean_posted_ids( $object_ids ) {
+		if ( ! is_array( $object_ids ) || empty( $object_ids ) ) {
+			return array();
+		}
+
+		foreach( $object_ids as $key => $id ) {
+			$id = sanitize_key( ( trim( $id ) ) ) ;
+
+			if ( '' === $id ) {
+				unset( $object_ids[ $key ] );
+			} else {
+				$object_ids[ $key ] = $id;
+			}
+		}
+
+		return $object_ids;
+	}
+
+	/**
+	 * Maintain the association between objects when one is added or removed to the other. This ensures that
+	 * if one type of object is added to another, that relationship is also established as meta for the
+	 * original type of object.
+	 *
+	 * @param $object_ids
+	 * @param $current_object_ids
+	 * @param $object_content_type
+	 * @param $post
+	 * @param $post_unique_id
+	 */
+	private function _maintain_object_association( $object_ids, $current_object_ids, $object_content_type, $post, $post_unique_id ) {
+		if ( empty( $object_ids ) ) {
+			$object_ids = array();
+		}
+
+		if ( $current_object_ids ) {
+			$added_object_ids = array_diff( $object_ids, $current_object_ids );
+			$removed_object_ids = array_diff( $current_object_ids, $object_ids );
+		} else {
+			$added_object_ids = $object_ids;
+			$removed_object_ids = array();
+		}
+
+		$all_objects = $this->_get_all_object_data( $object_content_type );
+
+		foreach( $added_object_ids as $add_object ) {
+			$object_post_id = $all_objects[ $add_object ]['id'];
+			$objects = get_post_meta( $object_post_id, '_' . $post->post_type . '_ids', true );
+
+			if ( empty( $objects ) ) {
+				$objects = array();
+			}
+
+			if ( ! in_array( $add_object, $objects ) ) {
+				$objects[] = $post_unique_id;
+			}
+			update_post_meta( $object_post_id, '_' . $post->post_type . '_ids', $objects );
+		}
+
+		foreach( $removed_object_ids as $remove_object ) {
+			$object_post_id = $all_objects[ $remove_object ]['id'];
+			$objects = get_post_meta( $object_post_id, '_' . $post->post_type . '_ids', true );
+
+			if ( empty( $objects ) ) {
+				$objects = array();
+			}
+
+			if ( $key = array_search( $remove_object, $objects ) ) {
+				unset( $objects [ $key ] );
+			}
+			update_post_meta( $object_post_id, '_' . $post->post_type . '_ids', $objects );
+		}
 	}
 
 	/**
