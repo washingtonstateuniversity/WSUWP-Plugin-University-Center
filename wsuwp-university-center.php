@@ -568,16 +568,19 @@ class WSUWP_University_Center {
 	 * @return array List of objects associated with the requested object.
 	 */
 	public function get_object_objects( $post_id, $object_type ) {
-		if ( 0 === $post_id ) {
-			$post_id = get_the_ID();
+		$post = get_post( $post_id );
+
+		// Return false if the requested object type is the same object type as the post object.
+		if ( $post->post_type === $object_type ) {
+			return false;
 		}
 
-		if ( false === $post_id ) {
+		if ( null === $post ) {
 			return array();
 		}
 
 		$all_objects = $this->_get_all_object_data( $object_type );
-		$associated_objects = get_post_meta( $post_id, '_' . $object_type . '_ids', true );
+		$associated_objects = get_post_meta( $post->ID, '_' . $object_type . '_ids', true );
 
 		if ( is_array( $associated_objects ) && ! empty( $associated_objects ) ) {
 			$objects = array_flip( $associated_objects );
