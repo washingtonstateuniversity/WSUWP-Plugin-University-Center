@@ -281,13 +281,13 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		$this_unique_id = get_post_meta( $post_id, '_wsuwp_uc_unique_id', true );
+		$post_unique_id = get_post_meta( $post_id, '_wsuwp_uc_unique_id', true );
 
 		if ( isset( $_POST['assign_people_ids'] ) ) {
 			$people_ids = explode( ',', $_POST['assign_people_ids'] );
 			$people_ids = $this->clean_posted_ids( $people_ids );
 
-			$this->_maintain_object_association( $people_ids, $this->people_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $people_ids, $this->people_content_type, $post, $post_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->people_content_type . '_ids', $people_ids );
 			$this->_flush_all_object_data_cache( $this->people_content_type );
@@ -297,7 +297,7 @@ class WSUWP_University_Center {
 			$projects_ids = explode( ',', $_POST['assign_projects_ids'] );
 			$projects_ids = $this->clean_posted_ids( $projects_ids );
 
-			$this->_maintain_object_association( $projects_ids, $this->project_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $projects_ids, $this->project_content_type, $post, $post_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->project_content_type . '_ids', $projects_ids );
 			$this->_flush_all_object_data_cache( $this->project_content_type );
@@ -307,7 +307,7 @@ class WSUWP_University_Center {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
 			$entities_ids = $this->clean_posted_ids( $entities_ids );
 
-			$this->_maintain_object_association( $entities_ids, $this->entity_content_type, $post, $this_unique_id );
+			$this->_maintain_object_association( $entities_ids, $this->entity_content_type, $post, $post_unique_id );
 
 			update_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', $entities_ids );
 			$this->_flush_all_object_data_cache( $this->entity_content_type );
