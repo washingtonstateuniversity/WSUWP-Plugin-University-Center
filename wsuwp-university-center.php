@@ -226,7 +226,7 @@ class WSUWP_University_Center {
 			'rewrite' => array( 'slug' => 'topic' ),
 		);
 
-		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ), $args );
+		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type ), $args );
 	}
 
 	/**
