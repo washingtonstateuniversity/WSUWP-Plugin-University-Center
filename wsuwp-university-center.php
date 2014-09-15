@@ -558,5 +558,71 @@ class WSUWP_University_Center {
 		wp_cache_delete( 'wsuwp_uc_all_' . $post_type );
 		$this->_get_all_object_data( $post_type );
 	}
+
+	/**
+	 * Get a list of objects from an object type which are associated with the requested object.
+	 *
+	 * @param int    $post_id     ID of the object currently being used.
+	 * @param string $object_type Slug of the object type to find.
+	 *
+	 * @return array List of objects associated with the requested object.
+	 */
+	public function get_object_objects( $post_id, $object_type ) {
+		if ( 0 === $post_id ) {
+			$post_id = get_the_ID();
+		}
+
+		if ( false === $post_id ) {
+			return array();
+		}
+
+		$all_objects = $this->_get_all_object_data( $object_type );
+		$associated_objects = get_post_meta( $post_id, '_' . $object_type . '_ids', true );
+
+		if ( is_array( $associated_objects ) && ! empty( $associated_objects ) ) {
+			$objects = array_flip( $associated_objects );
+			$objects = array_intersect_key( $all_objects, $objects );
+		} else {
+			$objects = array();
+		}
+
+		return $objects;
+	}
 }
-new WSUWP_University_Center();
+$wsuwp_university_center = new WSUWP_University_Center();
+
+/**
+ * Retrieve the list of projects associated with an object.
+ *
+ * @param int $post_id
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_projects( $post_id = 0 ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->project_content_type );
+}
+
+/**
+ * Retrieve the list of people associated with an object.
+ *
+ * @param int $post_id
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_people( $post_id = 0 ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->people_content_type );
+}
+
+/**
+ * Retrieve the list of entities associated with an object.
+ *
+ * @param int $post_id
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_entities( $post_id = 0 ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->entity_content_type );
+}
