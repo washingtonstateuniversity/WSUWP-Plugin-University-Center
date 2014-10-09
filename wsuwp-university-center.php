@@ -50,11 +50,12 @@ class WSUWP_University_Center {
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'register_project_content_type' ) );
-		add_action( 'init', array( $this, 'register_people_content_type' ) );
-		add_action( 'init', array( $this, 'register_entity_content_type' ) );
-		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ) );
-		add_action( 'init', array( $this, 'register_topic_taxonomy' ) );
+		add_action( 'init', array( $this, 'set_default_support' ), 10 );
+		add_action( 'init', array( $this, 'register_project_content_type' ), 11 );
+		add_action( 'init', array( $this, 'register_people_content_type' ), 11 );
+		add_action( 'init', array( $this, 'register_entity_content_type' ), 11 );
+		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ), 11 );
+		add_action( 'init', array( $this, 'register_topic_taxonomy' ), 11 );
 
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
@@ -66,9 +67,28 @@ class WSUWP_University_Center {
 	}
 
 	/**
+	 * If a theme does not provide explicit support for one or more portions of this plugin
+	 * when the plugin is activated, we should assume that intent is to use all functionality.
+	 *
+	 * If at least one portion has been declared as supported, we leave the decision with the theme.
+	 */
+	public function set_default_support() {
+		if ( false === current_theme_supports( 'wsuwp_uc_project' ) && false === current_theme_supports( 'wsuwp_uc_person' ) && false === current_theme_supports( 'wsuwp_uc_entity' ) ) {
+			add_theme_support( 'wsuwp_uc_project' );
+			add_theme_support( 'wsuwp_uc_person' );
+			add_theme_support( 'wsuwp_uc_entity' );
+		}
+	}
+
+	/**
 	 * Register the project content type.
 	 */
 	public function register_project_content_type() {
+		// Only register the project content type if supported by the theme.
+		if ( false === current_theme_supports( 'wsuwp_uc_project' ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'Projects', 'wsuwp_uc' ),
@@ -105,6 +125,11 @@ class WSUWP_University_Center {
 	 * Register the people content type.
 	 */
 	public function register_people_content_type() {
+		// Only register the people content type if supported by the theme.
+		if ( false === current_theme_supports( 'wsuwp_uc_person' ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'People', 'wsuwp_uc' ),
@@ -142,6 +167,11 @@ class WSUWP_University_Center {
 	 * Register the entity content type.
 	 */
 	public function register_entity_content_type() {
+		// Only register the entity content type if supported by the theme.
+		if ( false === current_theme_supports( 'wsuwp_uc_entity' ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'Entities', 'wsuwp_uc' ),
@@ -179,6 +209,11 @@ class WSUWP_University_Center {
 	 * Register a taxonomy to track types of entities.
 	 */
 	public function register_entity_type_taxonomy() {
+		// Only register the entity type taxonomy if the theme supports the entity content type.
+		if ( false === current_theme_supports( 'wsuwp_uc_entity' ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'Entity Types', 'wsuwp_uc' ),
@@ -204,9 +239,16 @@ class WSUWP_University_Center {
 	}
 
 	/**
-	 * Register a taxonomy to track topics for projects, people, and entities.
+	 * Register a taxonomy to track topics for projects. This can then be used to determine
+	 * what topics people and entities are associated with through their relationship with
+	 * projects.
 	 */
 	public function register_topic_taxonomy() {
+		// Only register the topic taxonomy if projects are supported.
+		if ( false === current_theme_supports( 'wsuwp_uc_project' ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'Topics', 'wsuwp_uc' ),
@@ -420,15 +462,15 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		if ( $this->project_content_type !== $post_type ) {
+		if ( $this->project_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_project' ) ) {
 			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign Projects', array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
 		}
 
-		if ( $this->entity_content_type !== $post_type ) {
+		if ( $this->entity_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_entity' ) ) {
 			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign Entities', array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
 		}
 
-		if ( $this->people_content_type !== $post_type ) {
+		if ( $this->people_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_person' ) ) {
 			add_meta_box( 'wsuwp_uc_assign_people', 'Assign People', array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
 		}
 	}
@@ -608,9 +650,23 @@ class WSUWP_University_Center {
 			return $content;
 		}
 
-		$entities = $this->get_object_objects( get_the_ID(), $this->entity_content_type );
-		$projects = $this->get_object_objects( get_the_ID(), $this->project_content_type );
-		$people = $this->get_object_objects( get_the_ID(), $this->people_content_type );
+		if ( current_theme_supports( 'wsuwp_uc_entity' ) ) {
+			$entities = $this->get_object_objects( get_the_ID(), $this->entity_content_type );
+		} else {
+			$entities = false;
+		}
+
+		if ( current_theme_supports( 'wsuwp_uc_project' ) ) {
+			$projects = $this->get_object_objects( get_the_ID(), $this->project_content_type );
+		} else {
+			$projects = false;
+		}
+
+		if ( current_theme_supports( 'wsuwp_uc_person' ) ) {
+			$people = $this->get_object_objects( get_the_ID(), $this->people_content_type );
+		} else {
+			$people = false;
+		}
 
 		$added_html = '';
 
