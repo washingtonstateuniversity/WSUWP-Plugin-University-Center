@@ -10,6 +10,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 class WSUWP_University_Center {
+	/**
+	 * The plugin version number, used to break caches and trigger
+	 * upgrade routines.
+	 *
+	 * @var string
+	 */
+	var $plugin_version = '0.2.0';
 
 	/**
 	 * The slug used to register the project custom content type.
@@ -57,6 +64,8 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ), 11 );
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ), 11 );
 
+		add_action( 'init', array( $this, 'process_upgrade_routine' ), 12 );
+
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
@@ -64,6 +73,20 @@ class WSUWP_University_Center {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
 
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
+	}
+
+	/**
+	 * Process any upgrade routines between versions or on initial activation.
+	 */
+	public function process_upgrade_routine() {
+		$db_version = get_option( 'wsuwp_uc_version', '0.0.0' );
+
+		// Flush rewrite rules if on an early or non existing DB version.
+		if ( version_compare( $db_version, '0.2.0', '<' ) ) {
+			flush_rewrite_rules();
+		}
+
+		update_option( 'wsuwp_uc_version', $this->plugin_version );
 	}
 
 	/**
