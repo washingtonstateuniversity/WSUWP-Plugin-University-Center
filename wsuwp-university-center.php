@@ -450,6 +450,10 @@ class WSUWP_University_Center {
 		}
 
 		foreach( $removed_object_ids as $remove_object ) {
+			if ( ! isset( $all_objects[ $remove_object ] ) ) {
+				continue;
+			}
+
 			$object_post_id = $all_objects[ $remove_object ]['id'];
 			$objects = get_post_meta( $object_post_id, '_' . $post->post_type . '_ids', true );
 
