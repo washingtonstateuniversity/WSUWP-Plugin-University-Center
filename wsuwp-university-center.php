@@ -33,6 +33,13 @@ class WSUWP_University_Center {
 	var $people_content_type = 'wsuwp_uc_person';
 
 	/**
+	 * The slug used to register the publication custom content type.
+	 *
+	 * @var string
+	 */
+	var $publication_content_type = 'wsuwp_uc_publication';
+
+	/**
 	 * The slug used to register the entity custom content type.
 	 *
 	 * @var string
@@ -60,6 +67,7 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'set_default_support' ), 10 );
 		add_action( 'init', array( $this, 'register_project_content_type' ), 11 );
 		add_action( 'init', array( $this, 'register_people_content_type' ), 11 );
+		add_action( 'init', array( $this, 'register_publication_content_type' ), 11 );
 		add_action( 'init', array( $this, 'register_entity_content_type' ), 11 );
 		add_action( 'init', array( $this, 'register_entity_type_taxonomy' ), 11 );
 		add_action( 'init', array( $this, 'register_topic_taxonomy' ), 11 );
@@ -96,10 +104,14 @@ class WSUWP_University_Center {
 	 * If at least one portion has been declared as supported, we leave the decision with the theme.
 	 */
 	public function set_default_support() {
-		if ( false === current_theme_supports( 'wsuwp_uc_project' ) && false === current_theme_supports( 'wsuwp_uc_person' ) && false === current_theme_supports( 'wsuwp_uc_entity' ) ) {
+		if ( false === current_theme_supports( 'wsuwp_uc_project' ) &&
+			 false === current_theme_supports( 'wsuwp_uc_person' )  &&
+			 false === current_theme_supports( 'wsuwp_uc_entity' )  &&
+			 false === current_theme_supports( 'wsuwp_uc_publication' ) ) {
 			add_theme_support( 'wsuwp_uc_project' );
 			add_theme_support( 'wsuwp_uc_person' );
 			add_theme_support( 'wsuwp_uc_entity' );
+			add_theme_support( 'wsuwp_uc_publication' );
 		}
 	}
 
@@ -184,6 +196,48 @@ class WSUWP_University_Center {
 		);
 
 		register_post_type( $this->people_content_type, $args );
+	}
+
+	/**
+	 * Register the publication content type.
+	 */
+	public function register_publication_content_type() {
+		// Only register the publication content type if supported by the theme.
+		if ( false === current_theme_supports( 'wsuwp_uc_publication' ) ) {
+			return;
+		}
+
+		$args = array(
+			'labels' => array(
+				'name' => __( 'Publications', 'wsuwp_uc' ),
+				'singular_name' => __( 'Publications', 'wsuwp_uc' ),
+				'all_items' => __( 'All Publications', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add Publication', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Publication', 'wsuwp_uc' ),
+				'new_item' => __( 'New Publication', 'wsuwp_uc' ),
+				'view_item' => __( 'View Publication', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Publications', 'wsuwp_uc' ),
+				'not_found' => __( 'No Publications found', 'wsuwp_uc' ),
+				'not_found_in_trash' => __( 'No Publications found in trash', 'wsuwp_uc' ),
+			),
+			'description' => __( 'Publications involved with the center.', 'wsuwp_uc' ),
+			'public' => true,
+			'hierarchical' => false,
+			'menu_icon' => 'dashicons-book',
+			'supports' => array (
+				'title',
+				'editor',
+				'revisions',
+				'thumbnail',
+			),
+			'has_archive' => true,
+			'rewrite' => array(
+				'slug' => 'publication',
+				'with_front' => false
+			),
+		);
+
+		register_post_type( $this->publication_content_type, $args );
 	}
 
 	/**
@@ -307,8 +361,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types - projects, people, publications, and entities.
+		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
 			return;
 		}
 
@@ -339,8 +393,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types - projects, people, publications and entities.
+		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
 			return;
 		}
 
@@ -378,6 +432,16 @@ class WSUWP_University_Center {
 
 			update_post_meta( $post_id, '_' . $this->entity_content_type . '_ids', $entities_ids );
 			$this->_flush_all_object_data_cache( $this->entity_content_type );
+		}
+
+		if ( isset( $_POST['assign_publications_ids'] ) ) {
+			$publications_ids = explode( ',', $_POST['assign_publications_ids'] );
+			$publications_ids = $this->clean_posted_ids( $publications_ids );
+
+			$this->_maintain_object_association( $publications_ids, $this->publication_content_type, $post, $post_unique_id );
+
+			update_post_meta( $post_id, '_' . $this->publication_content_type . '_ids', $publications_ids );
+			$this->_flush_all_object_data_cache( $this->publication_content_type );
 		}
 
 		$this->_flush_all_object_data_cache( $post->post_type );
@@ -485,7 +549,7 @@ class WSUWP_University_Center {
 	 * @param string $post_type The slug of the current post type.
 	 */
 	public function add_meta_boxes( $post_type) {
-		if ( ! in_array( $post_type, array( $this->project_content_type, $this->people_content_type, $this->entity_content_type ) ) ) {
+		if ( ! in_array( $post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
 			return;
 		}
 
@@ -499,6 +563,10 @@ class WSUWP_University_Center {
 
 		if ( $this->people_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_person' ) ) {
 			add_meta_box( 'wsuwp_uc_assign_people', 'Assign People', array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
+		}
+
+		if ( $this->publication_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_publication' ) ) {
+			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign Publications', array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
 		}
 	}
 
@@ -533,6 +601,17 @@ class WSUWP_University_Center {
 		$current_people = get_post_meta( $post->ID, '_' . $this->people_content_type . '_ids', true );
 		$all_people = $this->_get_all_object_data( $this->people_content_type );
 		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
+	}
+
+	/**
+	 * Display a meta box used to assign publications to other content types.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_publications_meta_box( $post ) {
+		$current_publications = get_post_meta( $post->ID, '_' . $this->publication_content_type . '_ids', true );
+		$all_publications = $this->_get_all_object_data( $this->publication_content_type );
+		$this->display_autocomplete_input( $all_publications, $current_publications, 'publications' );
 	}
 
 	/**
@@ -596,7 +675,7 @@ class WSUWP_University_Center {
 
 		if ( ! $all_object_data ) {
 
-			if ( ! in_array( $post_type, array( $this->entity_content_type, $this->people_content_type, $this->project_content_type ) ) ) {
+			if ( ! in_array( $post_type, array( $this->entity_content_type, $this->people_content_type, $this->publication_content_type, $this->project_content_type ) ) ) {
 				return false;
 			}
 
@@ -673,7 +752,7 @@ class WSUWP_University_Center {
 	 * @return string Modified content.
 	 */
 	public function add_object_content( $content ) {
-		if ( false === is_singular( array( $this->entity_content_type, $this->project_content_type, $this->people_content_type ) ) ) {
+		if ( false === is_singular( array( $this->entity_content_type, $this->project_content_type, $this->publication_content_type, $this->people_content_type ) ) ) {
 			return $content;
 		}
 
@@ -693,6 +772,12 @@ class WSUWP_University_Center {
 			$people = $this->get_object_objects( get_the_ID(), $this->people_content_type );
 		} else {
 			$people = false;
+		}
+
+		if ( current_theme_supports( 'wsuwp_uc_publication' ) ) {
+			$publications = $this->get_object_objects( get_the_ID(), $this->publication_content_type );
+		} else {
+			$publications = false;
 		}
 
 		$added_html = '';
@@ -720,6 +805,14 @@ class WSUWP_University_Center {
 				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
 			}
 			$added_html .= '<ul></div>';
+		}
+
+		if ( false !== $publications ) {
+			$added_html .= '<div class="wsuwp-uc-publications"><h3>Publications:</h3><ul>';
+			foreach( $publications as $publication ) {
+				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
+			}
+			$added_html .= '</ul></div>';
 		}
 
 		return $content . $added_html;
@@ -761,4 +854,16 @@ function wsuwp_uc_get_object_people( $post_id = 0 ) {
 function wsuwp_uc_get_object_entities( $post_id = 0 ) {
 	global $wsuwp_university_center;
 	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->entity_content_type );
+}
+
+/**
+ * Retrieve the list of publications associated with an object.
+ *
+ * @param int $post_id
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_publications( $post_id = 0 ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->publication_content_type );
 }

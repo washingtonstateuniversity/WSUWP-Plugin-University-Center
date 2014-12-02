@@ -87,5 +87,10 @@
 			autocomplete_object( 'entities' );
 			$('#entities-results' ).on('click', '.uc-object-close', 'entities', remove_object );
 		}
+
+		if ( 0 !== $('#wsuwp_uc_assign_publications' ).length ) {
+			autocomplete_object( 'publications' );
+			$('#publications-results' ).on('click', '.uc-object-close', 'publications', remove_object );
+		}
 	});
 }(jQuery));
