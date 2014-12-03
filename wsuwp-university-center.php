@@ -81,7 +81,7 @@ class WSUWP_University_Center {
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
 	}
