@@ -4,6 +4,7 @@
 
 * Introduce publications as a content type. Publications can be assigned to people, entities, and projects.
 * Add a meta box to capture URLs for all content types.
+* Add a meta box to capture email address for people.
 
 ## 0.2.2 (November 10, 2014)
 
