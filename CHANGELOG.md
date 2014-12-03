@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (TBD)
+
+* Introduce publications as a content type. Publications can be assigned to people, entities, and projects.
+
 ## 0.2.2 (November 10, 2014)
 
 * Introduce an upgrade routine to handle tasks such as rewrite rules flushing.
