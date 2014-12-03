@@ -92,7 +92,7 @@ class WSUWP_University_Center {
 	 * @return array
 	 */
 	public function get_object_type_slugs() {
-		$slugs = array( $this->project_content_type, $this->project_content_type, $this->entity_content_type, $this->publication_content_type );
+		$slugs = array( $this->people_content_type, $this->project_content_type, $this->entity_content_type, $this->publication_content_type );
 
 		return $slugs;
 	}
