@@ -821,6 +821,35 @@ class WSUWP_University_Center {
 $wsuwp_university_center = new WSUWP_University_Center();
 
 /**
+ * Return the content type slug for the object type being queried.
+ *
+ * @param string $content_type Should be one of people, publication, entity, or project.
+ *
+ * @return string
+ */
+function wsuwp_uc_get_object_type_slug( $content_type ) {
+	global $wsuwp_university_center;
+
+	if ( 'people' === $content_type ) {
+		return $wsuwp_university_center->people_content_type;
+	}
+
+	if ( 'publication' === $content_type ) {
+		return $wsuwp_university_center->publication_content_type;
+	}
+
+	if ( 'entity' === $content_type ) {
+		return $wsuwp_university_center->entity_content_type;
+	}
+
+	if ( 'project' === $content_type ) {
+		return $wsuwp_university_center->project_content_type;
+	}
+
+	return '';
+}
+
+/**
  * Retrieve the list of projects associated with an object.
  *
  * @param int $post_id
