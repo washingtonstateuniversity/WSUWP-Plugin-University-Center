@@ -9,6 +9,9 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
+// Include handling of meta for default content types.
+include_once __DIR__ . '/includes/wsuwp-university-center-meta.php';
+
 class WSUWP_University_Center {
 	/**
 	 * The plugin version number, used to break caches and trigger
@@ -78,9 +81,20 @@ class WSUWP_University_Center {
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
+	}
+
+	/**
+	 * Provide a list slugs for all registered content types.
+	 *
+	 * @return array
+	 */
+	public function get_object_type_slugs() {
+		$slugs = array( $this->people_content_type, $this->project_content_type, $this->entity_content_type, $this->publication_content_type );
+
+		return $slugs;
 	}
 
 	/**
@@ -361,8 +375,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, publications, and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types.
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -393,8 +407,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, publications and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types.
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -548,8 +562,8 @@ class WSUWP_University_Center {
 	 *
 	 * @param string $post_type The slug of the current post type.
 	 */
-	public function add_meta_boxes( $post_type) {
-		if ( ! in_array( $post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+	public function add_meta_boxes( $post_type ) {
+		if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -675,7 +689,7 @@ class WSUWP_University_Center {
 
 		if ( ! $all_object_data ) {
 
-			if ( ! in_array( $post_type, array( $this->entity_content_type, $this->people_content_type, $this->publication_content_type, $this->project_content_type ) ) ) {
+			if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
 				return false;
 			}
 
@@ -752,7 +766,7 @@ class WSUWP_University_Center {
 	 * @return string Modified content.
 	 */
 	public function add_object_content( $content ) {
-		if ( false === is_singular( array( $this->entity_content_type, $this->project_content_type, $this->publication_content_type, $this->people_content_type ) ) ) {
+		if ( false === is_singular( $this->get_object_type_slugs() ) ) {
 			return $content;
 		}
 
@@ -819,6 +833,45 @@ class WSUWP_University_Center {
 	}
 }
 $wsuwp_university_center = new WSUWP_University_Center();
+
+/**
+ * Return the content type slug for the object type being queried.
+ *
+ * @param string $content_type Should be one of people, publication, entity, or project.
+ *
+ * @return string
+ */
+function wsuwp_uc_get_object_type_slug( $content_type ) {
+	global $wsuwp_university_center;
+
+	if ( 'people' === $content_type ) {
+		return $wsuwp_university_center->people_content_type;
+	}
+
+	if ( 'publication' === $content_type ) {
+		return $wsuwp_university_center->publication_content_type;
+	}
+
+	if ( 'entity' === $content_type ) {
+		return $wsuwp_university_center->entity_content_type;
+	}
+
+	if ( 'project' === $content_type ) {
+		return $wsuwp_university_center->project_content_type;
+	}
+
+	return '';
+}
+
+/**
+ * Retrieve a list of content type slugs for registered content types by this plugin.
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_type_slugs() {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_type_slugs();
+}
 
 /**
  * Retrieve the list of projects associated with an object.
