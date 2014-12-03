@@ -87,6 +87,17 @@ class WSUWP_University_Center {
 	}
 
 	/**
+	 * Provide a list slugs for all registered content types.
+	 *
+	 * @return array
+	 */
+	public function get_object_type_slugs() {
+		$slugs = array( $this->project_content_type, $this->project_content_type, $this->entity_content_type, $this->publication_content_type );
+
+		return $slugs;
+	}
+
+	/**
 	 * Process any upgrade routines between versions or on initial activation.
 	 */
 	public function process_upgrade_routine() {
@@ -364,8 +375,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, publications, and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types.
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -396,8 +407,8 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		// Only assign a unique id to content from our registered types - projects, people, publications and entities.
-		if ( ! in_array( $post->post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+		// Only assign a unique id to content from our registered types.
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -551,8 +562,8 @@ class WSUWP_University_Center {
 	 *
 	 * @param string $post_type The slug of the current post type.
 	 */
-	public function add_meta_boxes( $post_type) {
-		if ( ! in_array( $post_type, array( $this->project_content_type, $this->people_content_type, $this->publication_content_type, $this->entity_content_type ) ) ) {
+	public function add_meta_boxes( $post_type ) {
+		if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
 			return;
 		}
 
@@ -678,7 +689,7 @@ class WSUWP_University_Center {
 
 		if ( ! $all_object_data ) {
 
-			if ( ! in_array( $post_type, array( $this->entity_content_type, $this->people_content_type, $this->publication_content_type, $this->project_content_type ) ) ) {
+			if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
 				return false;
 			}
 
@@ -755,7 +766,7 @@ class WSUWP_University_Center {
 	 * @return string Modified content.
 	 */
 	public function add_object_content( $content ) {
-		if ( false === is_singular( array( $this->entity_content_type, $this->project_content_type, $this->publication_content_type, $this->people_content_type ) ) ) {
+		if ( false === is_singular( $this->get_object_type_slugs() ) ) {
 			return $content;
 		}
 
@@ -850,6 +861,16 @@ function wsuwp_uc_get_object_type_slug( $content_type ) {
 	}
 
 	return '';
+}
+
+/**
+ * Retrieve a list of content type slugs for registered content types by this plugin.
+ *
+ * @return array
+ */
+function wsuwp_uc_get_object_type_slugs() {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_type_slugs();
 }
 
 /**
