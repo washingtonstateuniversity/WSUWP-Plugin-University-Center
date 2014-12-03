@@ -198,6 +198,7 @@ class WSUWP_University_Center {
 			'menu_icon' => 'dashicons-id-alt',
 			'supports' => array (
 				'title',
+				'author',
 				'editor',
 				'revisions',
 				'thumbnail',
