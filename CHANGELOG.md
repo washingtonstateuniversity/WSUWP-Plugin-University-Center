@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 (November 10, 2014)
+
+* Introduce an upgrade routine to handle tasks such as rewrite rules flushing.
+* Resolve issue with missing array index.
+
 ## 0.2.1 (October 9, 2014)
 
 * Check for theme support for `wsuwp_uc_person`, `wsuwp_uc_entity`, and `wsuwp_uc_project` before registering post types and taxonomies.
