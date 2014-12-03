@@ -9,6 +9,9 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
+// Include handling of meta for default content types.
+include_once __DIR__ . '/includes/wsuwp-university-center-meta.php';
+
 class WSUWP_University_Center {
 	/**
 	 * The plugin version number, used to break caches and trigger
