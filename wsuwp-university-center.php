@@ -167,6 +167,8 @@ class WSUWP_University_Center {
 				'with_front' => false
 			),
 		);
+		$args = apply_filters( 'wsuwp_uc_register_project_type_args', $args );
+
 		register_post_type( $this->project_content_type, $args );
 	}
 
@@ -209,6 +211,7 @@ class WSUWP_University_Center {
 				'with_front' => false
 			),
 		);
+		$args = apply_filters( 'wsuwp_uc_register_people_type_args', $args );
 
 		register_post_type( $this->people_content_type, $args );
 	}
@@ -251,6 +254,7 @@ class WSUWP_University_Center {
 				'with_front' => false
 			),
 		);
+		$args = apply_filters( 'wsuwp_uc_register_publication_type_args', $args );
 
 		register_post_type( $this->publication_content_type, $args );
 	}
@@ -293,6 +297,7 @@ class WSUWP_University_Center {
 				'with_front' => false
 			),
 		);
+		$args = apply_filters( 'wsuwp_uc_register_entity_type_args', $args );
 
 		register_post_type( $this->entity_content_type, $args );
 	}
@@ -326,6 +331,7 @@ class WSUWP_University_Center {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'entity-type' ),
 		);
+		$args = apply_filters( 'wsuwp_uc_regiter_entity_type_taxonomy_args', $args );
 
 		register_taxonomy( $this->entity_type_taxonomy, $this->entity_content_type, $args );
 	}
@@ -361,6 +367,7 @@ class WSUWP_University_Center {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'topic' ),
 		);
+		$args = apply_filters( 'wsuwp_uc_regiter_topic_taxonomy_args', $args );
 
 		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type ), $args );
 	}
