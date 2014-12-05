@@ -80,6 +80,7 @@ class WSUWP_University_Center {
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
+		add_action( 'admin_init', array( $this, 'display_settings' ), 11 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
@@ -127,6 +128,86 @@ class WSUWP_University_Center {
 			add_theme_support( 'wsuwp_uc_entity' );
 			add_theme_support( 'wsuwp_uc_publication' );
 		}
+	}
+
+	/**
+	 * Register the settings fields that will be output for this plugin.
+	 */
+	public function display_settings() {
+		register_setting( 'general', 'wsuwp_uc_names', array( $this, 'sanitize_names' ) );
+		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names'), 'general', 'default', array( 'label_for' => 'wsuwp_uc_names' ) );
+	}
+
+	/**
+	 * Sanitize the names assigned to object types before saving to the database.
+	 *
+	 * @param array $names Names being saved.
+	 *
+	 * @return array Clean data.
+	 */
+	public function sanitize_names( $names ) {
+		$clean_names = array();
+		foreach( $names as $name => $data ) {
+			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ) ) ) {
+				continue;
+			}
+
+			$clean_names[ $name ]['singular'] = sanitize_text_field( $data['singular'] );
+			$clean_names[ $name ]['plural'] = sanitize_text_field( $data['plural'] );
+		}
+
+		return $clean_names;
+	}
+
+	/**
+	 * Display a settings area to capture modified names for object types.
+	 */
+	public function general_settings_names() {
+		$names = get_option( 'wsuwp_uc_names', false );
+
+		$display_names = array();
+		if ( ! isset( $names['project'] ) ) {
+			$names['project'] = array();
+		}
+		if ( ! isset( $names['people'] ) ) {
+			$names['people'] = array();
+		}
+		if ( ! isset( $names['entity'] ) ) {
+			$names['entity'] = array();
+		}
+		if ( ! isset( $names['publication'] ) ) {
+			$names['publication'] = array();
+		}
+
+		$display_names['project'] = wp_parse_args( $names['project'], array( 'singular' => 'Project', 'plural' => 'Projects' ) );
+		$display_names['people'] = wp_parse_args( $names['people'], array( 'singular' => 'Person', 'plural' => 'People' ) );
+		$display_names['entity'] = wp_parse_args( $names['entity'], array( 'singular' => 'Entity', 'plural' => 'Entities' ) );
+		$display_names['publication'] = wp_parse_args( $names['publication'], array( 'singular' => 'Publication', 'plural' => 'Publications' ) );
+		?>
+		<div class="wsuwp-uc-settings-names">
+			<p>Changing the settings here will override the default labels for the content types provided by the University Center Objects plugin.</p>
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_project_singular">Project (Singular)</label>
+			<input id="wsuwp_uc_names_project_singular" name="wsuwp_uc_names[project][singular]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_project_plural">Projects (Plural)</label>
+			<input id="wsuwp_uc_names_project_plural" name="wsuwp_uc_names[project][plural]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_people_singular">Person (Singular)</label>
+			<input id="wsuwp_uc_names_people_singular" name="wsuwp_uc_names[people][singular]" value="<?php echo esc_attr( $display_names['people']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_people_plural">People (Plural)</label>
+			<input id="wsuwp_uc_names_people_plural" name="wsuwp_uc_names[people][plural]" value="<?php echo esc_attr( $display_names['people']['plural'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_entity_singular">Entity (Singular)</label>
+			<input id="wsuwp_uc_names_entity_singular" name="wsuwp_uc_names[entity][singular]" value="<?php echo esc_attr( $display_names['entity']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_entity_plural">Entities (Plural)</label>
+			<input id="wsuwp_uc_names_entity_plural" name="wsuwp_uc_names[entity][plural]" value="<?php echo esc_attr( $display_names['entity']['plural'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_publication_singular">Publication (Singular)</label>
+			<input id="wsuwp_uc_names_publication_singular" name="wsuwp_uc_names[publication][singular]" value="<?php echo esc_attr( $display_names['publication']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_publication_plural">Publications (Plural)</label>
+			<input id="wsuwp_uc_names_publication_plural" name="wsuwp_uc_names[publication][plural]" value="<?php echo esc_attr( $display_names['publication']['plural'] ); ?>" type="text" class="regular-text" />
+		</div>
+		<?php
 	}
 
 	/**
