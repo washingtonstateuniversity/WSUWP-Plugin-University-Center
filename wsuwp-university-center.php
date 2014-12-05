@@ -887,7 +887,8 @@ class WSUWP_University_Center {
 		$added_html = '';
 
 		if ( false !== $entities && ! empty( $entities )) {
-			$added_html .= '<div class="wsuwp-uc-entities"><h3>Organizations:</h3><ul>';
+			$labels = get_post_type_object( $this->entity_content_type );
+			$added_html .= '<div class="wsuwp-uc-entities"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $entities as $entity ) {
 				$added_html .= '<li><a href="' . esc_url( $entity['url'] ) . '">' . esc_html( $entity['name'] ) . '</a></li>';
 			}
@@ -896,7 +897,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $projects && ! empty( $projects ) ) {
-			$added_html .= '<div class="wsuwp-uc-projects"><h3>Projects:</h3><ul>';
+			$labels = get_post_type_object( $this->project_content_type );
+			$added_html .= '<div class="wsuwp-uc-projects"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach ( $projects as $project ) {
 				$added_html .= '<li><a href="' . esc_url( $project['url'] ) . '">' . esc_html( $project['name'] ) . '</a></li>';
 			}
@@ -904,7 +906,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $people && ! empty( $people ) ) {
-			$added_html .= '<div class="wsuwp-uc-people"><h3>People:</h3><ul>';
+			$labels = get_post_type_object( $this->people_content_type );
+			$added_html .= '<div class="wsuwp-uc-people"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $people as  $person ) {
 				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
 			}
@@ -912,7 +915,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $publications && ! empty( $publications ) ) {
-			$added_html .= '<div class="wsuwp-uc-publications"><h3>Publications:</h3><ul>';
+			$labels = get_post_type_object( $this->entity_content_type );
+			$added_html .= '<div class="wsuwp-uc-publications"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $publications as $publication ) {
 				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
 			}
