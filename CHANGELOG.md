@@ -7,6 +7,7 @@
 * Add a meta box to capture email address for people.
 * Add support for author to the people content type.
 * Hide the automatic display of related object headings of related objects of that type are not assigned.
+* Add filters to support the renaming of object type and taxonomy labels.
 
 ## 0.2.2 (November 10, 2014)
 
