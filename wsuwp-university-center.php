@@ -190,7 +190,7 @@ class WSUWP_University_Center {
 			<label for="wsuwp_uc_names_project_singular">Project (Singular)</label>
 			<input id="wsuwp_uc_names_project_singular" name="wsuwp_uc_names[project][singular]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
 			<label for="wsuwp_uc_names_project_plural">Projects (Plural)</label>
-			<input id="wsuwp_uc_names_project_plural" name="wsuwp_uc_names[project][plural]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
+			<input id="wsuwp_uc_names_project_plural" name="wsuwp_uc_names[project][plural]" value="<?php echo esc_attr( $display_names['project']['plural'] ); ?>" type="text" class="regular-text" />
 			<p class="description"></p>
 			<label for="wsuwp_uc_names_people_singular">Person (Singular)</label>
 			<input id="wsuwp_uc_names_people_singular" name="wsuwp_uc_names[people][singular]" value="<?php echo esc_attr( $display_names['people']['singular'] ); ?>" type="text" class="regular-text" />
