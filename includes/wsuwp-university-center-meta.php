@@ -21,7 +21,10 @@ class WSUWP_University_Center_Meta {
 		}
 
 		add_meta_box( 'wsuwp_uc_object_url', 'URL', array( $this, 'display_object_url_meta_box' ), null, 'normal', 'default' );
-		add_meta_box( 'wsuwp_uc_person_email', 'Email Address', array( $this, 'display_person_email_meta_box' ), null, 'side', 'default' );
+
+		if ( $post_type === wsuwp_uc_get_object_type_slug( 'people' ) ) {
+			add_meta_box( 'wsuwp_uc_person_email', 'Email Address', array( $this, 'display_person_email_meta_box' ), null, 'side', 'default' );
+		}
 	}
 
 	/**
