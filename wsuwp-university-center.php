@@ -245,6 +245,29 @@ class WSUWP_University_Center {
 	}
 
 	/**
+	 * Retrieve object type names from a previously saved names option.
+	 *
+	 * @param string $object_type The type of object for which we need names.
+	 *
+	 * @return array|bool A list of singular and plural names. False if not available.
+	 */
+	private function _get_object_type_names( $object_type ) {
+		$names = get_option( 'wsuwp_uc_names', false );
+
+		// If an option is not provided, do not provide names.
+		if ( false === $names || ! isset( $names[ $object_type ] ) ) {
+			return false;
+		}
+
+		// The data must match our structure before we can depend on it.
+		if ( ! isset( $names[ $object_type ]['singular'] ) || ! isset( $names[ $object_type ]['plural'] ) ) {
+			return false;
+		}
+
+		return array( 'singular' => esc_html( $names[ $object_type ]['singular'] ), 'plural' => esc_html( $names[ $object_type ]['plural'] ) );
+	}
+
+	/**
 	 * Register the project content type.
 	 */
 	public function register_project_content_type() {
@@ -267,7 +290,8 @@ class WSUWP_University_Center {
 		);
 		$default_description = __( 'Projects belonging to the center.', 'wsuwp_uc' );
 
-		$names = apply_filters( 'wsuwp_uc_project_type_names', false );
+		$names = $this->_get_object_type_names( 'project' );
+		$names = apply_filters( 'wsuwp_uc_project_type_names', $names );
 
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
@@ -322,7 +346,8 @@ class WSUWP_University_Center {
 		);
 		$default_description = __( 'People involved with the center.', 'wsuwp_uc' );
 
-		$names = apply_filters( 'wsuwp_uc_people_type_names', false );
+		$names = $this->_get_object_type_names( 'people' );
+		$names = apply_filters( 'wsuwp_uc_people_type_names', $names );
 
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
@@ -378,7 +403,8 @@ class WSUWP_University_Center {
 		);
 		$default_description = __( 'Publications involved with the center.', 'wsuwp_uc' );
 
-		$names = apply_filters( 'wsuwp_uc_publication_type_names', false );
+		$names = $this->_get_object_type_names( 'publication' );
+		$names = apply_filters( 'wsuwp_uc_publication_type_names', $names );
 
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
@@ -433,7 +459,8 @@ class WSUWP_University_Center {
 		);
 		$default_description = __( 'Entities involved with the center.', 'wsuwp_uc' );
 
-		$names = apply_filters( 'wsuwp_uc_entity_type_names', false );
+		$names = $this->_get_object_type_names( 'entity' );
+		$names = apply_filters( 'wsuwp_uc_entity_type_names', $names );
 
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
