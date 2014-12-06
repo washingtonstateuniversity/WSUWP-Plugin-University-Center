@@ -81,6 +81,8 @@ class WSUWP_University_Center {
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
 		add_action( 'admin_init', array( $this, 'display_settings' ), 11 );
+		add_action( 'wsuwp_uc_flush_rewrite_rules', array( $this, 'flush_rewrite_rules' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
@@ -156,7 +158,16 @@ class WSUWP_University_Center {
 			$clean_names[ $name ]['plural'] = sanitize_text_field( $data['plural'] );
 		}
 
+		wp_schedule_single_event( time() + 1, 'wsuwp_uc_flush_rewrite_rules' );
+
 		return $clean_names;
+	}
+
+	/**
+	 * Flush the rewrite rules on the site.
+	 */
+	public function flush_rewrite_rules() {
+		flush_rewrite_rules();
 	}
 
 	/**
