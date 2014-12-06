@@ -80,6 +80,9 @@ class WSUWP_University_Center {
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
+		add_action( 'admin_init', array( $this, 'display_settings' ), 11 );
+		add_action( 'wsuwp_uc_flush_rewrite_rules', array( $this, 'flush_rewrite_rules' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
@@ -130,6 +133,152 @@ class WSUWP_University_Center {
 	}
 
 	/**
+	 * Register the settings fields that will be output for this plugin.
+	 */
+	public function display_settings() {
+		register_setting( 'general', 'wsuwp_uc_names', array( $this, 'sanitize_names' ) );
+		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names'), 'general', 'default', array( 'label_for' => 'wsuwp_uc_names' ) );
+	}
+
+	/**
+	 * Sanitize the names assigned to object types before saving to the database.
+	 *
+	 * @param array $names Names being saved.
+	 *
+	 * @return array Clean data.
+	 */
+	public function sanitize_names( $names ) {
+		$clean_names = array();
+		foreach( $names as $name => $data ) {
+			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ) ) ) {
+				continue;
+			}
+
+			$clean_names[ $name ]['singular'] = sanitize_text_field( $data['singular'] );
+			$clean_names[ $name ]['plural'] = sanitize_text_field( $data['plural'] );
+		}
+
+		wp_schedule_single_event( time() + 1, 'wsuwp_uc_flush_rewrite_rules' );
+
+		return $clean_names;
+	}
+
+	/**
+	 * Flush the rewrite rules on the site.
+	 */
+	public function flush_rewrite_rules() {
+		flush_rewrite_rules();
+	}
+
+	/**
+	 * Display a settings area to capture modified names for object types.
+	 */
+	public function general_settings_names() {
+		$names = get_option( 'wsuwp_uc_names', false );
+
+		$display_names = array();
+		if ( ! isset( $names['project'] ) ) {
+			$names['project'] = array();
+		}
+		if ( ! isset( $names['people'] ) ) {
+			$names['people'] = array();
+		}
+		if ( ! isset( $names['entity'] ) ) {
+			$names['entity'] = array();
+		}
+		if ( ! isset( $names['publication'] ) ) {
+			$names['publication'] = array();
+		}
+
+		$display_names['project'] = wp_parse_args( $names['project'], array( 'singular' => 'Project', 'plural' => 'Projects' ) );
+		$display_names['people'] = wp_parse_args( $names['people'], array( 'singular' => 'Person', 'plural' => 'People' ) );
+		$display_names['entity'] = wp_parse_args( $names['entity'], array( 'singular' => 'Entity', 'plural' => 'Entities' ) );
+		$display_names['publication'] = wp_parse_args( $names['publication'], array( 'singular' => 'Publication', 'plural' => 'Publications' ) );
+		?>
+		<div class="wsuwp-uc-settings-names">
+			<p>Changing the settings here will override the default labels for the content types provided by the University Center Objects plugin. The default labels are listed to the left of each field. The <strong>singular</strong> label will also be used as a slug in URLs.</p>
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_project_singular">Project (Singular)</label>
+			<input id="wsuwp_uc_names_project_singular" name="wsuwp_uc_names[project][singular]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_project_plural">Projects (Plural)</label>
+			<input id="wsuwp_uc_names_project_plural" name="wsuwp_uc_names[project][plural]" value="<?php echo esc_attr( $display_names['project']['plural'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_people_singular">Person (Singular)</label>
+			<input id="wsuwp_uc_names_people_singular" name="wsuwp_uc_names[people][singular]" value="<?php echo esc_attr( $display_names['people']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_people_plural">People (Plural)</label>
+			<input id="wsuwp_uc_names_people_plural" name="wsuwp_uc_names[people][plural]" value="<?php echo esc_attr( $display_names['people']['plural'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_entity_singular">Entity (Singular)</label>
+			<input id="wsuwp_uc_names_entity_singular" name="wsuwp_uc_names[entity][singular]" value="<?php echo esc_attr( $display_names['entity']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_entity_plural">Entities (Plural)</label>
+			<input id="wsuwp_uc_names_entity_plural" name="wsuwp_uc_names[entity][plural]" value="<?php echo esc_attr( $display_names['entity']['plural'] ); ?>" type="text" class="regular-text" />
+			<p class="description"></p>
+			<label for="wsuwp_uc_names_publication_singular">Publication (Singular)</label>
+			<input id="wsuwp_uc_names_publication_singular" name="wsuwp_uc_names[publication][singular]" value="<?php echo esc_attr( $display_names['publication']['singular'] ); ?>" type="text" class="regular-text" />
+			<label for="wsuwp_uc_names_publication_plural">Publications (Plural)</label>
+			<input id="wsuwp_uc_names_publication_plural" name="wsuwp_uc_names[publication][plural]" value="<?php echo esc_attr( $display_names['publication']['plural'] ); ?>" type="text" class="regular-text" />
+		</div>
+		<?php
+	}
+
+	/**
+	 * Build labels for a custom content type based on passed names.
+	 *
+	 * @param array $names Array of singular and plural forms for label names.
+	 *
+	 * @return array List of labels.
+	 */
+	private function _build_labels( $names ) {
+		$labels = array(
+			'name'               => $names['plural'],
+			'singular_name'      => $names['singular'],
+			'all_items'          => 'All ' . $names['plural'],
+			'add_new_item'       => 'Add ' . $names['singular'],
+			'edit_item'          => 'Edit ' . $names['singular'],
+			'new_item'           => 'New ' . $names['singular'],
+			'view_item'          => 'View ' . $names['singular'],
+			'search_items'       => 'Search ' . $names['plural'],
+			'not_found'          => 'No ' . $names['plural'] . ' found',
+			'not_found_in_trash' => 'No ' . $names['plural'] . ' found in trash',
+		);
+		return $labels;
+	}
+
+	/**
+	 * Build a description string for a content type based on the passed naming data.
+	 *
+	 * @param string $plural Plural form of the string being set.
+	 *
+	 * @return string
+	 */
+	private function _build_description( $plural ) {
+		return esc_html( $plural ) . ' belonging to the center';
+	}
+
+	/**
+	 * Retrieve object type names from a previously saved names option.
+	 *
+	 * @param string $object_type The type of object for which we need names.
+	 *
+	 * @return array|bool A list of singular and plural names. False if not available.
+	 */
+	private function _get_object_type_names( $object_type ) {
+		$names = get_option( 'wsuwp_uc_names', false );
+
+		// If an option is not provided, do not provide names.
+		if ( false === $names || ! isset( $names[ $object_type ] ) ) {
+			return false;
+		}
+
+		// The data must match our structure before we can depend on it.
+		if ( ! isset( $names[ $object_type ]['singular'] ) || ! isset( $names[ $object_type ]['plural'] ) ) {
+			return false;
+		}
+
+		return array( 'singular' => esc_html( $names[ $object_type ]['singular'] ), 'plural' => esc_html( $names[ $object_type ]['plural'] ) );
+	}
+
+	/**
 	 * Register the project content type.
 	 */
 	public function register_project_content_type() {
@@ -138,20 +287,37 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$default_labels = array(
+			'name'               => __( 'Projects', 'wsuwp_uc' ),
+			'singular_name'      => __( 'Project', 'wsuwp_uc' ),
+			'all_items'          => __( 'All Projects', 'wsuwp_uc' ),
+			'add_new_item'       => __( 'Add Project', 'wsuwp_uc' ),
+			'edit_item'          => __( 'Edit Project', 'wsuwp_uc' ),
+			'new_item'           => __( 'New Project', 'wsuwp_uc' ),
+			'view_item'          => __( 'View Project', 'wsuwp_uc' ),
+			'search_items'       => __( 'Search Projects', 'wsuwp_uc' ),
+			'not_found'          => __( 'No Projects found', 'wsuwp_uc' ),
+			'not_found_in_trash' => __( 'No Projects found in trash', 'wsuwp_uc' ),
+		);
+		$default_description = __( 'Projects belonging to the center.', 'wsuwp_uc' );
+		$default_slug = 'project';
+
+		$names = $this->_get_object_type_names( 'project' );
+		$names = apply_filters( 'wsuwp_uc_project_type_names', $names );
+
+		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
+			$labels = $this->_build_labels( $names );
+			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
+		} else {
+			$labels = $default_labels;
+			$description = $default_description;
+			$slug = $default_slug;
+		}
+
 		$args = array(
-			'labels' => array(
-				'name' => __( 'Projects', 'wsuwp_uc' ),
-				'singular_name' => __( 'Project', 'wsuwp_uc' ),
-				'all_items' => __( 'All Projects', 'wsuwp_uc' ),
-				'add_new_item' => __( 'Add Project', 'wsuwp_uc' ),
-				'edit_item' => __( 'Edit Project', 'wsuwp_uc' ),
-				'new_item' => __( 'New Project', 'wsuwp_uc' ),
-				'view_item' => __( 'View Project', 'wsuwp_uc' ),
-				'search_items' => __( 'Search Projects', 'wsuwp_uc' ),
-				'not_found' => __( 'No Projects found', 'wsuwp_uc' ),
-				'not_found_in_trash' => __( 'No Projects found in trash', 'wsuwp_uc' ),
-			),
-			'description' => __( 'Projects belonging to the center.', 'wsuwp_uc' ),
+			'labels' => $labels,
+			'description' => $description,
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-analytics',
@@ -163,10 +329,11 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'project',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
+
 		register_post_type( $this->project_content_type, $args );
 	}
 
@@ -179,20 +346,37 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$default_labels = array(
+			'name'               => __( 'People', 'wsuwp_uc' ),
+			'singular_name'      => __( 'Person', 'wsuwp_uc' ),
+			'all_items'          => __( 'All People', 'wsuwp_uc' ),
+			'add_new_item'       => __( 'Add Person', 'wsuwp_uc' ),
+			'edit_item'          => __( 'Edit Person', 'wsuwp_uc' ),
+			'new_item'           => __( 'New Person', 'wsuwp_uc' ),
+			'view_item'          => __( 'View Person', 'wsuwp_uc' ),
+			'search_items'       => __( 'Search People', 'wsuwp_uc' ),
+			'not_found'          => __( 'No People found', 'wsuwp_uc' ),
+			'not_found_in_trash' => __( 'No People found in trash', 'wsuwp_uc' ),
+		);
+		$default_description = __( 'People involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'people';
+
+		$names = $this->_get_object_type_names( 'people' );
+		$names = apply_filters( 'wsuwp_uc_people_type_names', $names );
+
+		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
+			$labels = $this->_build_labels( $names );
+			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
+		} else {
+			$labels = $default_labels;
+			$description = $default_description;
+			$slug = $default_slug;
+		}
+
 		$args = array(
-			'labels' => array(
-				'name' => __( 'People', 'wsuwp_uc' ),
-				'singular_name' => __( 'Person', 'wsuwp_uc' ),
-				'all_items' => __( 'All People', 'wsuwp_uc' ),
-				'add_new_item' => __( 'Add Person', 'wsuwp_uc' ),
-				'edit_item' => __( 'Edit Person', 'wsuwp_uc' ),
-				'new_item' => __( 'New Person', 'wsuwp_uc' ),
-				'view_item' => __( 'View Person', 'wsuwp_uc' ),
-				'search_items' => __( 'Search People', 'wsuwp_uc' ),
-				'not_found' => __( 'No People found', 'wsuwp_uc' ),
-				'not_found_in_trash' => __( 'No People found in trash', 'wsuwp_uc' ),
-			),
-			'description' => __( 'People involved with the center.', 'wsuwp_uc' ),
+			'labels' => $labels,
+			'description' => $description,
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-id-alt',
@@ -205,7 +389,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'people',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -222,20 +406,37 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$default_labels = array(
+			'name'               => __( 'Publications', 'wsuwp_uc' ),
+			'singular_name'      => __( 'Publications', 'wsuwp_uc' ),
+			'all_items'          => __( 'All Publications', 'wsuwp_uc' ),
+			'add_new_item'       => __( 'Add Publication', 'wsuwp_uc' ),
+			'edit_item'          => __( 'Edit Publication', 'wsuwp_uc' ),
+			'new_item'           => __( 'New Publication', 'wsuwp_uc' ),
+			'view_item'          => __( 'View Publication', 'wsuwp_uc' ),
+			'search_items'       => __( 'Search Publications', 'wsuwp_uc' ),
+			'not_found'          => __( 'No Publications found', 'wsuwp_uc' ),
+			'not_found_in_trash' => __( 'No Publications found in trash', 'wsuwp_uc' ),
+		);
+		$default_description = __( 'Publications involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'publication';
+
+		$names = $this->_get_object_type_names( 'publication' );
+		$names = apply_filters( 'wsuwp_uc_publication_type_names', $names );
+
+		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
+			$labels = $this->_build_labels( $names );
+			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
+		} else {
+			$labels = $default_labels;
+			$description = $default_description;
+			$slug = $default_slug;
+		}
+
 		$args = array(
-			'labels' => array(
-				'name' => __( 'Publications', 'wsuwp_uc' ),
-				'singular_name' => __( 'Publications', 'wsuwp_uc' ),
-				'all_items' => __( 'All Publications', 'wsuwp_uc' ),
-				'add_new_item' => __( 'Add Publication', 'wsuwp_uc' ),
-				'edit_item' => __( 'Edit Publication', 'wsuwp_uc' ),
-				'new_item' => __( 'New Publication', 'wsuwp_uc' ),
-				'view_item' => __( 'View Publication', 'wsuwp_uc' ),
-				'search_items' => __( 'Search Publications', 'wsuwp_uc' ),
-				'not_found' => __( 'No Publications found', 'wsuwp_uc' ),
-				'not_found_in_trash' => __( 'No Publications found in trash', 'wsuwp_uc' ),
-			),
-			'description' => __( 'Publications involved with the center.', 'wsuwp_uc' ),
+			'labels' => $labels,
+			'description' => $description,
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-book',
@@ -247,7 +448,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'publication',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -264,20 +465,37 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$default_labels = array(
+			'name' => __( 'Entities', 'wsuwp_uc' ),
+			'singular_name' => __( 'Entity', 'wsuwp_uc' ),
+			'all_items' => __( 'All Entities', 'wsuwp_uc' ),
+			'add_new_item' => __( 'Add Entity', 'wsuwp_uc' ),
+			'edit_item' => __( 'Edit Entity', 'wsuwp_uc' ),
+			'new_item' => __( 'New Entity', 'wsuwp_uc' ),
+			'view_item' => __( 'View Entity', 'wsuwp_uc' ),
+			'search_items' => __( 'Search Entities', 'wsuwp_uc' ),
+			'not_found' => __( 'No Entities found', 'wsuwp_uc' ),
+			'not_found_in_trash' => __( 'No Entities found in trash', 'wsuwp_uc' ),
+		);
+		$default_description = __( 'Entities involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'entity';
+
+		$names = $this->_get_object_type_names( 'entity' );
+		$names = apply_filters( 'wsuwp_uc_entity_type_names', $names );
+
+		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
+			$labels = $this->_build_labels( $names );
+			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
+		} else {
+			$labels = $default_labels;
+			$description = $default_description;
+			$slug = $default_slug;
+		}
+
 		$args = array(
-			'labels' => array(
-				'name' => __( 'Entities', 'wsuwp_uc' ),
-				'singular_name' => __( 'Entity', 'wsuwp_uc' ),
-				'all_items' => __( 'All Entities', 'wsuwp_uc' ),
-				'add_new_item' => __( 'Add Entity', 'wsuwp_uc' ),
-				'edit_item' => __( 'Edit Entity', 'wsuwp_uc' ),
-				'new_item' => __( 'New Entity', 'wsuwp_uc' ),
-				'view_item' => __( 'View Entity', 'wsuwp_uc' ),
-				'search_items' => __( 'Search Entities', 'wsuwp_uc' ),
-				'not_found' => __( 'No Entities found', 'wsuwp_uc' ),
-				'not_found_in_trash' => __( 'No Entities found in trash', 'wsuwp_uc' ),
-			),
-			'description' => __( 'Entities involved with the center.', 'wsuwp_uc' ),
+			'labels' => $labels,
+			'description' => $description,
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-groups',
@@ -289,7 +507,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'entity',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -326,6 +544,7 @@ class WSUWP_University_Center {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'entity-type' ),
 		);
+		$args = apply_filters( 'wsuwp_uc_regiter_entity_type_taxonomy_args', $args );
 
 		register_taxonomy( $this->entity_type_taxonomy, $this->entity_content_type, $args );
 	}
@@ -361,6 +580,7 @@ class WSUWP_University_Center {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'topic' ),
 		);
+		$args = apply_filters( 'wsuwp_uc_regiter_topic_taxonomy_args', $args );
 
 		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type ), $args );
 	}
@@ -798,7 +1018,8 @@ class WSUWP_University_Center {
 		$added_html = '';
 
 		if ( false !== $entities && ! empty( $entities )) {
-			$added_html .= '<div class="wsuwp-uc-entities"><h3>Organizations:</h3><ul>';
+			$labels = get_post_type_object( $this->entity_content_type );
+			$added_html .= '<div class="wsuwp-uc-entities"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $entities as $entity ) {
 				$added_html .= '<li><a href="' . esc_url( $entity['url'] ) . '">' . esc_html( $entity['name'] ) . '</a></li>';
 			}
@@ -807,7 +1028,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $projects && ! empty( $projects ) ) {
-			$added_html .= '<div class="wsuwp-uc-projects"><h3>Projects:</h3><ul>';
+			$labels = get_post_type_object( $this->project_content_type );
+			$added_html .= '<div class="wsuwp-uc-projects"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach ( $projects as $project ) {
 				$added_html .= '<li><a href="' . esc_url( $project['url'] ) . '">' . esc_html( $project['name'] ) . '</a></li>';
 			}
@@ -815,7 +1037,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $people && ! empty( $people ) ) {
-			$added_html .= '<div class="wsuwp-uc-people"><h3>People:</h3><ul>';
+			$labels = get_post_type_object( $this->people_content_type );
+			$added_html .= '<div class="wsuwp-uc-people"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $people as  $person ) {
 				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
 			}
@@ -823,7 +1046,8 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $publications && ! empty( $publications ) ) {
-			$added_html .= '<div class="wsuwp-uc-publications"><h3>Publications:</h3><ul>';
+			$labels = get_post_type_object( $this->entity_content_type );
+			$added_html .= '<div class="wsuwp-uc-publications"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $publications as $publication ) {
 				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
 			}

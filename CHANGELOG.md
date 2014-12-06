@@ -7,6 +7,9 @@
 * Add a meta box to capture email address for people.
 * Add support for author to the people content type.
 * Hide the automatic display of related object headings of related objects of that type are not assigned.
+* Add filters to support the renaming of object type and taxonomy labels.
+* Add settings fields to general settings to change the singular and plural names for all object types.
+	* Note that changes here may break existing URL structures as the singular name will become a part of the URL.
 
 ## 0.2.2 (November 10, 2014)
 
