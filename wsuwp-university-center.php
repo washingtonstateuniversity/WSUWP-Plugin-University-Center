@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: University Center
+Plugin Name: University Center Objcets
 Plugin URI: http://web.wsu.edu/wordpress/plugins/university-center/
-Description: Provide custom content types and taxonomies for a university center or organization.
+Description: Provides content objects and relationships common to a center, institute, or other organization at a university.
 Author: washingtonstateuniversity, jeremyfelt
-Version: 0.2.2
+Version: 0.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -19,7 +19,7 @@ class WSUWP_University_Center {
 	 *
 	 * @var string
 	 */
-	var $plugin_version = '0.2.2';
+	var $plugin_version = '0.3.0';
 
 	/**
 	 * The slug used to register the project custom content type.

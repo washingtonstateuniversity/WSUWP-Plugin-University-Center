@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (TBD)
+## 0.3.0 (December 5, 2014)
 
 * Introduce publications as a content type. Publications can be assigned to people, entities, and projects.
 * Add a meta box to capture URLs for all content types.
