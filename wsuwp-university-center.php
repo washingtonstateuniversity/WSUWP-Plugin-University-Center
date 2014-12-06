@@ -289,6 +289,7 @@ class WSUWP_University_Center {
 			'not_found_in_trash' => __( 'No Projects found in trash', 'wsuwp_uc' ),
 		);
 		$default_description = __( 'Projects belonging to the center.', 'wsuwp_uc' );
+		$default_slug = 'project';
 
 		$names = $this->_get_object_type_names( 'project' );
 		$names = apply_filters( 'wsuwp_uc_project_type_names', $names );
@@ -296,9 +297,11 @@ class WSUWP_University_Center {
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
 			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
 		} else {
 			$labels = $default_labels;
 			$description = $default_description;
+			$slug = $default_slug;
 		}
 
 		$args = array(
@@ -315,7 +318,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'project',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -345,6 +348,7 @@ class WSUWP_University_Center {
 			'not_found_in_trash' => __( 'No People found in trash', 'wsuwp_uc' ),
 		);
 		$default_description = __( 'People involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'people';
 
 		$names = $this->_get_object_type_names( 'people' );
 		$names = apply_filters( 'wsuwp_uc_people_type_names', $names );
@@ -352,9 +356,11 @@ class WSUWP_University_Center {
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
 			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
 		} else {
 			$labels = $default_labels;
 			$description = $default_description;
+			$slug = $default_slug;
 		}
 
 		$args = array(
@@ -372,7 +378,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'people',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -402,6 +408,7 @@ class WSUWP_University_Center {
 			'not_found_in_trash' => __( 'No Publications found in trash', 'wsuwp_uc' ),
 		);
 		$default_description = __( 'Publications involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'publication';
 
 		$names = $this->_get_object_type_names( 'publication' );
 		$names = apply_filters( 'wsuwp_uc_publication_type_names', $names );
@@ -409,9 +416,11 @@ class WSUWP_University_Center {
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
 			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
 		} else {
 			$labels = $default_labels;
 			$description = $default_description;
+			$slug = $default_slug;
 		}
 
 		$args = array(
@@ -428,7 +437,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'publication',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
@@ -458,6 +467,7 @@ class WSUWP_University_Center {
 			'not_found_in_trash' => __( 'No Entities found in trash', 'wsuwp_uc' ),
 		);
 		$default_description = __( 'Entities involved with the center.', 'wsuwp_uc' );
+		$default_slug = 'entity';
 
 		$names = $this->_get_object_type_names( 'entity' );
 		$names = apply_filters( 'wsuwp_uc_entity_type_names', $names );
@@ -465,9 +475,11 @@ class WSUWP_University_Center {
 		if ( false !== $names && isset( $names['singular'] ) && isset( $names['plural'] ) ) {
 			$labels = $this->_build_labels( $names );
 			$description = $this->_build_description( $names['plural'] );
+			$slug = sanitize_title( strtolower( $names['singular'] ) );
 		} else {
 			$labels = $default_labels;
 			$description = $default_description;
+			$slug = $default_slug;
 		}
 
 		$args = array(
@@ -484,7 +496,7 @@ class WSUWP_University_Center {
 			),
 			'has_archive' => true,
 			'rewrite' => array(
-				'slug' => 'entity',
+				'slug' => $slug,
 				'with_front' => false
 			),
 		);
