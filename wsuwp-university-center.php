@@ -196,7 +196,7 @@ class WSUWP_University_Center {
 		$display_names['publication'] = wp_parse_args( $names['publication'], array( 'singular' => 'Publication', 'plural' => 'Publications' ) );
 		?>
 		<div class="wsuwp-uc-settings-names">
-			<p>Changing the settings here will override the default labels for the content types provided by the University Center Objects plugin.</p>
+			<p>Changing the settings here will override the default labels for the content types provided by the University Center Objects plugin. The default labels are listed to the left of each field. The <strong>singular</strong> label will also be used as a slug in URLs.</p>
 			<p class="description"></p>
 			<label for="wsuwp_uc_names_project_singular">Project (Singular)</label>
 			<input id="wsuwp_uc_names_project_singular" name="wsuwp_uc_names[project][singular]" value="<?php echo esc_attr( $display_names['project']['singular'] ); ?>" type="text" class="regular-text" />
