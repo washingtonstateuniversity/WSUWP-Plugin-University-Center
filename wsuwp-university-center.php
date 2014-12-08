@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: University Center Objcets
-Plugin URI: http://web.wsu.edu/wordpress/plugins/university-center/
+Plugin Name: University Center Objects
+Plugin URI: http://web.wsu.edu/wordpress/plugins/university-center-objects/
 Description: Provides content objects and relationships common to a center, institute, or other organization at a university.
 Author: washingtonstateuniversity, jeremyfelt
 Version: 0.3.0
