@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 (TBD)
+
+* Sort archives for people, entities, and projects by title. Publications sort by date.
+* Set `posts_per_page` to 2000 for people, entities, projects, and publications.
+
 ## 0.3.0 (December 5, 2014)
 
 * Introduce publications as a content type. Publications can be assigned to people, entities, and projects.
