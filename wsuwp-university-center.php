@@ -87,6 +87,8 @@ class WSUWP_University_Center {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 1 );
 
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
+
+		add_action( 'pre_get_posts', array( $this, 'filter_query' ), 10 );
 	}
 
 	/**
@@ -1055,6 +1057,30 @@ class WSUWP_University_Center {
 		}
 
 		return $content . $added_html;
+	}
+
+	/**
+	 * Sort all of our custom content types except for publication alphabetical by name. Publications
+	 * should be handled by date. All object types should make a decent attempt to show all records
+	 * in one page view, hence a limit of 2000.
+	 *
+	 * @param WP_Query $query
+	 */
+	public function filter_query( $query ) {
+		if ( ! $query->is_main_query() || is_admin() ) {
+			return;
+		}
+
+		$post_types = $this->get_object_type_slugs();
+
+		if ( $query->is_post_type_archive( $post_types ) ) {
+			$query->set( 'posts_per_page', 2000 );
+		}
+
+		if ( $query->is_post_type_archive( $post_types ) && ! $query->is_post_type_archive( $this->publication_content_type ) ) {
+			$query->set( 'orderby', 'title' );
+			$query->set( 'order', 'ASC' );
+		}
 	}
 }
 $wsuwp_university_center = new WSUWP_University_Center();
