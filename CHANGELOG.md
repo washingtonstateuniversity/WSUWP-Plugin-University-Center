@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.1 (TBD)
+## 0.3.1 (December 8, 2014)
 
 * Sort archives for people, entities, and projects by title. Publications sort by date.
 * Set `posts_per_page` to 2000 for people, entities, projects, and publications.
