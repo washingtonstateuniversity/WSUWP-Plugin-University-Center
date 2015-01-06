@@ -7,7 +7,7 @@ class WSUWP_University_Center_Meta {
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 11, 1 );
 		add_action( 'save_post', array( $this, 'save_object_url' ), 12, 2 );
-		add_action( 'save_post', array( $this, 'save_person_email' ), 12, 2 );
+		add_action( 'save_post', array( $this, 'save_person_information' ), 12, 2 );
 	}
 
 	/**
@@ -23,7 +23,7 @@ class WSUWP_University_Center_Meta {
 		add_meta_box( 'wsuwp_uc_object_url', 'URL', array( $this, 'display_object_url_meta_box' ), null, 'normal', 'default' );
 
 		if ( $post_type === wsuwp_uc_get_object_type_slug( 'people' ) ) {
-			add_meta_box( 'wsuwp_uc_person_email', 'Email Address', array( $this, 'display_person_email_meta_box' ), null, 'side', 'default' );
+			add_meta_box( 'wsuwp_uc_person_info', 'Information', array( $this, 'display_person_information_meta_box' ), null, 'normal', 'default' );
 		}
 	}
 
@@ -50,18 +50,46 @@ class WSUWP_University_Center_Meta {
 	}
 
 	/**
-	 * Display a meta box to capture a person's email address.
+	 * Display a meta box to capture meta information for a person. This will include things
+	 * such as first name, last name, phone number, and office.
+	 *
+	 * @todo Should themes be able to disable certain meta capture points?
+	 * @todo Should themes be able to add their own meta capture points?
 	 *
 	 * @param WP_Post $post
 	 */
-	public function display_person_email_meta_box( $post ) {
+	public function display_person_information_meta_box( $post ) {
+		$person_prefix = get_post_meta( $post->ID, '_wsuwp_uc_person_prefix', true );
+		$person_first_name = get_post_meta( $post->ID, '_wsuwp_uc_person_first_name', true );
+		$person_last_name = get_post_meta( $post->ID, '_wsuwp_uc_person_last_name', true );
+		$person_title = get_post_meta( $post->ID, '_wsuwp_uc_person_title', true );
+		$person_office = get_post_meta( $post->ID, '_wsuwp_uc_person_office', true );
 		$person_email = get_post_meta( $post->ID, '_wsuwp_uc_person_email', true );
+		$person_phone = get_post_meta( $post->ID, '_wsuwp_uc_person_phone', true );
 
-		wp_nonce_field( 'save_person_email', '_uc_person_email_nonce' );
+		wp_nonce_field( 'save_person_information', '_uc_person_information_nonce' );
 		?>
+		<label for="wsuwp-uc-person-prefix">Prefix:</label>
+		<input type="text" id="wsuwp-uc-person-prefix" name="wsuwp_uc_person_prefix" value="<?php echo esc_attr( $person_prefix ); ?>" />
+
+		<label for="wsuwp-uc-person-first-name">First Name:</label>
+		<input type="text" id="wsuwp-uc-person-first-name" name="wsuwp_uc_person_first_name" value="<?php echo esc_attr( $person_first_name ); ?>" />
+
+		<label for="wsuwp-uc-person-last-name">Last Name:</label>
+		<input type="text" id="wsuwp-uc-person-last-name" name="wsuwp_uc_person_last_name" value="<?php echo esc_attr( $person_last_name ); ?>" />
+
+		<label for="wsuwp-uc-person-title">Title:</label>
+		<input type="text" id="wsuwp-uc-person-title" name="wsuwp_uc_person_title" value="<?php echo esc_attr( $person_title ); ?>" />
+
+		<label for="wsuwp-uc-person-office">Office:</label>
+		<input type="text" id="wsuwp-uc-person-office" name="wsuwp_uc_person_office" value="<?php echo esc_attr( $person_office ); ?>" />
+
 		<label for="wsuwp-uc-person-email">Email:</label>
 		<input type="text" id="wsuwp-uc-person-email" name="wsuwp_uc_person_email" value="<?php echo esc_attr( $person_email ); ?>" />
 		<p class="description">An email address entered here will be publicly available on this person's profile page.</p>
+
+		<label for="wsuwp-uc-person-phone">Phone Number:</label>
+		<input type="text" id="wsuwp-uc-person-phone" name="wsuwp_uc_person_phone" value="<?php echo esc_attr( $person_phone ); ?>" />
 		<?php
 	}
 
@@ -101,12 +129,12 @@ class WSUWP_University_Center_Meta {
 	}
 
 	/**
-	 * Assign an email to a person when saved through a meta box.
+	 * Save a person's meta information after entry.
 	 *
 	 * @param int     $post_id ID of the post being saved.
 	 * @param WP_Post $post    The full post object being saved.
 	 */
-	public function save_person_email( $post_id, $post ) {
+	public function save_person_information( $post_id, $post ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -119,8 +147,48 @@ class WSUWP_University_Center_Meta {
 			return;
 		}
 
-		if ( ! isset( $_POST['_uc_person_email_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_person_email_nonce'], 'save_person_email' ) ) {
+		if ( ! isset( $_POST['_uc_person_information_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_person_information_nonce'], 'save_person_information' ) ) {
 			return;
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_prefix'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_prefix'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_prefix' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_prefix', sanitize_text_field( $_POST['wsuwp_uc_person_prefix'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_first_name'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_first_name'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_first_name' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_first_name', sanitize_text_field( $_POST['wsuwp_uc_person_first_name'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_last_name'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_last_name'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_last_name' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_last_name', sanitize_text_field( $_POST['wsuwp_uc_person_last_name'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_title'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_title'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_title' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_title', sanitize_text_field( $_POST['wsuwp_uc_person_title'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_office'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_office'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_office' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_office', sanitize_text_field( $_POST['wsuwp_uc_person_office'] ) );
+			}
 		}
 
 		if ( isset( $_POST['wsuwp_uc_person_email'] ) ) {
@@ -128,6 +196,14 @@ class WSUWP_University_Center_Meta {
 				delete_post_meta( $post_id, '_wsuwp_uc_person_email' );
 			} else {
 				update_post_meta( $post_id, '_wsuwp_uc_person_email', sanitize_email( $_POST['wsuwp_uc_person_email'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_phone'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_phone'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_phone' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_phone', sanitize_text_field( $_POST['wsuwp_uc_person_phone'] ) );
 			}
 		}
 
