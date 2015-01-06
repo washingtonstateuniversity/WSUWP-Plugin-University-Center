@@ -63,6 +63,7 @@ class WSUWP_University_Center_Meta {
 		$person_first_name = get_post_meta( $post->ID, '_wsuwp_uc_person_first_name', true );
 		$person_last_name = get_post_meta( $post->ID, '_wsuwp_uc_person_last_name', true );
 		$person_title = get_post_meta( $post->ID, '_wsuwp_uc_person_title', true );
+		$person_title_secondary = get_post_meta( $post->ID, '_wsuwp_uc_person_title_secondary', true );
 		$person_office = get_post_meta( $post->ID, '_wsuwp_uc_person_office', true );
 		$person_email = get_post_meta( $post->ID, '_wsuwp_uc_person_email', true );
 		$person_phone = get_post_meta( $post->ID, '_wsuwp_uc_person_phone', true );
@@ -89,6 +90,9 @@ class WSUWP_University_Center_Meta {
 			<div class="person-information">
 				<label for="wsuwp-uc-person-title">Title:</label>
 				<input type="text" id="wsuwp-uc-person-title" name="wsuwp_uc_person_title" value="<?php echo esc_attr( $person_title ); ?>" />
+
+				<label for="wsuwp-uc-person-title-secondary">Secondary Title:</label>
+				<input type="text" id="wsuwp-uc-person-title-secondary" name="wsuwp_uc_person_title_secondary" value="<?php echo esc_attr( $person_title_secondary ); ?>" />
 
 				<label for="wsuwp-uc-person-office">Office:</label>
 				<input type="text" id="wsuwp-uc-person-office" name="wsuwp_uc_person_office" value="<?php echo esc_attr( $person_office ); ?>" />
@@ -194,6 +198,14 @@ class WSUWP_University_Center_Meta {
 			}
 		}
 
+		if ( isset( $_POST['wsuwp_uc_person_title_secondary'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_title_secondary'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_title_secondary' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_title_secondary', sanitize_text_field( $_POST['wsuwp_uc_person_title_secondary'] ) );
+			}
+		}
+
 		if ( isset( $_POST['wsuwp_uc_person_office'] ) ) {
 			if ( empty( trim( $_POST['wsuwp_uc_person_office'] ) ) ) {
 				delete_post_meta( $post_id, '_wsuwp_uc_person_office' );
@@ -234,7 +246,7 @@ class WSUWP_University_Center_Meta {
 			return false;
 		}
 
-		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'title', 'office', 'email', 'phone' );
+		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'title', 'title_secondary', 'office', 'email', 'phone' );
 
 		if ( ! in_array( $field, $supported_fields ) ) {
 			return false;
