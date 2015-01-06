@@ -69,27 +69,38 @@ class WSUWP_University_Center_Meta {
 
 		wp_nonce_field( 'save_person_information', '_uc_person_information_nonce' );
 		?>
-		<label for="wsuwp-uc-person-prefix">Prefix:</label>
-		<input type="text" id="wsuwp-uc-person-prefix" name="wsuwp_uc_person_prefix" value="<?php echo esc_attr( $person_prefix ); ?>" />
+		<div id="capture-person-information">
+			<div class="person-information-name">
+				<div class="pi-prefix">
+					<label for="wsuwp-uc-person-prefix">Prefix:</label>
+					<input type="text" id="wsuwp-uc-person-prefix" name="wsuwp_uc_person_prefix" value="<?php echo esc_attr( $person_prefix ); ?>" />
+				</div>
+				<div class="pi-first">
+					<label for="wsuwp-uc-person-first-name">First Name:</label>
+					<input type="text" id="wsuwp-uc-person-first-name" name="wsuwp_uc_person_first_name" value="<?php echo esc_attr( $person_first_name ); ?>" />
+				</div>
+				<div class="pi-last">
+					<label for="wsuwp-uc-person-last-name">Last Name:</label>
+					<input type="text" id="wsuwp-uc-person-last-name" name="wsuwp_uc_person_last_name" value="<?php echo esc_attr( $person_last_name ); ?>" />
+				</div>
+			</div>
+			<div class="clear"></div>
+			<div class="person-information">
+				<label for="wsuwp-uc-person-title">Title:</label>
+				<input type="text" id="wsuwp-uc-person-title" name="wsuwp_uc_person_title" value="<?php echo esc_attr( $person_title ); ?>" />
 
-		<label for="wsuwp-uc-person-first-name">First Name:</label>
-		<input type="text" id="wsuwp-uc-person-first-name" name="wsuwp_uc_person_first_name" value="<?php echo esc_attr( $person_first_name ); ?>" />
+				<label for="wsuwp-uc-person-office">Office:</label>
+				<input type="text" id="wsuwp-uc-person-office" name="wsuwp_uc_person_office" value="<?php echo esc_attr( $person_office ); ?>" />
 
-		<label for="wsuwp-uc-person-last-name">Last Name:</label>
-		<input type="text" id="wsuwp-uc-person-last-name" name="wsuwp_uc_person_last_name" value="<?php echo esc_attr( $person_last_name ); ?>" />
+				<label for="wsuwp-uc-person-email">Email:</label>
+				<input type="text" id="wsuwp-uc-person-email" name="wsuwp_uc_person_email" value="<?php echo esc_attr( $person_email ); ?>" />
+				<p class="description">An email address entered here will be publicly available on this person's profile page.</p>
 
-		<label for="wsuwp-uc-person-title">Title:</label>
-		<input type="text" id="wsuwp-uc-person-title" name="wsuwp_uc_person_title" value="<?php echo esc_attr( $person_title ); ?>" />
-
-		<label for="wsuwp-uc-person-office">Office:</label>
-		<input type="text" id="wsuwp-uc-person-office" name="wsuwp_uc_person_office" value="<?php echo esc_attr( $person_office ); ?>" />
-
-		<label for="wsuwp-uc-person-email">Email:</label>
-		<input type="text" id="wsuwp-uc-person-email" name="wsuwp_uc_person_email" value="<?php echo esc_attr( $person_email ); ?>" />
-		<p class="description">An email address entered here will be publicly available on this person's profile page.</p>
-
-		<label for="wsuwp-uc-person-phone">Phone Number:</label>
-		<input type="text" id="wsuwp-uc-person-phone" name="wsuwp_uc_person_phone" value="<?php echo esc_attr( $person_phone ); ?>" />
+				<label for="wsuwp-uc-person-phone">Phone Number:</label>
+				<input type="text" id="wsuwp-uc-person-phone" name="wsuwp_uc_person_phone" value="<?php echo esc_attr( $person_phone ); ?>" />
+			</div>
+			<div class="clear"></div>
+		</div>
 		<?php
 	}
 
