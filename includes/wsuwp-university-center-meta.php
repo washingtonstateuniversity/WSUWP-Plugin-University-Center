@@ -220,5 +220,42 @@ class WSUWP_University_Center_Meta {
 
 		return;
 	}
+
+	/**
+	 * Provide the meta value for a specific key associated with people data.
+	 *
+	 * @param int    $post_id ID of the person.
+	 * @param string $field   Friendly field name for the meta being requested.
+	 *
+	 * @return bool|mixed Requested metadata if available, false if not.
+	 */
+	public function get_meta( $post_id, $field ) {
+		if ( 0 === absint( $post_id ) ) {
+			return false;
+		}
+
+		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'title', 'office', 'email', 'phone' );
+
+		if ( ! in_array( $field, $supported_fields ) ) {
+			return false;
+		}
+
+		$data = get_post_meta( $post_id, '_wsuwp_uc_person_' . $field, true );
+
+		return $data;
+	}
 }
 $wsuwp_university_center_meta = new WSUWP_University_Center_Meta();
+
+/**
+ * Provides a helper function for grabbing the meta data stored for people.
+ *
+ * @param int    $post_id ID of the person.
+ * @param string $field   Friendly field name for the meta being requested.
+ *
+ * @return bool|mixed
+ */
+function wsuwp_uc_get_meta( $post_id, $field ) {
+	global $wsuwp_university_center_meta;
+	return $wsuwp_university_center_meta->get_meta( $post_id, $field );
+}
