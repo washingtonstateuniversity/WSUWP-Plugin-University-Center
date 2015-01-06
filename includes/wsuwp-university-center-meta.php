@@ -70,6 +70,7 @@ class WSUWP_University_Center_Meta {
 		wp_nonce_field( 'save_person_information', '_uc_person_information_nonce' );
 		?>
 		<div id="capture-person-information">
+			<p class="description">All information here will be publicly available on this person's profile page.</p>
 			<div class="person-information-name">
 				<div class="pi-prefix">
 					<label for="wsuwp-uc-person-prefix">Prefix:</label>
@@ -94,7 +95,6 @@ class WSUWP_University_Center_Meta {
 
 				<label for="wsuwp-uc-person-email">Email:</label>
 				<input type="text" id="wsuwp-uc-person-email" name="wsuwp_uc_person_email" value="<?php echo esc_attr( $person_email ); ?>" />
-				<p class="description">An email address entered here will be publicly available on this person's profile page.</p>
 
 				<label for="wsuwp-uc-person-phone">Phone Number:</label>
 				<input type="text" id="wsuwp-uc-person-phone" name="wsuwp_uc_person_phone" value="<?php echo esc_attr( $person_phone ); ?>" />
