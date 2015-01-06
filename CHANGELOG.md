@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (January 6, 2015)
+
+* Capture more information about people.
+
 ## 0.3.1 (December 8, 2014)
 
 * Sort archives for people, entities, and projects by title. Publications sort by date.
