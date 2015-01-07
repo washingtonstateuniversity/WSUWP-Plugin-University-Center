@@ -62,7 +62,9 @@ class WSUWP_University_Center_Meta {
 		$person_prefix = get_post_meta( $post->ID, '_wsuwp_uc_person_prefix', true );
 		$person_first_name = get_post_meta( $post->ID, '_wsuwp_uc_person_first_name', true );
 		$person_last_name = get_post_meta( $post->ID, '_wsuwp_uc_person_last_name', true );
+		$person_suffix = get_post_meta( $post->ID, '_wsuwp_uc_person_suffix', true );
 		$person_title = get_post_meta( $post->ID, '_wsuwp_uc_person_title', true );
+		$person_title_secondary = get_post_meta( $post->ID, '_wsuwp_uc_person_title_secondary', true );
 		$person_office = get_post_meta( $post->ID, '_wsuwp_uc_person_office', true );
 		$person_email = get_post_meta( $post->ID, '_wsuwp_uc_person_email', true );
 		$person_phone = get_post_meta( $post->ID, '_wsuwp_uc_person_phone', true );
@@ -84,11 +86,18 @@ class WSUWP_University_Center_Meta {
 					<label for="wsuwp-uc-person-last-name">Last Name:</label>
 					<input type="text" id="wsuwp-uc-person-last-name" name="wsuwp_uc_person_last_name" value="<?php echo esc_attr( $person_last_name ); ?>" />
 				</div>
+				<div class="pi-suffix">
+					<label for="wsuwp-uc-person-suffix">Suffix:</label>
+					<input type="text" id="wsuwp-uc-person-suffix" name="wsuwp_uc_person_suffix" value="<?php echo esc_attr( $person_suffix ); ?>" />
+				</div>
 			</div>
 			<div class="clear"></div>
 			<div class="person-information">
 				<label for="wsuwp-uc-person-title">Title:</label>
 				<input type="text" id="wsuwp-uc-person-title" name="wsuwp_uc_person_title" value="<?php echo esc_attr( $person_title ); ?>" />
+
+				<label for="wsuwp-uc-person-title-secondary">Secondary Title:</label>
+				<input type="text" id="wsuwp-uc-person-title-secondary" name="wsuwp_uc_person_title_secondary" value="<?php echo esc_attr( $person_title_secondary ); ?>" />
 
 				<label for="wsuwp-uc-person-office">Office:</label>
 				<input type="text" id="wsuwp-uc-person-office" name="wsuwp_uc_person_office" value="<?php echo esc_attr( $person_office ); ?>" />
@@ -186,11 +195,27 @@ class WSUWP_University_Center_Meta {
 			}
 		}
 
+		if ( isset( $_POST['wsuwp_uc_person_suffix'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_suffix'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_suffix' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_suffix', sanitize_text_field( $_POST['wsuwp_uc_person_suffix'] ) );
+			}
+		}
+
 		if ( isset( $_POST['wsuwp_uc_person_title'] ) ) {
 			if ( empty( trim( $_POST['wsuwp_uc_person_title'] ) ) ) {
 				delete_post_meta( $post_id, '_wsuwp_uc_person_title' );
 			} else {
 				update_post_meta( $post_id, '_wsuwp_uc_person_title', sanitize_text_field( $_POST['wsuwp_uc_person_title'] ) );
+			}
+		}
+
+		if ( isset( $_POST['wsuwp_uc_person_title_secondary'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_person_title_secondary'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_person_title_secondary' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_person_title_secondary', sanitize_text_field( $_POST['wsuwp_uc_person_title_secondary'] ) );
 			}
 		}
 
@@ -220,5 +245,42 @@ class WSUWP_University_Center_Meta {
 
 		return;
 	}
+
+	/**
+	 * Provide the meta value for a specific key associated with people data.
+	 *
+	 * @param int    $post_id ID of the person.
+	 * @param string $field   Friendly field name for the meta being requested.
+	 *
+	 * @return bool|mixed Requested metadata if available, false if not.
+	 */
+	public function get_meta( $post_id, $field ) {
+		if ( 0 === absint( $post_id ) ) {
+			return false;
+		}
+
+		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'suffix', 'title', 'title_secondary', 'office', 'email', 'phone' );
+
+		if ( ! in_array( $field, $supported_fields ) ) {
+			return false;
+		}
+
+		$data = get_post_meta( $post_id, '_wsuwp_uc_person_' . $field, true );
+
+		return $data;
+	}
 }
 $wsuwp_university_center_meta = new WSUWP_University_Center_Meta();
+
+/**
+ * Provides a helper function for grabbing the meta data stored for people.
+ *
+ * @param int    $post_id ID of the person.
+ * @param string $field   Friendly field name for the meta being requested.
+ *
+ * @return bool|mixed
+ */
+function wsuwp_uc_get_meta( $post_id, $field ) {
+	global $wsuwp_university_center_meta;
+	return $wsuwp_university_center_meta->get_meta( $post_id, $field );
+}

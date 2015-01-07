@@ -86,8 +86,22 @@
 
 .pi-prefix,
 .pi-first,
-.pi-last {
+.pi-last,
+.pi-suffix {
 	float: left;
+	width: 40%;
+}
+
+.pi-prefix {
+	width: 10%;
+}
+
+.pi-first {
+	width: 30%;
+}
+
+.pi-suffix {
+	width: 15%;
 }
 
 .pi-prefix input {
