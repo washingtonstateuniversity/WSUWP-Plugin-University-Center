@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 (January 6, 2015)
+
+* Provide `wsuwp_uc_get_meta()` to retrieve meta values for university objects using friendly field names.
+* Capture suffix as part of a person's name details.
+* Capture a secondary title as part of a person's information.
+
 ## 0.4.0 (January 6, 2015)
 
 * Capture more information about people.
