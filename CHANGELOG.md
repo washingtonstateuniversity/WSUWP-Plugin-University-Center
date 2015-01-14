@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (January 14, 2015)
+
+* Sort people by last name in an archive view. This requires that every person has a last name entered.
+
 ## 0.5.0 (January 6, 2015)
 
 * Provide `wsuwp_uc_get_meta()` to retrieve meta values for university objects using friendly field names.
