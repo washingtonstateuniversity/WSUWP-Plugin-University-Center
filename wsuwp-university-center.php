@@ -1060,9 +1060,12 @@ class WSUWP_University_Center {
 	}
 
 	/**
-	 * Sort all of our custom content types except for publication alphabetical by name. Publications
-	 * should be handled by date. All object types should make a decent attempt to show all records
-	 * in one page view, hence a limit of 2000.
+	 * Filter post type archive view queries.
+	 *
+	 * - Projects and entities are sorted by title.
+	 * - People are sorted by last name.
+	 * - Publications are left to a default sort by date.
+	 * - All posts_per_page limits are bumped to 2000.
 	 *
 	 * @param WP_Query $query
 	 */
@@ -1073,6 +1076,7 @@ class WSUWP_University_Center {
 
 		$post_types = $this->get_object_type_slugs();
 
+		// Avoid paginating without intent by maxing out at 2000 per archive.
 		if ( $query->is_post_type_archive( $post_types ) ) {
 			$query->set( 'posts_per_page', 2000 );
 		}
