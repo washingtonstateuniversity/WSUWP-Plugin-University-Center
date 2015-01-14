@@ -89,6 +89,9 @@ class WSUWP_University_Center {
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_query' ), 10 );
+
+		add_action( 'manage_' . $this->people_content_type . '_posts_columns', array( $this, 'manage_people_posts_columns' ), 10, 1 );
+		add_action( 'manage_' . $this->people_content_type . '_posts_custom_column', array( $this, 'manage_people_posts_custom_column' ), 10, 2 );
 	}
 
 	/**
@@ -1092,6 +1095,54 @@ class WSUWP_University_Center {
 			$query->set( 'meta_key', '_wsuwp_uc_person_last_name' );
 			$query->set( 'orderby', 'meta_value' );
 			$query->set( 'order', 'ASC' );
+		}
+	}
+
+	/**
+	 * Alter post columns for the people content type.
+	 *
+	 * @param $post_columns
+	 *
+	 * @return mixed
+	 */
+	public function manage_people_posts_columns( $post_columns ) {
+		unset( $post_columns['cb'] );
+		unset( $post_columns['tags'] );
+		unset( $post_columns['date'] );
+
+		$new_post_columns = array(
+			'cb' => '<input type="checkbox" />',
+			'person_last_name' => 'Last Name',
+			'person_first_name' => 'First Name',
+		);
+		$post_columns = array_merge( $new_post_columns, $post_columns );
+
+		return $post_columns;
+	}
+
+	/**
+	 * Manage the output of custom column data for the people content type list view.
+	 *
+	 * @param string $column_name Column data being displayed.
+	 * @param int    $post_id     ID of the post from the current row.
+	 */
+	public function manage_people_posts_custom_column( $column_name, $post_id ) {
+		if ( 'person_first_name' === $column_name ) {
+			$first_name = get_post_meta( $post_id, '_wsuwp_uc_person_first_name', true );
+			if ( empty( $first_name ) ) {
+				echo 'Not Entered';
+			} else {
+				echo esc_html( $first_name );
+			}
+		}
+
+		if ( 'person_last_name' === $column_name ) {
+			$last_name = get_post_meta( $post_id, '_wsuwp_uc_person_last_name', true );
+			if ( empty( $last_name ) ) {
+				echo 'Not Entered';
+			} else {
+				echo esc_html( $last_name );
+			}
 		}
 	}
 }
