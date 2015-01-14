@@ -1077,8 +1077,16 @@ class WSUWP_University_Center {
 			$query->set( 'posts_per_page', 2000 );
 		}
 
-		if ( $query->is_post_type_archive( $post_types ) && ! $query->is_post_type_archive( $this->publication_content_type ) ) {
+		// Entities and projects are sorted by their titles in archive views.
+		if ( $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
 			$query->set( 'orderby', 'title' );
+			$query->set( 'order', 'ASC' );
+		}
+
+		// People are sorted by their last names in archive views.
+		if ( $query->is_post_type_archive( $post_types ) && $query->is_post_type_archive( $this->people_content_type ) ) {
+			$query->set( 'meta_key', '_wsuwp_uc_person_last_name' );
+			$query->set( 'orderby', 'meta_value' );
 			$query->set( 'order', 'ASC' );
 		}
 	}
