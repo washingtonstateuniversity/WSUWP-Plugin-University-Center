@@ -89,9 +89,11 @@ class WSUWP_University_Center {
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_query' ), 10 );
+		add_action( 'pre_get_posts', array( $this, 'sort_list_table' ), 10 );
 
 		add_action( 'manage_' . $this->people_content_type . '_posts_columns', array( $this, 'manage_people_posts_columns' ), 10, 1 );
 		add_action( 'manage_' . $this->people_content_type . '_posts_custom_column', array( $this, 'manage_people_posts_custom_column' ), 10, 2 );
+		add_action( 'manage_edit-' . $this->people_content_type . '_sortable_columns', array( $this, 'manage_people_sortable_columns' ), 10, 1 );
 	}
 
 	/**
@@ -1143,6 +1145,55 @@ class WSUWP_University_Center {
 			} else {
 				echo esc_html( $last_name );
 			}
+		}
+	}
+
+	public function manage_people_sortable_columns( $sortable_columns ) {
+		$sortable_columns['person_first_name'] = 'first_name';
+		$sortable_columns['person_last_name'] = 'last_name';
+		return $sortable_columns;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 */
+	public function sort_list_table( $query ) {
+		// Only sort in the admin on the main query.
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+
+		// Only sort on the people content type list table.
+		if ( 'edit-' . $this->people_content_type !== get_current_screen()->id ) {
+			return;
+		}
+
+		if ( isset( $_GET['orderby'] ) && 'first_name' === $_GET['orderby'] ) {
+			$query->set( 'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key' => '_wsuwp_uc_person_first_name',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key' => '_wsuwp_uc_person_first_name',
+					'compare' => '!=',
+					'value' => '1',
+				)
+			));
+			$query->set( 'meta_key', '_wsuwp_uc_person_first_name' );
+			$query->set( 'orderby', 'meta_value' );
+		}
+
+		if ( isset( $_GET['orderby'] ) && 'last_name' === $_GET['orderby'] ) {
+			$query->set( 'meta_key', '_wsuwp_uc_person_last_name' );
+			$query->set( 'orderby', 'meta_value' );
+		}
+
+		if ( isset( $_GET['order'] ) && 'desc' === $_GET['order'] ) {
+			$query->set( 'order', 'DESC' );
+		} else {
+			$query->set( 'order', 'ASC' );
 		}
 	}
 }
