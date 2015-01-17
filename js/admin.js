@@ -78,6 +78,11 @@
 			$('#people-results').on( 'click', '.uc-object-close','people', remove_object );
 		}
 
+		if ( 0 !== $('#wsuwp_uc_assign_pis' ).length ) {
+			autocomplete_object( 'project_pis' );
+			$('#project_pis-results' ).on('click', '.uc-object-close', 'project_pis', remove_object );
+		}
+
 		if ( 0 !== $('#wsuwp_uc_assign_projects' ).length ) {
 			autocomplete_object( 'projects' );
 			$('#projects-results' ).on('click', '.uc-object-close', 'projects', remove_object );
