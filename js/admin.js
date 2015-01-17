@@ -53,8 +53,8 @@
 				assign.val('');
 
 				// Check to see if this object's ID is already in the list of added objects before adding it.
-				if ( 0 >= $('#' + ui.item.value ).length ) {
-					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + ' added-object" id="' + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
+				if ( 0 >= $('#' + object_type + ui.item.value ).length ) {
+					$('#' + object_type + '-results' ).append('<div class="added-' + object_type + ' added-object" id="' + object_type + ui.item.value + '" data-name="' + ui.item.label + '">' + ui.item.label + '<span class="uc-object-close dashicons-no-alt"></span></div>');
 
 					var current_ids = assign_ids.val();
 					if ( '' === current_ids ) {
