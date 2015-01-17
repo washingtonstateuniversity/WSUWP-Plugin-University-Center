@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.2 (January 16, 2015)
+
+* Capture an ID for projects.
+* Move URL capture into the standard "information" area on people and projects.
+
 ## 0.5.1 (January 14, 2015)
 
 * Sort people by last name in an archive view. This requires that every person has a last name entered.
