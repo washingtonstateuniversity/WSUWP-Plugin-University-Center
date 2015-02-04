@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3 (February 4, 2015)
+
+* Fix bug where publicly used `save_object_url()` method was private.
+
 ## 0.5.2 (January 16, 2015)
 
 * Capture an ID for projects.
