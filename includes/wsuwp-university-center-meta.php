@@ -147,7 +147,7 @@ class WSUWP_University_Center_Meta {
 	 *
 	 * @param int     $post_id The ID of the post being saved.
 	 */
-	private function save_object_url( $post_id ) {
+	public function save_object_url( $post_id ) {
 		if ( isset( $_POST['wsuwp_uc_object_url'] ) ) {
 			if ( empty( trim( $_POST['wsuwp_uc_object_url'] ) ) ) {
 				delete_post_meta( $post_id, '_wsuwp_uc_object_url' );
