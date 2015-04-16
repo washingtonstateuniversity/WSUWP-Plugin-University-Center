@@ -329,6 +329,7 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
@@ -389,6 +390,7 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
@@ -448,6 +450,7 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
@@ -507,6 +510,7 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
