@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.4 (April 16, 2015)
+
+* Provide support for categories and tags on all object types.
+
 ## 0.5.3 (February 4, 2015)
 
 * Fix bug where publicly used `save_object_url()` method was private.
