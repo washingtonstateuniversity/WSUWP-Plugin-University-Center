@@ -691,17 +691,22 @@ class WSUWP_University_Center {
 	/**
 	 * Clean posted object ID data so that any IDs passed are sanitized and validated as not empty.
 	 *
-	 * @param array $object_ids List of object IDs being associated.
+	 * @param array  $object_ids    List of object IDs being associated.
+	 * @param string $strip_from_id Text to strip from an ID.
 	 *
 	 * @return array Cleaned list of object IDs.
 	 */
-	public function clean_posted_ids( $object_ids ) {
+	public function clean_posted_ids( $object_ids, $strip_from_id = '' ) {
 		if ( ! is_array( $object_ids ) || empty( $object_ids ) ) {
 			return array();
 		}
 
 		foreach( $object_ids as $key => $id ) {
 			$id = sanitize_key( ( trim( $id ) ) ) ;
+
+			if ( '' !== $strip_from_id ) {
+				$id = str_replace( $strip_from_id, '', $id );
+			}
 
 			if ( '' === $id ) {
 				unset( $object_ids[ $key ] );
@@ -1153,13 +1158,26 @@ function wsuwp_uc_get_object_type_slugs() {
  * Retrieve all of the items from a specified content type with their unique ID,
  * current post ID, and name.
  *
- * @param string $post_type The custom post type slug.
+ * @param string $object_type The custom post type slug.
  *
  * @return array|bool Array of results or false if incorrectly called.
  */
 function wsuwp_uc_get_all_object_data( $object_type ) {
 	global $wsuwp_university_center;
 	return $wsuwp_university_center->get_all_object_data( $object_type );
+}
+
+/**
+ * Clean posted object ID data so that any IDs passed are sanitized and validated as not empty.
+ *
+ * @param array  $object_ids    List of object IDs being associated.
+ * @param string $strip_from_id Text to strip from an object's ID.
+ *
+ * @return array Cleaned list of object IDs.
+ */
+function wsuwp_uc_clean_post_ids( $object_ids, $strip_from_id = '' ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->clean_posted_ids( $object_ids, $strip_from_id );
 }
 
 /**
