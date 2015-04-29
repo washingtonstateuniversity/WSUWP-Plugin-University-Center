@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2 (April 29, 2015)
+
+* Avoid pagination on taxonomy archive pages.
+* Sort topics and entity types by title (by default).
+
 ## 0.6.1 (April 29, 2015)
 
 * Avoid collision between object IDs when displaying previously saved object associations.
