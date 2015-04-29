@@ -1104,6 +1104,11 @@ class WSUWP_University_Center {
 			$query->set( 'posts_per_page', 2000 );
 		}
 
+		// Avoid pagination without intent by maxing out at 2000 per taxonomy archive.
+		if ( $query->is_tax( $this->entity_type_taxonomy ) || $query->is_tax( $this->topics_taxonomy ) ) {
+			$query->set( 'posts_per_page', 2000 );
+		}
+
 		// Entities and projects are sorted by their titles in archive views.
 		if ( $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
 			$query->set( 'orderby', 'title' );
