@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 (April 29, 2015)
+
+* Make more methods public so that plugins and themes are able to extend object relationships using the logic provided by this plugin.
+
 ## 0.5.4 (April 16, 2015)
 
 * Provide support for categories and tags on all object types.
