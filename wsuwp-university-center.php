@@ -899,14 +899,19 @@ class WSUWP_University_Center {
 		}
 
 		$objects = json_encode( $objects );
+
+		$objects_to_display_clean = array();
+		foreach( $objects_to_display as $id => $object ) {
+			$objects_to_display_clean[ $id . $id_append ] = $object;
+		}
 		?>
 
 		<script> var wsu_uc = wsu_uc || {}; wsu_uc.<?php echo esc_js( $object_type ); ?> = <?php echo $objects; ?>; </script>
 
 		<?php
 		$current_objects_html = '';
-		$current_objects_ids = implode( ',', array_keys( $objects_to_display ) );
-		foreach( $objects_to_display as $key => $current_object ) {
+		$current_objects_ids = implode( ',', array_keys( $objects_to_display_clean ) );
+		foreach( $objects_to_display_clean as $key => $current_object ) {
 			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
 		?>
