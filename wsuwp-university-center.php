@@ -864,6 +864,15 @@ class WSUWP_University_Center {
 	 * @param string $object_type         The object type.
 	 */
 	public function display_autocomplete_input( $all_object_data, $current_object_data, $object_type ) {
+		$base_object_types = array( 'people', 'projects', 'entities', 'publications' );
+		// If we're autocompleting an object that is not part of our base, we append
+		// the object type to each objects ID to avoid collision.
+		if ( ! in_array( $object_type, $base_object_types ) ) {
+			$id_append = esc_attr( $object_type );
+		} else {
+			$id_append = '';
+		}
+
 		if ( $current_object_data ) {
 			$match_objects = array();
 			foreach( $current_object_data as $current_object ) {
@@ -879,7 +888,7 @@ class WSUWP_University_Center {
 		$objects = array();
 		foreach ( $objects_for_adding as $id => $object ) {
 			$objects[] = array(
-				'value' => $id,
+				'value' => $id . $id_append,
 				'label' => $object['name'],
 			);
 		}
