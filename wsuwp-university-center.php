@@ -738,7 +738,7 @@ class WSUWP_University_Center {
 			$removed_object_ids = array();
 		}
 
-		$all_objects = $this->_get_all_object_data( $object_content_type );
+		$all_objects = $this->get_all_object_data( $object_content_type );
 
 		foreach( $added_object_ids as $add_object ) {
 			$object_post_id = $all_objects[ $add_object ]['id'];
@@ -818,7 +818,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_projects_meta_box( $post ) {
 		$current_projects = get_post_meta( $post->ID, '_' . $this->project_content_type . '_ids', true );
-		$all_projects = $this->_get_all_object_data( $this->project_content_type );
+		$all_projects = $this->get_all_object_data( $this->project_content_type );
 		$this->display_autocomplete_input( $all_projects, $current_projects, 'projects' );
 	}
 
@@ -829,7 +829,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_entities_meta_box( $post ) {
 		$current_entities = get_post_meta( $post->ID, '_' . $this->entity_content_type . '_ids', true );
-		$all_entities = $this->_get_all_object_data( $this->entity_content_type );
+		$all_entities = $this->get_all_object_data( $this->entity_content_type );
 		$this->display_autocomplete_input( $all_entities, $current_entities, 'entities' );
 	}
 
@@ -840,7 +840,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_people_meta_box( $post ) {
 		$current_people = get_post_meta( $post->ID, '_' . $this->people_content_type . '_ids', true );
-		$all_people = $this->_get_all_object_data( $this->people_content_type );
+		$all_people = $this->get_all_object_data( $this->people_content_type );
 		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
 	}
 
@@ -851,7 +851,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_publications_meta_box( $post ) {
 		$current_publications = get_post_meta( $post->ID, '_' . $this->publication_content_type . '_ids', true );
-		$all_publications = $this->_get_all_object_data( $this->publication_content_type );
+		$all_publications = $this->get_all_object_data( $this->publication_content_type );
 		$this->display_autocomplete_input( $all_publications, $current_publications, 'publications' );
 	}
 
@@ -911,7 +911,7 @@ class WSUWP_University_Center {
 	 *
 	 * @return array|bool Array of results or false if incorrectly called.
 	 */
-	private function _get_all_object_data( $post_type ) {
+	public function get_all_object_data( $post_type ) {
 		$all_object_data = wp_cache_get( 'wsuwp_uc_all_' . $post_type );
 
 		if ( ! $all_object_data ) {
@@ -948,7 +948,7 @@ class WSUWP_University_Center {
 	 */
 	private function _flush_all_object_data_cache( $post_type ) {
 		wp_cache_delete( 'wsuwp_uc_all_' . $post_type );
-		$this->_get_all_object_data( $post_type );
+		$this->get_all_object_data( $post_type );
 	}
 
 	/**
@@ -971,7 +971,7 @@ class WSUWP_University_Center {
 			return array();
 		}
 
-		$all_objects = $this->_get_all_object_data( $object_type );
+		$all_objects = $this->get_all_object_data( $object_type );
 		$associated_objects = get_post_meta( $post->ID, '_' . $object_type . '_ids', true );
 
 		if ( is_array( $associated_objects ) && ! empty( $associated_objects ) ) {
@@ -1138,6 +1138,19 @@ function wsuwp_uc_get_object_type_slug( $content_type ) {
 function wsuwp_uc_get_object_type_slugs() {
 	global $wsuwp_university_center;
 	return $wsuwp_university_center->get_object_type_slugs();
+}
+
+/**
+ * Retrieve all of the items from a specified content type with their unique ID,
+ * current post ID, and name.
+ *
+ * @param string $post_type The custom post type slug.
+ *
+ * @return array|bool Array of results or false if incorrectly called.
+ */
+function wsuwp_uc_get_all_object_data( $object_type ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_all_object_data( $object_type );
 }
 
 /**
