@@ -1110,7 +1110,7 @@ class WSUWP_University_Center {
 		}
 
 		// Entities and projects are sorted by their titles in archive views.
-		if ( $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
+		if ( $query->is_tax( $this->topics_taxonomy ) || $query->is_tax( $this->entity_type_taxonomy ) || $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
 			$query->set( 'orderby', 'title' );
 			$query->set( 'order', 'ASC' );
 		}
