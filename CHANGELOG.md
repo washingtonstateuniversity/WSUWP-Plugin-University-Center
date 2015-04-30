@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3 (April 30, 2015)
+
+* Provide a wrapper to retrieve an object's associated objects.
+* Allow for fabricated object types to be pulled as associated objects.
+
 ## 0.6.2 (April 29, 2015)
 
 * Avoid pagination on taxonomy archive pages.

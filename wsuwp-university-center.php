@@ -4,7 +4,7 @@ Plugin Name: University Center Objects
 Plugin URI: https://web.wsu.edu/wordpress/plugins/university-center-objects/
 Description: Provides content objects and relationships common to a center, institute, or other organization at a university.
 Author: washingtonstateuniversity, jeremyfelt
-Version: 0.6.2
+Version: 0.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
