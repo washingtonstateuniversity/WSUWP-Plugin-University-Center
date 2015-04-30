@@ -973,12 +973,16 @@ class WSUWP_University_Center {
 	/**
 	 * Get a list of objects from an object type which are associated with the requested object.
 	 *
-	 * @param int    $post_id     ID of the object currently being used.
-	 * @param string $object_type Slug of the object type to find.
+	 * @param int         $post_id          ID of the object currently being used.
+	 * @param string      $object_type      Slug of the object type to find.
+	 * @param bool|string $base_object_type Slug of the object type to use as the base of this
+	 *                                      query to support additional fabricated object types.
+	 *                                      False if base object type should inherit the passed
+	 *                                      object_type parameter.
 	 *
 	 * @return array List of objects associated with the requested object.
 	 */
-	public function get_object_objects( $post_id, $object_type ) {
+	public function get_object_objects( $post_id, $object_type, $base_object_type = false ) {
 		$post = get_post( $post_id );
 
 		// Return false if the requested object type is the same object type as the post object.
@@ -990,7 +994,11 @@ class WSUWP_University_Center {
 			return array();
 		}
 
-		$all_objects = $this->get_all_object_data( $object_type );
+		if ( false === $base_object_type ) {
+			$base_object_type = $object_type;
+		}
+
+		$all_objects = $this->get_all_object_data( $base_object_type );
 		$associated_objects = get_post_meta( $post->ID, '_' . $object_type . '_ids', true );
 
 		if ( is_array( $associated_objects ) && ! empty( $associated_objects ) ) {
@@ -1236,4 +1244,21 @@ function wsuwp_uc_get_object_entities( $post_id = 0 ) {
 function wsuwp_uc_get_object_publications( $post_id = 0 ) {
 	global $wsuwp_university_center;
 	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->publication_content_type );
+}
+
+/**
+ * Wrapper method to retrieve a list of objects from an object type associated with the requested object.
+ *
+ * @param int         $post_id          ID of the object currently being used.
+ * @param string      $object_type      Slug of the object type to find.
+ * @param bool|string $base_object_type Slug of the object type to use as the base of this
+ *                                      query to support additional fabricated object types.
+ *                                      False if base object type should inherit the passed
+ *                                      object_type parameter.
+ *
+ * @return array List of objects associated with the requested object.
+ */
+function wsuwp_uc_get_object_objects( $post_id, $object_type, $base_object_type = false ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $object_type, $base_object_type );
 }
