@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.4 (June 2, 2015)
+
+* Provide a filter to modify the list of people output during content generation on another post type.
+* Avoid recreating unique identifiers during an import.
+
 ## 0.6.3 (April 30, 2015)
 
 * Provide a wrapper to retrieve an object's associated objects.
