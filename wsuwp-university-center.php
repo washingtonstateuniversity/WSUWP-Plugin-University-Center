@@ -1079,6 +1079,7 @@ class WSUWP_University_Center {
 			$added_html .= '</ul></div>';
 		}
 
+		$people = apply_filters( 'wsuwp_uc_people_to_add_to_content', $people, get_the_ID() );
 		if ( false !== $people && ! empty( $people ) ) {
 			$labels = get_post_type_object( $this->people_content_type );
 			$added_html .= '<div class="wsuwp-uc-people"><h3>' . $labels->labels->name . '</h3><ul>';
