@@ -602,6 +602,11 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		// Do not overwrite existing unique IDs during an import.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return;
+		}
+
 		// Only assign a unique id to content from our registered types.
 		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
@@ -631,6 +636,11 @@ class WSUWP_University_Center {
 	 */
 	public function save_associated_data( $post_id, $post ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Do not overwrite existing information during an import.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
 			return;
 		}
 
