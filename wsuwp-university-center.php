@@ -826,7 +826,7 @@ class WSUWP_University_Center {
 
 		if ( $this->publication_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_publication' ) ) {
 			$labels = get_post_type_object( $this->publication_content_type );
-			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign ' . $labels->label->name, array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
+			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
 		}
 	}
 
