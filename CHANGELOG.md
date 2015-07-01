@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.6 (July 1, 2015)
+
+* Use the proper label for publications when adding default content to another post type.
+
 ## 0.6.5 (July 1, 2015)
 
 * Ensure the proper labels assigned to each post type are used when displaying meta boxes.
