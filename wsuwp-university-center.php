@@ -810,19 +810,23 @@ class WSUWP_University_Center {
 		}
 
 		if ( $this->project_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_project' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign Projects', array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->project_content_type );
+			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->entity_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_entity' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign Entities', array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->entity_content_type );
+			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->people_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_person' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_people', 'Assign People', array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->people_content_type );
+			add_meta_box( 'wsuwp_uc_assign_people', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->publication_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_publication' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign Publications', array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->publication_content_type );
+			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign ' . $labels->label->name, array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
 		}
 	}
 
