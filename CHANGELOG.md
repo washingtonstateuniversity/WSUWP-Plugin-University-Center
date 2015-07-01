@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5 (July 1, 2015)
+
+* Ensure the proper labels assigned to each post type are used when displaying meta boxes.
+
 ## 0.6.4 (June 2, 2015)
 
 * Provide a filter to modify the list of people output during content generation on another post type.
