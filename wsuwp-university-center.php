@@ -1094,7 +1094,7 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $publications && ! empty( $publications ) ) {
-			$labels = get_post_type_object( $this->entity_content_type );
+			$labels = get_post_type_object( $this->publication_content_type );
 			$added_html .= '<div class="wsuwp-uc-publications"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $publications as $publication ) {
 				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
