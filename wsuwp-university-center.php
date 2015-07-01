@@ -675,6 +675,22 @@ class WSUWP_University_Center {
 			$this->_flush_all_object_data_cache( $this->project_content_type );
 		}
 
+		if ( isset( $_POST['assign_project_pis_ids'] ) ) {
+			$project_pis_ids = explode( ',', $_POST['assign_project_pis_ids'] );
+			$project_pis_ids = $this->clean_posted_ids( $project_pis_ids );
+
+			update_post_meta( $post_id, '_' . $this->project_content_type . '_pis_ids', $project_pis_ids );
+			$this->_flush_all_object_data_cache( $this->project_content_type );
+		}
+
+		if ( isset( $_POST['assign_project_pms_ids'] ) ) {
+			$project_pms_ids = explode( ',', $_POST['assign_project_pms_ids'] );
+			$project_pms_ids = $this->clean_posted_ids( $project_pms_ids );
+
+			update_post_meta( $post_id, '_' . $this->project_content_type . '_pms_ids', $project_pms_ids );
+			$this->_flush_all_object_data_cache( $this->project_content_type );
+		}
+
 		if ( isset( $_POST['assign_entities_ids'] ) ) {
 			$entities_ids = explode( ',', $_POST['assign_entities_ids'] );
 			$entities_ids = $this->clean_posted_ids( $entities_ids );
@@ -814,6 +830,11 @@ class WSUWP_University_Center {
 			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
 		}
 
+		if ( $this->project_content_type === $post_type && current_theme_supports( 'wsuwp_uc_project' ) && current_theme_supports( 'wsuwp_uc_person' ) ) {
+			add_meta_box( 'wsuwp_uc_assign_pis', 'Assign Primary Investigators', array( $this, 'display_assign_pis_meta_box' ), null, 'normal', 'default' );
+			add_meta_box( 'wsuwp_uc_assign_pms', 'Assign Project Managers', array( $this, 'display_assign_pms_meta_box' ), null, 'normal', 'default' );
+		}
+
 		if ( $this->entity_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_entity' ) ) {
 			$labels = get_post_type_object( $this->entity_content_type );
 			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
@@ -839,6 +860,28 @@ class WSUWP_University_Center {
 		$current_projects = get_post_meta( $post->ID, '_' . $this->project_content_type . '_ids', true );
 		$all_projects = $this->get_all_object_data( $this->project_content_type );
 		$this->display_autocomplete_input( $all_projects, $current_projects, 'projects' );
+	}
+
+	/**
+	 * Display a meta box used to assign principal investigators to a project.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_pis_meta_box( $post ) {
+		$current_pis = get_post_meta( $post->ID, '_' . $this->project_content_type . '_pis_ids', true );
+		$all_people = $this->_get_all_object_data( $this->people_content_type );
+		$this->display_autocomplete_input( $all_people, $current_pis, 'project_pis' );
+	}
+
+	/**
+	 * Display a meta box used to assign project managers to a project.
+	 *
+	 * @param WP_Post $post Currently displayed post object.
+	 */
+	public function display_assign_pms_meta_box( $post ) {
+		$current_pms = get_post_meta( $post->ID, '_' . $this->project_content_type . '_pms_ids', true );
+		$all_people = $this->_get_all_object_data( $this->people_content_type );
+		$this->display_autocomplete_input( $all_people, $current_pms, 'project_pms' );
 	}
 
 	/**
