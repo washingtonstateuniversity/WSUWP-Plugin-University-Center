@@ -125,8 +125,10 @@ class WSUWP_University_Center {
 	public function extend_content_syndicate() {
 		if ( class_exists( 'WSU_Syndicate_Shortcode_Base') ) {
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-entity.php' );
 
 			new University_Center_Syndicate_Shortcode_Project();
+			new University_Center_Syndicate_Shortcode_Entity();
 		}
 	}
 
