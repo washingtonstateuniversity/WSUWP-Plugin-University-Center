@@ -335,6 +335,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'projects', // Note that this can be different from the post type slug.
 		);
 
 		register_post_type( $this->project_content_type, $args );
@@ -396,6 +398,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'people',
 		);
 
 		register_post_type( $this->people_content_type, $args );
@@ -456,6 +460,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'publications',
 		);
 
 		register_post_type( $this->publication_content_type, $args );
@@ -516,6 +522,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'entities',
 		);
 
 		register_post_type( $this->entity_content_type, $args );
