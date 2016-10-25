@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 (TBD)
+
+* Add `wsuwp_uc_people` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_entities` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_publications` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_projects` shortcode, extending WSUWP Content Syndicate.
+
 ## 0.6.6 (July 1, 2015)
 
 * Use the proper label for publications when adding default content to another post type.

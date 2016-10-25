@@ -77,6 +77,8 @@ class WSUWP_University_Center {
 
 		add_action( 'init', array( $this, 'process_upgrade_routine' ), 12 );
 
+		add_action( 'init', array( $this, 'extend_content_syndicate' ), 12 );
+
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
@@ -114,6 +116,24 @@ class WSUWP_University_Center {
 		}
 
 		update_option( 'wsuwp_uc_version', $this->plugin_version );
+	}
+
+	/**
+	 * Include the code used to extend WSUWP Content Synidcate with shortcodes for
+	 * University Center object types.
+	 */
+	public function extend_content_syndicate() {
+		if ( class_exists( 'WSU_Syndicate_Shortcode_Base') ) {
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-entity.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-publication.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-person.php' );
+
+			new University_Center_Syndicate_Shortcode_Project();
+			new University_Center_Syndicate_Shortcode_Entity();
+			new University_Center_Syndicate_Shortcode_Publication();
+			new University_Center_Syndicate_Shortcode_Person();
+		}
 	}
 
 	/**
@@ -335,6 +355,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'projects', // Note that this can be different from the post type slug.
 		);
 
 		register_post_type( $this->project_content_type, $args );
@@ -396,6 +418,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'people',
 		);
 
 		register_post_type( $this->people_content_type, $args );
@@ -456,6 +480,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'publications',
 		);
 
 		register_post_type( $this->publication_content_type, $args );
@@ -516,6 +542,8 @@ class WSUWP_University_Center {
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'entities',
 		);
 
 		register_post_type( $this->entity_content_type, $args );
