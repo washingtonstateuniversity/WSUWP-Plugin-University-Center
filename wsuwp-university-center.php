@@ -77,6 +77,8 @@ class WSUWP_University_Center {
 
 		add_action( 'init', array( $this, 'process_upgrade_routine' ), 12 );
 
+		add_action( 'init', array( $this, 'extend_content_syndicate' ), 12 );
+
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
@@ -114,6 +116,18 @@ class WSUWP_University_Center {
 		}
 
 		update_option( 'wsuwp_uc_version', $this->plugin_version );
+	}
+
+	/**
+	 * Include the code used to extend WSUWP Content Synidcate with shortcodes for
+	 * University Center object types.
+	 */
+	public function extend_content_syndicate() {
+		if ( class_exists( 'WSU_Syndicate_Shortcode_Base') ) {
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
+
+			new University_Center_Syndicate_Shortcode_Project();
+		}
 	}
 
 	/**
