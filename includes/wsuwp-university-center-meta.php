@@ -21,11 +21,11 @@ class WSUWP_University_Center_Meta {
 			return;
 		}
 
-		if ( $post_type === wsuwp_uc_get_object_type_slug( 'people' ) ) {
+		if ( wsuwp_uc_get_object_type_slug( 'people' ) === $post_type ) {
 			add_meta_box( 'wsuwp_uc_person_info', 'Information', array( $this, 'display_person_information_meta_box' ), null, 'normal', 'default' );
 		}
 
-		if ( $post_type === wsuwp_uc_get_object_type_slug( 'project' ) ) {
+		if ( wsuwp_uc_get_object_type_slug( 'project' ) === $post_type ) {
 			add_meta_box( 'wsuwp_uc_project_info', 'Information', array( $this, 'display_project_information_meta_box' ) , null, 'normal', 'default' );
 		}
 	}
