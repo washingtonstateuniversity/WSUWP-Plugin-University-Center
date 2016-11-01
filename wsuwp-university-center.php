@@ -809,9 +809,9 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
-			// @ignoreCodingStandardsStart
+			// @codingStandardsIgnoreStart
 			$key = array_search( $post_unique_id, $objects );
-			// @ignoreCodingStandardsEnd
+			// @codingStandardsIgnoreEnd
 
 			if ( false !== $key ) {
 				unset( $objects[ $key ] );
