@@ -46,7 +46,7 @@ class WSUWP_University_Center_Meta {
 
 		?>
 		<label for="wsuwp-uc-object-url">URL:</label>
-		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo $object_url; ?>" />
+		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo esc_attr( $object_url ); ?>" />
 		<p class="description">Enter a URL to be displayed to guide visitors toward more information.</p>
 		<?php
 	}
