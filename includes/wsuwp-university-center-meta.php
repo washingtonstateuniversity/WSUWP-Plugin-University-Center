@@ -17,7 +17,7 @@ class WSUWP_University_Center_Meta {
 	 * @param string $post_type
 	 */
 	public function add_meta_boxes( $post_type ) {
-		if ( ! in_array( $post_type, wsuwp_uc_get_object_type_slugs() ) ) {
+		if ( ! in_array( $post_type, wsuwp_uc_get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -310,7 +310,7 @@ class WSUWP_University_Center_Meta {
 
 		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'suffix', 'title', 'title_secondary', 'office', 'email', 'phone' );
 
-		if ( ! in_array( $field, $supported_fields ) ) {
+		if ( ! in_array( $field, $supported_fields, true ) ) {
 			return false;
 		}
 

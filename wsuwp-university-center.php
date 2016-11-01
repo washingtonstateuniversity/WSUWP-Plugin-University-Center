@@ -172,7 +172,7 @@ class WSUWP_University_Center {
 	public function sanitize_names( $names ) {
 		$clean_names = array();
 		foreach ( $names as $name => $data ) {
-			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ) ) ) {
+			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ), true ) ) {
 				continue;
 			}
 
@@ -636,7 +636,7 @@ class WSUWP_University_Center {
 		}
 
 		// Only assign a unique id to content from our registered types.
-		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -673,7 +673,7 @@ class WSUWP_University_Center {
 		}
 
 		// Only assign a unique id to content from our registered types.
-		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -791,7 +791,7 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
-			if ( ! in_array( $add_object, $objects ) ) {
+			if ( ! in_array( $add_object, $objects, true ) ) {
 				$objects[] = $post_unique_id;
 			}
 			update_post_meta( $object_post_id, '_' . $post->post_type . '_ids', $objects );
@@ -809,7 +809,9 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
+			// @ignoreCodingStandardsStart
 			$key = array_search( $post_unique_id, $objects );
+			// @ignoreCodingStandardsEnd
 
 			if ( false !== $key ) {
 				unset( $objects[ $key ] );
@@ -833,7 +835,7 @@ class WSUWP_University_Center {
 	 * @param string $post_type The slug of the current post type.
 	 */
 	public function add_meta_boxes( $post_type ) {
-		if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -914,7 +916,7 @@ class WSUWP_University_Center {
 		$base_object_types = array( 'people', 'projects', 'entities', 'publications' );
 		// If we're autocompleting an object that is not part of our base, we append
 		// the object type to each objects ID to avoid collision.
-		if ( ! in_array( $object_type, $base_object_types ) ) {
+		if ( ! in_array( $object_type, $base_object_types, true ) ) {
 			$id_append = esc_attr( $object_type );
 		} else {
 			$id_append = '';
@@ -977,7 +979,7 @@ class WSUWP_University_Center {
 
 		if ( ! $all_object_data ) {
 
-			if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
+			if ( ! in_array( $post_type, $this->get_object_type_slugs(), true ) ) {
 				return false;
 			}
 
