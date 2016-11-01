@@ -948,22 +948,29 @@ class WSUWP_University_Center {
 		foreach ( $objects_to_display as $id => $object ) {
 			$objects_to_display_clean[ $id . $id_append ] = $object;
 		}
+
+		// @codingStandardsIgnoreStart
 		?>
 
 		<script> var wsu_uc = wsu_uc || {}; wsu_uc.<?php echo esc_js( $object_type ); ?> = <?php echo $objects; ?>; </script>
 
 		<?php
+		// @codingStandardsIgnoreEnd
+
 		$current_objects_html = '';
 		$current_objects_ids = implode( ',', array_keys( $objects_to_display_clean ) );
 		foreach ( $objects_to_display_clean as $key => $current_object ) {
 			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
+
+		// @codingStandardsIgnoreStart
 		?>
 		<input id="<?php echo esc_attr( $object_type ); ?>-assign">
-		<input type="hidden" id="<?php echo esc_attr( $object_type ); ?>-assign-ids" name="assign_<?php echo esc_attr( $object_type ); ?>_ids" value="<?php echo $current_objects_ids; ?>">
+		<input type="hidden" id="<?php echo esc_attr( $object_type ); ?>-assign-ids" name="assign_<?php echo esc_attr( $object_type ); ?>_ids" value="<?php echo esc_attr( $current_objects_ids ); ?>">
 		<div id="<?php echo esc_attr( $object_type ); ?>-results" class="wsu-uc-objects-results"><?php echo $current_objects_html; ?></div>
 		<div class="clear"></div>
-	<?php
+		<?php
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
