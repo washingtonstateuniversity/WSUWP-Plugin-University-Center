@@ -8,6 +8,7 @@ class WSUWP_University_Center_Meta {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 11, 1 );
 		add_action( 'save_post', array( $this, 'save_object_url' ), 12, 2 );
 		add_action( 'save_post', array( $this, 'save_person_information' ), 12, 2 );
+		add_action( 'save_post', array( $this, 'save_project_information' ), 12, 2 );
 	}
 
 	/**
@@ -20,10 +21,12 @@ class WSUWP_University_Center_Meta {
 			return;
 		}
 
-		add_meta_box( 'wsuwp_uc_object_url', 'URL', array( $this, 'display_object_url_meta_box' ), null, 'normal', 'default' );
-
 		if ( $post_type === wsuwp_uc_get_object_type_slug( 'people' ) ) {
 			add_meta_box( 'wsuwp_uc_person_info', 'Information', array( $this, 'display_person_information_meta_box' ), null, 'normal', 'default' );
+		}
+
+		if ( $post_type === wsuwp_uc_get_object_type_slug( 'project' ) ) {
+			add_meta_box( 'wsuwp_uc_project_info', 'Information', array( $this, 'display_project_information_meta_box' ) , null, 'normal', 'default' );
 		}
 	}
 
@@ -32,7 +35,7 @@ class WSUWP_University_Center_Meta {
 	 *
 	 * @param WP_Post $post
 	 */
-	public function display_object_url_meta_box( $post ) {
+	private function display_object_url_meta_box( $post ) {
 		$object_url = get_post_meta( $post->ID, '_wsuwp_uc_object_url', true );
 
 		if ( ! empty( $object_url ) ) {
@@ -41,11 +44,35 @@ class WSUWP_University_Center_Meta {
 			$object_url = '';
 		}
 
-		wp_nonce_field( 'save_object_url', '_uc_object_url_nonce' );
 		?>
 		<label for="wsuwp-uc-object-url">URL:</label>
 		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo $object_url; ?>" />
 		<p class="description">Enter a URL to be displayed to guide visitors toward more information.</p>
+		<?php
+	}
+
+	/**
+	 * Display a meta box to capture meta information for a project. This will include things
+	 * such as project ID.
+	 *
+	 * @param WP_Post $post The full post object being edited.
+	 */
+	public function display_project_information_meta_box( $post ) {
+		$project_id = get_post_meta( $post->ID, '_wsuwp_uc_project_id', true );
+
+		wp_nonce_field( 'save_project_information', '_uc_project_information_nonce' );
+		?>
+		<div id="capture-project-information">
+			<p class="description">All information here will be publicly available on this project's page.</p>
+			<div class="project-information-id">
+				<label for="wsuwp-uc-project-id">Project ID:</label>
+				<input type="text" id="wsuwp-uc-project-id" name="wsuwp_uc_project_id" value="<?php echo esc_attr( $project_id ); ?>" />
+			</div>
+			<div class="project-information-url">
+				<?php $this->display_object_url_meta_box( $post ); ?>
+			</div>
+			<div class="clear"></div>
+		</div>
 		<?php
 	}
 
@@ -107,6 +134,8 @@ class WSUWP_University_Center_Meta {
 
 				<label for="wsuwp-uc-person-phone">Phone Number:</label>
 				<input type="text" id="wsuwp-uc-person-phone" name="wsuwp_uc_person_phone" value="<?php echo esc_attr( $person_phone ); ?>" />
+
+				<?php $this->display_object_url_meta_box( $post ); ?>
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -117,26 +146,8 @@ class WSUWP_University_Center_Meta {
 	 * Assign a URL to an object when saved through the object's meta box.
 	 *
 	 * @param int     $post_id The ID of the post being saved.
-	 * @param WP_Post $post    The full post object being saved.
 	 */
-	public function save_object_url( $post_id, $post ) {
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return;
-		}
-
-		// Only assign a unique id to content from our registered types.
-		if ( ! in_array( $post->post_type, wsuwp_uc_get_object_type_slugs() ) ) {
-			return;
-		}
-
-		if ( 'auto-draft' === $post->post_status ) {
-			return;
-		}
-
-		if ( ! isset( $_POST['_uc_object_url_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_object_url_nonce'], 'save_object_url' ) ) {
-			return;
-		}
-
+	public function save_object_url( $post_id ) {
 		if ( isset( $_POST['wsuwp_uc_object_url'] ) ) {
 			if ( empty( trim( $_POST['wsuwp_uc_object_url'] ) ) ) {
 				delete_post_meta( $post_id, '_wsuwp_uc_object_url' );
@@ -144,6 +155,42 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_object_url', esc_url_raw( $_POST['wsuwp_uc_object_url'] ) );
 			}
 		}
+
+		return;
+	}
+
+	/**
+	 * Save a project's meta information after entry.
+	 *
+	 * @param int     $post_id ID of the post being saved.
+	 * @param WP_Post $post    Full post object being saved.
+	 */
+	public function save_project_information( $post_id, $post ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( wsuwp_uc_get_object_type_slug( 'project' ) !== $post->post_type ) {
+			return;
+		}
+
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['_uc_project_information_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_project_information_nonce'], 'save_project_information' ) ) {
+			return;
+		}
+
+		if ( isset( $_POST['wsuwp_uc_project_id'] ) ) {
+			if ( empty( trim( $_POST['wsuwp_uc_project_id'] ) ) ) {
+				delete_post_meta( $post_id, '_wsuwp_uc_project_id' );
+			} else {
+				update_post_meta( $post_id, '_wsuwp_uc_project_id', sanitize_text_field( $_POST['wsuwp_uc_project_id'] ) );
+			}
+		}
+
+		$this->save_object_url( $post_id );
 
 		return;
 	}
@@ -242,6 +289,8 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_person_phone', sanitize_text_field( $_POST['wsuwp_uc_person_phone'] ) );
 			}
 		}
+
+		$this->save_object_url( $post_id );
 
 		return;
 	}

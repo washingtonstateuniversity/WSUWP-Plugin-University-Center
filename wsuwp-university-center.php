@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: University Center Objects
-Plugin URI: http://web.wsu.edu/wordpress/plugins/university-center-objects/
+Plugin URI: https://web.wsu.edu/wordpress/plugins/university-center-objects/
 Description: Provides content objects and relationships common to a center, institute, or other organization at a university.
 Author: washingtonstateuniversity, jeremyfelt
-Version: 0.5.1
+Version: 0.6.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -19,7 +19,7 @@ class WSUWP_University_Center {
 	 *
 	 * @var string
 	 */
-	var $plugin_version = '0.5.1';
+	var $plugin_version = '0.6.6';
 
 	/**
 	 * The slug used to register the project custom content type.
@@ -77,6 +77,8 @@ class WSUWP_University_Center {
 
 		add_action( 'init', array( $this, 'process_upgrade_routine' ), 12 );
 
+		add_action( 'init', array( $this, 'extend_content_syndicate' ), 12 );
+
 		add_action( 'save_post', array( $this, 'assign_unique_id' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'save_associated_data' ), 11, 2 );
 
@@ -119,6 +121,24 @@ class WSUWP_University_Center {
 		}
 
 		update_option( 'wsuwp_uc_version', $this->plugin_version );
+	}
+
+	/**
+	 * Include the code used to extend WSUWP Content Synidcate with shortcodes for
+	 * University Center object types.
+	 */
+	public function extend_content_syndicate() {
+		if ( class_exists( 'WSU_Syndicate_Shortcode_Base') ) {
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-entity.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-publication.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-person.php' );
+
+			new University_Center_Syndicate_Shortcode_Project();
+			new University_Center_Syndicate_Shortcode_Entity();
+			new University_Center_Syndicate_Shortcode_Publication();
+			new University_Center_Syndicate_Shortcode_Person();
+		}
 	}
 
 	/**
@@ -334,11 +354,14 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'projects', // Note that this can be different from the post type slug.
 		);
 
 		register_post_type( $this->project_content_type, $args );
@@ -394,11 +417,14 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'people',
 		);
 
 		register_post_type( $this->people_content_type, $args );
@@ -453,11 +479,14 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'publications',
 		);
 
 		register_post_type( $this->publication_content_type, $args );
@@ -512,11 +541,14 @@ class WSUWP_University_Center {
 				'revisions',
 				'thumbnail',
 			),
+			'taxonomies' => array( 'category', 'post_tag' ),
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
 				'with_front' => false
 			),
+			'show_in_rest' => true,
+			'rest_base' => 'entities',
 		);
 
 		register_post_type( $this->entity_content_type, $args );
@@ -603,6 +635,11 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		// Do not overwrite existing unique IDs during an import.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return;
+		}
+
 		// Only assign a unique id to content from our registered types.
 		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
 			return;
@@ -632,6 +669,11 @@ class WSUWP_University_Center {
 	 */
 	public function save_associated_data( $post_id, $post ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Do not overwrite existing information during an import.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
 			return;
 		}
 
@@ -692,17 +734,22 @@ class WSUWP_University_Center {
 	/**
 	 * Clean posted object ID data so that any IDs passed are sanitized and validated as not empty.
 	 *
-	 * @param array $object_ids List of object IDs being associated.
+	 * @param array  $object_ids    List of object IDs being associated.
+	 * @param string $strip_from_id Text to strip from an ID.
 	 *
 	 * @return array Cleaned list of object IDs.
 	 */
-	public function clean_posted_ids( $object_ids ) {
+	public function clean_posted_ids( $object_ids, $strip_from_id = '' ) {
 		if ( ! is_array( $object_ids ) || empty( $object_ids ) ) {
 			return array();
 		}
 
 		foreach( $object_ids as $key => $id ) {
 			$id = sanitize_key( ( trim( $id ) ) ) ;
+
+			if ( '' !== $strip_from_id ) {
+				$id = str_replace( $strip_from_id, '', $id );
+			}
 
 			if ( '' === $id ) {
 				unset( $object_ids[ $key ] );
@@ -739,7 +786,7 @@ class WSUWP_University_Center {
 			$removed_object_ids = array();
 		}
 
-		$all_objects = $this->_get_all_object_data( $object_content_type );
+		$all_objects = $this->get_all_object_data( $object_content_type );
 
 		foreach( $added_object_ids as $add_object ) {
 			$object_post_id = $all_objects[ $add_object ]['id'];
@@ -796,19 +843,23 @@ class WSUWP_University_Center {
 		}
 
 		if ( $this->project_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_project' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign Projects', array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->project_content_type );
+			add_meta_box( 'wsuwp_uc_assign_projects', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_projects_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->entity_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_entity' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign Entities', array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->entity_content_type );
+			add_meta_box( 'wsuwp_uc_assign_entities', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_entities_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->people_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_person' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_people', 'Assign People', array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->people_content_type );
+			add_meta_box( 'wsuwp_uc_assign_people', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_people_meta_box' ), null, 'normal', 'default' );
 		}
 
 		if ( $this->publication_content_type !== $post_type && current_theme_supports( 'wsuwp_uc_publication' ) ) {
-			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign Publications', array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
+			$labels = get_post_type_object( $this->publication_content_type );
+			add_meta_box( 'wsuwp_uc_assign_publications', 'Assign ' . $labels->labels->name, array( $this, 'display_assign_publications_meta_box' ), null, 'normal', 'default' );
 		}
 	}
 
@@ -819,7 +870,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_projects_meta_box( $post ) {
 		$current_projects = get_post_meta( $post->ID, '_' . $this->project_content_type . '_ids', true );
-		$all_projects = $this->_get_all_object_data( $this->project_content_type );
+		$all_projects = $this->get_all_object_data( $this->project_content_type );
 		$this->display_autocomplete_input( $all_projects, $current_projects, 'projects' );
 	}
 
@@ -830,7 +881,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_entities_meta_box( $post ) {
 		$current_entities = get_post_meta( $post->ID, '_' . $this->entity_content_type . '_ids', true );
-		$all_entities = $this->_get_all_object_data( $this->entity_content_type );
+		$all_entities = $this->get_all_object_data( $this->entity_content_type );
 		$this->display_autocomplete_input( $all_entities, $current_entities, 'entities' );
 	}
 
@@ -841,7 +892,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_people_meta_box( $post ) {
 		$current_people = get_post_meta( $post->ID, '_' . $this->people_content_type . '_ids', true );
-		$all_people = $this->_get_all_object_data( $this->people_content_type );
+		$all_people = $this->get_all_object_data( $this->people_content_type );
 		$this->display_autocomplete_input( $all_people, $current_people, 'people' );
 	}
 
@@ -852,7 +903,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_assign_publications_meta_box( $post ) {
 		$current_publications = get_post_meta( $post->ID, '_' . $this->publication_content_type . '_ids', true );
-		$all_publications = $this->_get_all_object_data( $this->publication_content_type );
+		$all_publications = $this->get_all_object_data( $this->publication_content_type );
 		$this->display_autocomplete_input( $all_publications, $current_publications, 'publications' );
 	}
 
@@ -865,6 +916,15 @@ class WSUWP_University_Center {
 	 * @param string $object_type         The object type.
 	 */
 	public function display_autocomplete_input( $all_object_data, $current_object_data, $object_type ) {
+		$base_object_types = array( 'people', 'projects', 'entities', 'publications' );
+		// If we're autocompleting an object that is not part of our base, we append
+		// the object type to each objects ID to avoid collision.
+		if ( ! in_array( $object_type, $base_object_types ) ) {
+			$id_append = esc_attr( $object_type );
+		} else {
+			$id_append = '';
+		}
+
 		if ( $current_object_data ) {
 			$match_objects = array();
 			foreach( $current_object_data as $current_object ) {
@@ -880,20 +940,25 @@ class WSUWP_University_Center {
 		$objects = array();
 		foreach ( $objects_for_adding as $id => $object ) {
 			$objects[] = array(
-				'value' => $id,
+				'value' => $id . $id_append,
 				'label' => $object['name'],
 			);
 		}
 
 		$objects = json_encode( $objects );
+
+		$objects_to_display_clean = array();
+		foreach( $objects_to_display as $id => $object ) {
+			$objects_to_display_clean[ $id . $id_append ] = $object;
+		}
 		?>
 
 		<script> var wsu_uc = wsu_uc || {}; wsu_uc.<?php echo esc_js( $object_type ); ?> = <?php echo $objects; ?>; </script>
 
 		<?php
 		$current_objects_html = '';
-		$current_objects_ids = implode( ',', array_keys( $objects_to_display ) );
-		foreach( $objects_to_display as $key => $current_object ) {
+		$current_objects_ids = implode( ',', array_keys( $objects_to_display_clean ) );
+		foreach( $objects_to_display_clean as $key => $current_object ) {
 			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
 		?>
@@ -912,7 +977,7 @@ class WSUWP_University_Center {
 	 *
 	 * @return array|bool Array of results or false if incorrectly called.
 	 */
-	private function _get_all_object_data( $post_type ) {
+	public function get_all_object_data( $post_type ) {
 		$all_object_data = wp_cache_get( 'wsuwp_uc_all_' . $post_type );
 
 		if ( ! $all_object_data ) {
@@ -949,18 +1014,22 @@ class WSUWP_University_Center {
 	 */
 	private function _flush_all_object_data_cache( $post_type ) {
 		wp_cache_delete( 'wsuwp_uc_all_' . $post_type );
-		$this->_get_all_object_data( $post_type );
+		$this->get_all_object_data( $post_type );
 	}
 
 	/**
 	 * Get a list of objects from an object type which are associated with the requested object.
 	 *
-	 * @param int    $post_id     ID of the object currently being used.
-	 * @param string $object_type Slug of the object type to find.
+	 * @param int         $post_id          ID of the object currently being used.
+	 * @param string      $object_type      Slug of the object type to find.
+	 * @param bool|string $base_object_type Slug of the object type to use as the base of this
+	 *                                      query to support additional fabricated object types.
+	 *                                      False if base object type should inherit the passed
+	 *                                      object_type parameter.
 	 *
 	 * @return array List of objects associated with the requested object.
 	 */
-	public function get_object_objects( $post_id, $object_type ) {
+	public function get_object_objects( $post_id, $object_type, $base_object_type = false ) {
 		$post = get_post( $post_id );
 
 		// Return false if the requested object type is the same object type as the post object.
@@ -972,7 +1041,11 @@ class WSUWP_University_Center {
 			return array();
 		}
 
-		$all_objects = $this->_get_all_object_data( $object_type );
+		if ( false === $base_object_type ) {
+			$base_object_type = $object_type;
+		}
+
+		$all_objects = $this->get_all_object_data( $base_object_type );
 		$associated_objects = get_post_meta( $post->ID, '_' . $object_type . '_ids', true );
 
 		if ( is_array( $associated_objects ) && ! empty( $associated_objects ) ) {
@@ -1043,6 +1116,7 @@ class WSUWP_University_Center {
 			$added_html .= '</ul></div>';
 		}
 
+		$people = apply_filters( 'wsuwp_uc_people_to_add_to_content', $people, get_the_ID() );
 		if ( false !== $people && ! empty( $people ) ) {
 			$labels = get_post_type_object( $this->people_content_type );
 			$added_html .= '<div class="wsuwp-uc-people"><h3>' . $labels->labels->name . '</h3><ul>';
@@ -1053,7 +1127,7 @@ class WSUWP_University_Center {
 		}
 
 		if ( false !== $publications && ! empty( $publications ) ) {
-			$labels = get_post_type_object( $this->entity_content_type );
+			$labels = get_post_type_object( $this->publication_content_type );
 			$added_html .= '<div class="wsuwp-uc-publications"><h3>' . $labels->labels->name . '</h3><ul>';
 			foreach( $publications as $publication ) {
 				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
@@ -1086,8 +1160,13 @@ class WSUWP_University_Center {
 			$query->set( 'posts_per_page', 2000 );
 		}
 
+		// Avoid pagination without intent by maxing out at 2000 per taxonomy archive.
+		if ( $query->is_tax( $this->entity_type_taxonomy ) || $query->is_tax( $this->topics_taxonomy ) ) {
+			$query->set( 'posts_per_page', 2000 );
+		}
+
 		// Entities and projects are sorted by their titles in archive views.
-		if ( $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
+		if ( $query->is_tax( $this->topics_taxonomy ) || $query->is_tax( $this->entity_type_taxonomy ) || $query->is_post_type_archive( $this->entity_content_type ) || $query->is_post_type_archive( $this->project_content_type ) ) {
 			$query->set( 'orderby', 'title' );
 			$query->set( 'order', 'ASC' );
 		}
@@ -1239,6 +1318,32 @@ function wsuwp_uc_get_object_type_slugs() {
 }
 
 /**
+ * Retrieve all of the items from a specified content type with their unique ID,
+ * current post ID, and name.
+ *
+ * @param string $object_type The custom post type slug.
+ *
+ * @return array|bool Array of results or false if incorrectly called.
+ */
+function wsuwp_uc_get_all_object_data( $object_type ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_all_object_data( $object_type );
+}
+
+/**
+ * Clean posted object ID data so that any IDs passed are sanitized and validated as not empty.
+ *
+ * @param array  $object_ids    List of object IDs being associated.
+ * @param string $strip_from_id Text to strip from an object's ID.
+ *
+ * @return array Cleaned list of object IDs.
+ */
+function wsuwp_uc_clean_post_ids( $object_ids, $strip_from_id = '' ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->clean_posted_ids( $object_ids, $strip_from_id );
+}
+
+/**
  * Retrieve the list of projects associated with an object.
  *
  * @param int $post_id
@@ -1284,4 +1389,21 @@ function wsuwp_uc_get_object_entities( $post_id = 0 ) {
 function wsuwp_uc_get_object_publications( $post_id = 0 ) {
 	global $wsuwp_university_center;
 	return $wsuwp_university_center->get_object_objects( $post_id, $wsuwp_university_center->publication_content_type );
+}
+
+/**
+ * Wrapper method to retrieve a list of objects from an object type associated with the requested object.
+ *
+ * @param int         $post_id          ID of the object currently being used.
+ * @param string      $object_type      Slug of the object type to find.
+ * @param bool|string $base_object_type Slug of the object type to use as the base of this
+ *                                      query to support additional fabricated object types.
+ *                                      False if base object type should inherit the passed
+ *                                      object_type parameter.
+ *
+ * @return array List of objects associated with the requested object.
+ */
+function wsuwp_uc_get_object_objects( $post_id, $object_type, $base_object_type = false ) {
+	global $wsuwp_university_center;
+	return $wsuwp_university_center->get_object_objects( $post_id, $object_type, $base_object_type );
 }

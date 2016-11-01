@@ -1,4 +1,4 @@
-(function($){
+(function($, window){
 	/**
 	 * Remove a previously associated object and update the list of objects
 	 * that are now associated with the primary post object.
@@ -72,6 +72,9 @@
 		});
 	}
 
+	window.wsuwp_uc_autocomplete_object = autocomplete_object;
+	window.wsuwp_uc_remove_object = remove_object;
+
 	$(document ).ready(function() {
 		if ( 0 !== $('#wsuwp_uc_assign_people' ).length ) {
 			autocomplete_object( 'people' );
@@ -93,4 +96,4 @@
 			$('#publications-results' ).on('click', '.uc-object-close', 'publications', remove_object );
 		}
 	});
-}(jQuery));
+}(jQuery, window));

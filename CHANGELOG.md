@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.7.0 (TBD)
+
+* Add `wsuwp_uc_people` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_entities` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_publications` shortcode, extending WSUWP Content Syndicate.
+* Add `wsuwp_uc_projects` shortcode, extending WSUWP Content Syndicate.
+
+## 0.6.6 (July 1, 2015)
+
+* Use the proper label for publications when adding default content to another post type.
+
+## 0.6.5 (July 1, 2015)
+
+* Ensure the proper labels assigned to each post type are used when displaying meta boxes.
+
+## 0.6.4 (June 2, 2015)
+
+* Provide a filter to modify the list of people output during content generation on another post type.
+* Avoid recreating unique identifiers during an import.
+
+## 0.6.3 (April 30, 2015)
+
+* Provide a wrapper to retrieve an object's associated objects.
+* Allow for fabricated object types to be pulled as associated objects.
+
+## 0.6.2 (April 29, 2015)
+
+* Avoid pagination on taxonomy archive pages.
+* Sort topics and entity types by title (by default).
+
+## 0.6.1 (April 29, 2015)
+
+* Avoid collision between object IDs when displaying previously saved object associations.
+
+## 0.6.0 (April 29, 2015)
+
+* Make more methods public so that plugins and themes are able to extend object relationships using the logic provided by this plugin.
+
+## 0.5.4 (April 16, 2015)
+
+* Provide support for categories and tags on all object types.
+
+## 0.5.3 (February 4, 2015)
+
+* Fix bug where publicly used `save_object_url()` method was private.
+
+## 0.5.2 (January 16, 2015)
+
+* Capture an ID for projects.
+* Move URL capture into the standard "information" area on people and projects.
+
 ## 0.5.1 (January 14, 2015)
 
 * Sort people by last name in an archive view. This requires that every person has a last name entered.
