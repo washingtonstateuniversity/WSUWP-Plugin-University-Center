@@ -942,7 +942,7 @@ class WSUWP_University_Center {
 			);
 		}
 
-		$objects = json_encode( $objects );
+		$objects = wp_json_encode( $objects );
 
 		$objects_to_display_clean = array();
 		foreach ( $objects_to_display as $id => $object ) {
