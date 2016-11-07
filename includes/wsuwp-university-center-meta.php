@@ -17,15 +17,15 @@ class WSUWP_University_Center_Meta {
 	 * @param string $post_type
 	 */
 	public function add_meta_boxes( $post_type ) {
-		if ( ! in_array( $post_type, wsuwp_uc_get_object_type_slugs() ) ) {
+		if ( ! in_array( $post_type, wsuwp_uc_get_object_type_slugs(), true ) ) {
 			return;
 		}
 
-		if ( $post_type === wsuwp_uc_get_object_type_slug( 'people' ) ) {
+		if ( wsuwp_uc_get_object_type_slug( 'people' ) === $post_type ) {
 			add_meta_box( 'wsuwp_uc_person_info', 'Information', array( $this, 'display_person_information_meta_box' ), null, 'normal', 'default' );
 		}
 
-		if ( $post_type === wsuwp_uc_get_object_type_slug( 'project' ) ) {
+		if ( wsuwp_uc_get_object_type_slug( 'project' ) === $post_type ) {
 			add_meta_box( 'wsuwp_uc_project_info', 'Information', array( $this, 'display_project_information_meta_box' ) , null, 'normal', 'default' );
 		}
 	}
@@ -46,7 +46,7 @@ class WSUWP_University_Center_Meta {
 
 		?>
 		<label for="wsuwp-uc-object-url">URL:</label>
-		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo $object_url; ?>" />
+		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo esc_attr( $object_url ); ?>" />
 		<p class="description">Enter a URL to be displayed to guide visitors toward more information.</p>
 		<?php
 	}
@@ -310,7 +310,7 @@ class WSUWP_University_Center_Meta {
 
 		$supported_fields = array( 'prefix', 'first_name', 'last_name', 'suffix', 'title', 'title_secondary', 'office', 'email', 'phone' );
 
-		if ( ! in_array( $field, $supported_fields ) ) {
+		if ( ! in_array( $field, $supported_fields, true ) ) {
 			return false;
 		}
 
