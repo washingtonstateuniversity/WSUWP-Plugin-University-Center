@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.7.0 (TBD)
+## 0.7.1 (November 8, 2016)
+
+* Bug: Ensure class global is `$global` before starting.
+
+## 0.7.0 (November 1, 2016)
 
 * Add `wsuwp_uc_people` shortcode, extending WSUWP Content Syndicate.
 * Add `wsuwp_uc_entities` shortcode, extending WSUWP Content Syndicate.
