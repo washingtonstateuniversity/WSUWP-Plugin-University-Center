@@ -1183,6 +1183,7 @@ class WSUWP_University_Center {
 		}
 	}
 }
+global $wsuwp_university_center;
 $wsuwp_university_center = new WSUWP_University_Center();
 
 /**
