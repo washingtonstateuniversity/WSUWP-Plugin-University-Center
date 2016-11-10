@@ -4,7 +4,7 @@ Plugin Name: University Center Objects
 Plugin URI: https://web.wsu.edu/wordpress/plugins/university-center-objects/
 Description: Provides content objects and relationships common to a center, institute, or other organization at a university.
 Author: washingtonstateuniversity, jeremyfelt
-Version: 0.6.6
+Version: 0.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -19,7 +19,7 @@ class WSUWP_University_Center {
 	 *
 	 * @var string
 	 */
-	var $plugin_version = '0.6.6';
+	var $plugin_version = '0.7.1';
 
 	/**
 	 * The slug used to register the project custom content type.
@@ -128,7 +128,7 @@ class WSUWP_University_Center {
 	 * University Center object types.
 	 */
 	public function extend_content_syndicate() {
-		if ( class_exists( 'WSU_Syndicate_Shortcode_Base') ) {
+		if ( class_exists( 'WSU_Syndicate_Shortcode_Base' ) ) {
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-entity.php' );
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-publication.php' );
@@ -164,7 +164,7 @@ class WSUWP_University_Center {
 	 */
 	public function display_settings() {
 		register_setting( 'general', 'wsuwp_uc_names', array( $this, 'sanitize_names' ) );
-		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names'), 'general', 'default', array( 'label_for' => 'wsuwp_uc_names' ) );
+		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names' ), 'general', 'default', array( 'label_for' => 'wsuwp_uc_names' ) );
 	}
 
 	/**
@@ -176,8 +176,8 @@ class WSUWP_University_Center {
 	 */
 	public function sanitize_names( $names ) {
 		$clean_names = array();
-		foreach( $names as $name => $data ) {
-			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ) ) ) {
+		foreach ( $names as $name => $data ) {
+			if ( ! in_array( $name, array( 'project', 'people', 'entity', 'publication' ), true ) ) {
 				continue;
 			}
 
@@ -348,7 +348,7 @@ class WSUWP_University_Center {
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-analytics',
-			'supports' => array (
+			'supports' => array(
 				'title',
 				'editor',
 				'revisions',
@@ -358,7 +358,7 @@ class WSUWP_University_Center {
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
-				'with_front' => false
+				'with_front' => false,
 			),
 			'show_in_rest' => true,
 			'rest_base' => 'projects', // Note that this can be different from the post type slug.
@@ -410,7 +410,7 @@ class WSUWP_University_Center {
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-id-alt',
-			'supports' => array (
+			'supports' => array(
 				'title',
 				'author',
 				'editor',
@@ -421,7 +421,7 @@ class WSUWP_University_Center {
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
-				'with_front' => false
+				'with_front' => false,
 			),
 			'show_in_rest' => true,
 			'rest_base' => 'people',
@@ -473,7 +473,7 @@ class WSUWP_University_Center {
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-book',
-			'supports' => array (
+			'supports' => array(
 				'title',
 				'editor',
 				'revisions',
@@ -483,7 +483,7 @@ class WSUWP_University_Center {
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
-				'with_front' => false
+				'with_front' => false,
 			),
 			'show_in_rest' => true,
 			'rest_base' => 'publications',
@@ -535,7 +535,7 @@ class WSUWP_University_Center {
 			'public' => true,
 			'hierarchical' => false,
 			'menu_icon' => 'dashicons-groups',
-			'supports' => array (
+			'supports' => array(
 				'title',
 				'editor',
 				'revisions',
@@ -545,7 +545,7 @@ class WSUWP_University_Center {
 			'has_archive' => true,
 			'rewrite' => array(
 				'slug' => $slug,
-				'with_front' => false
+				'with_front' => false,
 			),
 			'show_in_rest' => true,
 			'rest_base' => 'entities',
@@ -641,7 +641,7 @@ class WSUWP_University_Center {
 		}
 
 		// Only assign a unique id to content from our registered types.
-		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -678,7 +678,7 @@ class WSUWP_University_Center {
 		}
 
 		// Only assign a unique id to content from our registered types.
-		if ( ! in_array( $post->post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post->post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -744,8 +744,8 @@ class WSUWP_University_Center {
 			return array();
 		}
 
-		foreach( $object_ids as $key => $id ) {
-			$id = sanitize_key( ( trim( $id ) ) ) ;
+		foreach ( $object_ids as $key => $id ) {
+			$id = sanitize_key( ( trim( $id ) ) );
 
 			if ( '' !== $strip_from_id ) {
 				$id = str_replace( $strip_from_id, '', $id );
@@ -788,7 +788,7 @@ class WSUWP_University_Center {
 
 		$all_objects = $this->get_all_object_data( $object_content_type );
 
-		foreach( $added_object_ids as $add_object ) {
+		foreach ( $added_object_ids as $add_object ) {
 			$object_post_id = $all_objects[ $add_object ]['id'];
 			$objects = get_post_meta( $object_post_id, '_' . $post->post_type . '_ids', true );
 
@@ -796,13 +796,13 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
-			if ( ! in_array( $add_object, $objects ) ) {
+			if ( ! in_array( $add_object, $objects, true ) ) {
 				$objects[] = $post_unique_id;
 			}
 			update_post_meta( $object_post_id, '_' . $post->post_type . '_ids', $objects );
 		}
 
-		foreach( $removed_object_ids as $remove_object ) {
+		foreach ( $removed_object_ids as $remove_object ) {
 			if ( ! isset( $all_objects[ $remove_object ] ) ) {
 				continue;
 			}
@@ -814,7 +814,9 @@ class WSUWP_University_Center {
 				$objects = array();
 			}
 
+			// @codingStandardsIgnoreStart
 			$key = array_search( $post_unique_id, $objects );
+			// @codingStandardsIgnoreEnd
 
 			if ( false !== $key ) {
 				unset( $objects[ $key ] );
@@ -838,7 +840,7 @@ class WSUWP_University_Center {
 	 * @param string $post_type The slug of the current post type.
 	 */
 	public function add_meta_boxes( $post_type ) {
-		if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
+		if ( ! in_array( $post_type, $this->get_object_type_slugs(), true ) ) {
 			return;
 		}
 
@@ -919,7 +921,7 @@ class WSUWP_University_Center {
 		$base_object_types = array( 'people', 'projects', 'entities', 'publications' );
 		// If we're autocompleting an object that is not part of our base, we append
 		// the object type to each objects ID to avoid collision.
-		if ( ! in_array( $object_type, $base_object_types ) ) {
+		if ( ! in_array( $object_type, $base_object_types, true ) ) {
 			$id_append = esc_attr( $object_type );
 		} else {
 			$id_append = '';
@@ -927,7 +929,7 @@ class WSUWP_University_Center {
 
 		if ( $current_object_data ) {
 			$match_objects = array();
-			foreach( $current_object_data as $current_object ) {
+			foreach ( $current_object_data as $current_object ) {
 				$match_objects[ $current_object ] = true;
 			}
 			$objects_for_adding = array_diff_key( $all_object_data, $match_objects );
@@ -945,28 +947,35 @@ class WSUWP_University_Center {
 			);
 		}
 
-		$objects = json_encode( $objects );
+		$objects = wp_json_encode( $objects );
 
 		$objects_to_display_clean = array();
-		foreach( $objects_to_display as $id => $object ) {
+		foreach ( $objects_to_display as $id => $object ) {
 			$objects_to_display_clean[ $id . $id_append ] = $object;
 		}
+
+		// @codingStandardsIgnoreStart
 		?>
 
 		<script> var wsu_uc = wsu_uc || {}; wsu_uc.<?php echo esc_js( $object_type ); ?> = <?php echo $objects; ?>; </script>
 
 		<?php
+		// @codingStandardsIgnoreEnd
+
 		$current_objects_html = '';
 		$current_objects_ids = implode( ',', array_keys( $objects_to_display_clean ) );
-		foreach( $objects_to_display_clean as $key => $current_object ) {
+		foreach ( $objects_to_display_clean as $key => $current_object ) {
 			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
 		}
+
+		// @codingStandardsIgnoreStart
 		?>
 		<input id="<?php echo esc_attr( $object_type ); ?>-assign">
-		<input type="hidden" id="<?php echo esc_attr( $object_type ); ?>-assign-ids" name="assign_<?php echo esc_attr( $object_type ); ?>_ids" value="<?php echo $current_objects_ids; ?>">
+		<input type="hidden" id="<?php echo esc_attr( $object_type ); ?>-assign-ids" name="assign_<?php echo esc_attr( $object_type ); ?>_ids" value="<?php echo esc_attr( $current_objects_ids ); ?>">
 		<div id="<?php echo esc_attr( $object_type ); ?>-results" class="wsu-uc-objects-results"><?php echo $current_objects_html; ?></div>
 		<div class="clear"></div>
-	<?php
+		<?php
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -982,14 +991,14 @@ class WSUWP_University_Center {
 
 		if ( ! $all_object_data ) {
 
-			if ( ! in_array( $post_type, $this->get_object_type_slugs() ) ) {
+			if ( ! in_array( $post_type, $this->get_object_type_slugs(), true ) ) {
 				return false;
 			}
 
 			$all_object_data = array();
 			$all_data = get_posts( array( 'post_type' => $post_type, 'posts_per_page' => 1000 ) );
 
-			foreach( $all_data as $data ) {
+			foreach ( $all_data as $data ) {
 				$unique_data_id = get_post_meta( $data->ID, '_wsuwp_uc_unique_id', true );
 				if ( $unique_data_id ) {
 					$all_object_data[ $unique_data_id ]['id'] = $data->ID;
@@ -1097,10 +1106,10 @@ class WSUWP_University_Center {
 
 		$added_html = '';
 
-		if ( false !== $entities && ! empty( $entities )) {
+		if ( false !== $entities && ! empty( $entities ) ) {
 			$labels = get_post_type_object( $this->entity_content_type );
 			$added_html .= '<div class="wsuwp-uc-entities"><h3>' . $labels->labels->name . '</h3><ul>';
-			foreach( $entities as $entity ) {
+			foreach ( $entities as $entity ) {
 				$added_html .= '<li><a href="' . esc_url( $entity['url'] ) . '">' . esc_html( $entity['name'] ) . '</a></li>';
 			}
 			$added_html .= '</ul></div>';
@@ -1120,7 +1129,7 @@ class WSUWP_University_Center {
 		if ( false !== $people && ! empty( $people ) ) {
 			$labels = get_post_type_object( $this->people_content_type );
 			$added_html .= '<div class="wsuwp-uc-people"><h3>' . $labels->labels->name . '</h3><ul>';
-			foreach( $people as  $person ) {
+			foreach ( $people as  $person ) {
 				$added_html .= '<li><a href="' . esc_url( $person['url'] ) . '">' . esc_html( $person['name'] ) . '</a></li>';
 			}
 			$added_html .= '<ul></div>';
@@ -1129,7 +1138,7 @@ class WSUWP_University_Center {
 		if ( false !== $publications && ! empty( $publications ) ) {
 			$labels = get_post_type_object( $this->publication_content_type );
 			$added_html .= '<div class="wsuwp-uc-publications"><h3>' . $labels->labels->name . '</h3><ul>';
-			foreach( $publications as $publication ) {
+			foreach ( $publications as $publication ) {
 				$added_html .= '<li><a href="' . esc_url( $publication['url'] ) . '">' . esc_html( $publication['name'] ) . '</a></li>';
 			}
 			$added_html .= '</ul></div>';
@@ -1276,6 +1285,7 @@ class WSUWP_University_Center {
 		}
 	}
 }
+global $wsuwp_university_center;
 $wsuwp_university_center = new WSUWP_University_Center();
 
 /**
