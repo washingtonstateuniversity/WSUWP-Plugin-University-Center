@@ -18,7 +18,7 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	 * @var array A set of default attributes for this shortcode only.
 	 */
 	public $local_extended_atts = array(
-		'entity' => '',
+		'organization' => '',
 		'person' => '',
 		'publication' => '',
 	);
@@ -62,9 +62,9 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 		$request_url = esc_url( $site_url['host'] . $site_url['path'] . $this->default_path ) . $atts['query'];
 		$request_url = $this->build_taxonomy_filters( $atts, $request_url );
 
-		if ( ! empty( $atts['entity'] ) ) {
-			$slug = sanitize_key( $atts['entity'] );
-			$request_url = add_query_arg( array( 'filter[uc_entity]' => $slug ), $request_url );
+		if ( ! empty( $atts['organization'] ) ) {
+			$slug = sanitize_key( $atts['organization'] );
+			$request_url = add_query_arg( array( 'filter[uc_organization]' => $slug ), $request_url );
 		} elseif ( ! empty( $atts['person'] ) ) {
 			$slug = sanitize_key( $atts['person'] );
 			$request_url = add_query_arg( array( 'filter[uc_person]' => $slug ), $request_url );
