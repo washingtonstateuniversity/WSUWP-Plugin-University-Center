@@ -134,12 +134,12 @@ class WSUWP_University_Center {
 	public function extend_content_syndicate() {
 		if ( class_exists( 'WSU_Syndicate_Shortcode_Base' ) ) {
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-project.php' );
-			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-entity.php' );
+			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-organization.php' );
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-publication.php' );
 			require_once( dirname( __FILE__ ) . '/includes/university-center-syndicate-shortcode-person.php' );
 
 			new University_Center_Syndicate_Shortcode_Project();
-			new University_Center_Syndicate_Shortcode_Entity();
+			new University_Center_Syndicate_Shortcode_Organization();
 			new University_Center_Syndicate_Shortcode_Publication();
 			new University_Center_Syndicate_Shortcode_Person();
 		}
@@ -506,18 +506,18 @@ class WSUWP_University_Center {
 		}
 
 		$default_labels = array(
-			'name' => __( 'Entities', 'wsuwp_uc' ),
-			'singular_name' => __( 'Entity', 'wsuwp_uc' ),
-			'all_items' => __( 'All Entities', 'wsuwp_uc' ),
-			'add_new_item' => __( 'Add Entity', 'wsuwp_uc' ),
-			'edit_item' => __( 'Edit Entity', 'wsuwp_uc' ),
-			'new_item' => __( 'New Entity', 'wsuwp_uc' ),
-			'view_item' => __( 'View Entity', 'wsuwp_uc' ),
-			'search_items' => __( 'Search Entities', 'wsuwp_uc' ),
-			'not_found' => __( 'No Entities found', 'wsuwp_uc' ),
-			'not_found_in_trash' => __( 'No Entities found in trash', 'wsuwp_uc' ),
+			'name' => __( 'Organizations', 'wsuwp_uc' ),
+			'singular_name' => __( 'Organization', 'wsuwp_uc' ),
+			'all_items' => __( 'All Organizations', 'wsuwp_uc' ),
+			'add_new_item' => __( 'Add Organization', 'wsuwp_uc' ),
+			'edit_item' => __( 'Edit Organization', 'wsuwp_uc' ),
+			'new_item' => __( 'New Organization', 'wsuwp_uc' ),
+			'view_item' => __( 'View Organization', 'wsuwp_uc' ),
+			'search_items' => __( 'Search Organizations', 'wsuwp_uc' ),
+			'not_found' => __( 'No Organizations found', 'wsuwp_uc' ),
+			'not_found_in_trash' => __( 'No Organizations found in trash', 'wsuwp_uc' ),
 		);
-		$default_description = __( 'Entities involved with the center.', 'wsuwp_uc' );
+		$default_description = __( 'Organizations involved with the center.', 'wsuwp_uc' );
 		$default_slug = 'entity';
 
 		$names = $this->_get_object_type_names( 'entity' );
@@ -552,7 +552,7 @@ class WSUWP_University_Center {
 				'with_front' => false,
 			),
 			'show_in_rest' => true,
-			'rest_base' => 'entities',
+			'rest_base' => 'organizations',
 		);
 
 		register_post_type( $this->entity_content_type, $args );
@@ -569,17 +569,17 @@ class WSUWP_University_Center {
 
 		$args = array(
 			'labels' => array(
-				'name' => __( 'Entity Types', 'wsuwp_uc' ),
-				'singular_name' => __( 'Entity Type', 'wsuwp_uc' ),
-				'search_items' => __( 'Search Entity Types', 'wsuwp_uc' ),
-				'all_items' => __( 'All Entity Types', 'wsuwp_uc' ),
-				'parent_item' => __( 'Parent Entity Type', 'wsuwp_uc' ),
-				'parent_item_colon' => __( 'Parent Entity Type:', 'wsuwp_uc' ),
-				'edit_item' => __( 'Edit Entity Type', 'wsuwp_uc' ),
-				'update_item' => __( 'Update Entity Type', 'wsuwp_uc' ),
-				'add_new_item' => __( 'Add New Entity Type', 'wsuwp_uc' ),
-				'new_item_name' => __( 'New Entity Type Name', 'wsuwp_uc' ),
-				'menu_name' => __( 'Entity Type', 'wsuwp_uc' ),
+				'name' => __( 'Organization Types', 'wsuwp_uc' ),
+				'singular_name' => __( 'Organization Type', 'wsuwp_uc' ),
+				'search_items' => __( 'Search Organization Types', 'wsuwp_uc' ),
+				'all_items' => __( 'All Organization Types', 'wsuwp_uc' ),
+				'parent_item' => __( 'Parent Organization Type', 'wsuwp_uc' ),
+				'parent_item_colon' => __( 'Parent Organization Type:', 'wsuwp_uc' ),
+				'edit_item' => __( 'Edit Organization Type', 'wsuwp_uc' ),
+				'update_item' => __( 'Update Organization Type', 'wsuwp_uc' ),
+				'add_new_item' => __( 'Add New Organization Type', 'wsuwp_uc' ),
+				'new_item_name' => __( 'New Organization Type Name', 'wsuwp_uc' ),
+				'menu_name' => __( 'Organization Type', 'wsuwp_uc' ),
 			),
 			'hierarchical' => true,
 			'show_ui' => true,
@@ -1162,14 +1162,14 @@ class WSUWP_University_Center {
 
 	/**
 	 * Adds custom query vars to allow the filtering of REST API results by
-	 * entity, person, publication, or project.
+	 * organization, person, publication, or project.
 	 *
 	 * @since 0.8.0
 	 */
 	public function add_query_vars() {
 		global $wp;
 
-		$wp->add_query_var( 'uc_entity' );
+		$wp->add_query_var( 'uc_organization' );
 		$wp->add_query_var( 'uc_person' );
 		$wp->add_query_var( 'uc_publication' );
 		$wp->add_query_var( 'uc_project' );
@@ -1189,8 +1189,8 @@ class WSUWP_University_Center {
 		// If we don't remove this filter, we'll start an infinite loop.
 		remove_filter( 'pre_get_posts', array( $this, 'filter_rest_query' ) );
 
-		if ( isset( $query->query['uc_entity'] ) && ! empty( $query->query['uc_entity'] ) ) {
-			$slug = sanitize_title( $query->query['uc_entity'] );
+		if ( isset( $query->query['uc_organization'] ) && ! empty( $query->query['uc_organization'] ) ) {
+			$slug = sanitize_title( $query->query['uc_organization'] );
 			$type = $this->entity_content_type;
 		} elseif ( isset( $query->query['uc_person'] ) && ! empty( $query->query['uc_person'] ) ) {
 			$slug = sanitize_title( $query->query['uc_person'] );

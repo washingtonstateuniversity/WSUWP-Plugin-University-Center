@@ -1,15 +1,15 @@
 <?php
 
-class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortcode_Base {
+class University_Center_Syndicate_Shortcode_Organization extends WSU_Syndicate_Shortcode_Base {
 	/**
-	 * @var array A list of defaults specific to "entities" that will override the
+	 * @var array A list of defaults specific to "organizations" that will override the
 	 *            base defaults set for all syndicate shortcodes.
 	 */
 	public $local_default_atts = array(
 		'output' => 'headlines',
 		'host'   => '',
 		'site'   => '',
-		'query'  => 'entities',
+		'query'  => 'organizations',
 	);
 
 	/**
@@ -26,7 +26,7 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 	/**
 	 * @var string Shortcode name.
 	 */
-	public $shortcode_name = 'wsuwp_uc_entities';
+	public $shortcode_name = 'wsuwp_uc_organizations';
 
 	public function __construct() {
 		parent::construct();
@@ -37,7 +37,7 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 	}
 
 	/**
-	 * Display entities from a provided host in a structured format using the
+	 * Display organizations from a provided host in a structured format using the
 	 * WP REST API.
 	 *
 	 * @param array $atts Attributes passed to the shortcode.
@@ -90,17 +90,17 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 			return '';
 		}
 
-		$content = '<div class="content-syndicate-entities-wrapper">';
+		$content = '<div class="content-syndicate-organizations-wrapper">';
 
-		$entities = json_decode( $data );
+		$organizations = json_decode( $data );
 
-		$entities = apply_filters( 'wsuwp_uc_entities_sort_items', $entities, $atts );
+		$organizations = apply_filters( 'wsuwp_uc_organizations_sort_items', $organizations, $atts );
 
-		foreach ( $entities as $entity ) {
-			$content .= $this->generate_item_html( $entity, $atts['output'] );
+		foreach ( $organizations as $organization ) {
+			$content .= $this->generate_item_html( $organization, $atts['output'] );
 		}
 
-		$content .= '</div><!-- end content-syndicate-entities-wrapper -->';
+		$content .= '</div><!-- end content-syndicate-organizations-wrapper -->';
 
 		$this->set_content_cache( $atts, $this->shortcode_name, $content );
 
@@ -108,20 +108,20 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 	}
 
 	/**
-	 * Generate the HTML used for individual entities when called with the shortcode.
+	 * Generate the HTML used for individual organizations when called with the shortcode.
 	 *
-	 * @param stdClass $entity Data returned from the WP REST API.
-	 * @param string   $type   The type of output expected.
+	 * @param stdClass $organization Data returned from the WP REST API.
+	 * @param string   $type         The type of output expected.
 	 *
-	 * @return string The generated HTML for an individual entity.
+	 * @return string The generated HTML for an individual organization.
 	 */
-	private function generate_item_html( $entity, $type ) {
+	private function generate_item_html( $organization, $type ) {
 		if ( 'headlines' === $type ) {
 			ob_start();
 			?>
-			<div class="content-syndicate-entity-container">
-				<div class="uco-syndicate-entity-name">
-					<a href="<?php echo esc_url( $entity->link ); ?>"><?php echo esc_html( $entity->title->rendered ); ?></a>
+			<div class="content-syndicate-organization-container">
+				<div class="uco-syndicate-organization-name">
+					<a href="<?php echo esc_url( $organization->link ); ?>"><?php echo esc_html( $organization->title->rendered ); ?></a>
 				</div>
 			</div>
 			<?php
@@ -131,6 +131,6 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 			return $html;
 		}
 
-		return apply_filters( 'wsuwp_uc_entities_item_html', '', $entity, $type );
+		return apply_filters( 'wsuwp_uc_organizations_item_html', '', $organization, $type );
 	}
 }
