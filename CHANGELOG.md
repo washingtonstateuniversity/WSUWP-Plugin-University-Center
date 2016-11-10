@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 (November 10, 2016)
+
+* Provide ability to filter by object association in shortcodes.
+* Wrap name in anchor/link when headlines output is used.
+* Add an automatic fallback for site URL to the current site.
+* Provide more explicit nonce handling for object URL.
+* Add a nonce to the save of object associations.
+
 ## 0.7.1 (November 8, 2016)
 
 * Bug: Ensure class global is `$global` before starting.
