@@ -57,6 +57,17 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 		$request_url = esc_url( $site_url['host'] . $site_url['path'] . $this->default_path ) . $atts['query'];
 		$request_url = $this->build_taxonomy_filters( $atts, $request_url );
 
+		if ( ! empty( $atts['entity'] ) ) {
+			$slug = sanitize_key( $atts['entity'] );
+			$request_url = add_query_arg( array( 'filter[uc_entity]' => $slug ), $request_url );
+		} elseif ( ! empty( $atts['project'] ) ) {
+			$slug = sanitize_key( $atts['project'] );
+			$request_url = add_query_arg( array( 'filter[uc_project]' => $slug ), $request_url );
+		} elseif ( ! empty( $atts['publication'] ) ) {
+			$slug = sanitize_key( $atts['publication'] );
+			$request_url = add_query_arg( array( 'filter[uc_publication]' => $slug ), $request_url );
+		}
+
 		if ( $atts['count'] ) {
 			$count = ( 100 < absint( $atts['count'] ) ) ? 100 : $atts['count'];
 			$request_url = add_query_arg( array( 'per_page' => absint( $count ) ), $request_url );
