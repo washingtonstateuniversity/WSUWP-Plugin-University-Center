@@ -115,7 +115,9 @@ class University_Center_Syndicate_Shortcode_Entity extends WSU_Syndicate_Shortco
 			ob_start();
 			?>
 			<div class="content-syndicate-entity-container">
-				<div class="uco-syndicate-entity-name"><?php echo esc_html( $entity->title->rendered ); ?></div>
+				<div class="uco-syndicate-entity-name">
+					<a href="<?php echo esc_url( $entity->link ); ?>"><?php echo esc_html( $entity->title->rendered ); ?></a>
+				</div>
 			</div>
 			<?php
 			$html = ob_get_contents();

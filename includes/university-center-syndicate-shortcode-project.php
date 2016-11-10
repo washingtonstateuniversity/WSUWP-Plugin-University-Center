@@ -115,7 +115,9 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 			ob_start();
 			?>
 			<div class="content-syndicate-project-container">
-				<div class="uco-syndicate-project-name"><?php echo esc_html( $project->title->rendered ); ?></div>
+				<div class="uco-syndicate-project-name">
+					<a href="<?php echo esc_url( $project->link ); ?>"><?php echo esc_html( $project->title->rendered ); ?></a>
+				</div>
 			</div>
 			<?php
 			$html = ob_get_contents();

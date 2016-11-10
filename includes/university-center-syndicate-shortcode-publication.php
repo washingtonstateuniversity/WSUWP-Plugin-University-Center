@@ -115,7 +115,9 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 			ob_start();
 			?>
 			<div class="content-syndicate-publication-container">
-				<div class="uco-syndicate-publication-name"><?php echo esc_html( $publication->title->rendered ); ?></div>
+				<div class="uco-syndicate-publication-name">
+					<a href="<?php echo esc_url( $publication->link ); ?>"><?php echo esc_html( $publication->title->rendered ); ?></a>
+				</div>
 			</div>
 			<?php
 			$html = ob_get_contents();

@@ -115,7 +115,9 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 			ob_start();
 			?>
 			<div class="content-syndicate-person-container">
-				<div class="uco-syndicate-person-name"><?php echo esc_html( $person->title->rendered ); ?></div>
+				<div class="uco-syndicate-person-name">
+					<a href="<?php echo esc_url( $person->link ); ?>"><?php echo esc_html( $person->title->rendered ); ?></a>
+				</div>
 			</div>
 			<?php
 			$html = ob_get_contents();
