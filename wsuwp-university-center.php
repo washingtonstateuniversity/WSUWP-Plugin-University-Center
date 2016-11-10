@@ -64,6 +64,13 @@ class WSUWP_University_Center {
 	var $topics_taxonomy = 'wsuwp_uc_topics';
 
 	/**
+	 * Whether a nonce has been output for associated objects.
+	 *
+	 * @var bool
+	 */
+	var $nonce_output = false;
+
+	/**
 	 * Setup the hooks used by the plugin.
 	 */
 	public function __construct() {
@@ -679,6 +686,10 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		if ( ! isset( $_POST['_uc_object_associations_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_object_associations_nonce'], 'save_object_associations' ) ) {
+			return;
+		}
+
 		if ( 'auto-draft' === $post->post_status ) {
 			return;
 		}
@@ -963,6 +974,11 @@ class WSUWP_University_Center {
 		$current_objects_ids = implode( ',', array_keys( $objects_to_display_clean ) );
 		foreach ( $objects_to_display_clean as $key => $current_object ) {
 			$current_objects_html .= '<div class="added-' . esc_attr( $object_type ) . ' added-object" id="' . esc_attr( $key ) . '" data-name="' . esc_attr( $current_object['name'] ) . '">' . esc_html( $current_object['name'] ) . '<span class="uc-object-close dashicons-no-alt"></span></div>';
+		}
+
+		if ( false === $this->nonce_output ) {
+			$this->nonce_output = true;
+			wp_nonce_field( 'save_object_associations', '_uc_object_associations_nonce' );
 		}
 
 		// @codingStandardsIgnoreStart
