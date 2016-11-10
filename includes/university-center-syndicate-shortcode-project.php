@@ -8,7 +8,19 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	public $local_default_atts = array(
 		'output' => 'headlines',
 		'host'   => '',
+		'site'   => '',
 		'query'  => 'projects',
+	);
+
+	/**
+	 * @since 0.8.0
+	 *
+	 * @var array A set of default attributes for this shortcode only.
+	 */
+	public $local_extended_atts = array(
+		'entity' => '',
+		'person' => '',
+		'publication' => '',
 	);
 
 	/**
@@ -35,6 +47,10 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	public function display_shortcode( $atts ) {
 		$atts = $this->process_attributes( $atts );
 
+		if ( '' === $atts['host'] && '' === $atts['site'] ) {
+			$atts['site'] = get_home_url();
+		}
+
 		if ( ! $site_url = $this->get_request_url( $atts ) ) {
 			return '<!-- ' . $this->shortcode_name . ' ERROR - an empty host was supplied -->';
 		}
@@ -45,6 +61,17 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 
 		$request_url = esc_url( $site_url['host'] . $site_url['path'] . $this->default_path ) . $atts['query'];
 		$request_url = $this->build_taxonomy_filters( $atts, $request_url );
+
+		if ( ! empty( $atts['entity'] ) ) {
+			$slug = sanitize_key( $atts['entity'] );
+			$request_url = add_query_arg( array( 'filter[uc_entity]' => $slug ), $request_url );
+		} elseif ( ! empty( $atts['person'] ) ) {
+			$slug = sanitize_key( $atts['person'] );
+			$request_url = add_query_arg( array( 'filter[uc_person]' => $slug ), $request_url );
+		} elseif ( ! empty( $atts['publication'] ) ) {
+			$slug = sanitize_key( $atts['publication'] );
+			$request_url = add_query_arg( array( 'filter[uc_publication]' => $slug ), $request_url );
+		}
 
 		if ( $atts['count'] ) {
 			$count = ( 100 < absint( $atts['count'] ) ) ? 100 : $atts['count'];
@@ -93,7 +120,9 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 			ob_start();
 			?>
 			<div class="content-syndicate-project-container">
-				<div class="uco-syndicate-project-name"><?php echo esc_html( $project->title->rendered ); ?></div>
+				<div class="uco-syndicate-project-name">
+					<a href="<?php echo esc_url( $project->link ); ?>"><?php echo esc_html( $project->title->rendered ); ?></a>
+				</div>
 			</div>
 			<?php
 			$html = ob_get_contents();

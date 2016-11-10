@@ -90,6 +90,8 @@ class WSUWP_University_Center {
 
 		add_filter( 'the_content', array( $this, 'add_object_content' ), 999, 1 );
 
+		add_action( 'init', array( $this, 'add_query_vars' ), 10 );
+		add_action( 'pre_get_posts', array( $this, 'filter_rest_query' ), 10 );
 		add_action( 'pre_get_posts', array( $this, 'filter_query' ), 10 );
 	}
 
@@ -1140,6 +1142,71 @@ class WSUWP_University_Center {
 		}
 
 		return $content . $added_html;
+	}
+
+	/**
+	 * Adds custom query vars to allow the filtering of REST API results by
+	 * entity, person, publication, or project.
+	 *
+	 * @since 0.8.0
+	 */
+	public function add_query_vars() {
+		global $wp;
+
+		$wp->add_query_var( 'uc_entity' );
+		$wp->add_query_var( 'uc_person' );
+		$wp->add_query_var( 'uc_publication' );
+		$wp->add_query_var( 'uc_project' );
+	}
+
+	/**
+	 * Restricts a REST API request result to a set of IDs when a
+	 * corresponding query var is provided.
+	 *
+	 * @param WP_Query $query
+	 */
+	public function filter_rest_query( $query ) {
+		if ( ! defined( 'REST_REQUEST' ) || true !== REST_REQUEST ) {
+			return;
+		}
+
+		// If we don't remove this filter, we'll start an infinite loop.
+		remove_filter( 'pre_get_posts', array( $this, 'filter_rest_query' ) );
+
+		if ( isset( $query->query['uc_entity'] ) && ! empty( $query->query['uc_entity'] ) ) {
+			$slug = sanitize_title( $query->query['uc_entity'] );
+			$type = $this->entity_content_type;
+		} elseif ( isset( $query->query['uc_person'] ) && ! empty( $query->query['uc_person'] ) ) {
+			$slug = sanitize_title( $query->query['uc_person'] );
+			$type = $this->people_content_type;
+		} elseif ( isset( $query->query['uc_publication'] ) && ! empty( $query->query['uc_publication'] ) ) {
+			$slug = sanitize_title( $query->query['uc_publication'] );
+			$type = $this->publication_content_type;
+		} elseif ( isset( $query->query['uc_project'] ) && ! empty( $query->query['uc_project'] ) ) {
+			$slug = sanitize_title( $query->query['uc_project'] );
+			$type = $this->project_content_type;
+		} else {
+			return;
+		}
+
+		$posts = get_posts( array( 'post_type' => $type, 'name' => $slug ) );
+
+		if ( 0 === count( $posts ) ) {
+			$query->set( 'post__in', array( 0 ) );
+			return;
+		}
+
+		$objects = wsuwp_uc_get_object_objects( $posts[0]->ID, $query->query['post_type'] );
+
+		if ( empty( $objects ) ) {
+			$query->set( 'post__in', array( 0 ) );
+			return;
+		}
+
+		$ids = array_values( wp_list_pluck( $objects, 'id' ) );
+
+		$query->set( 'post__in', $ids );
+		$query->set( 'per_page', 100 );
 	}
 
 	/**
