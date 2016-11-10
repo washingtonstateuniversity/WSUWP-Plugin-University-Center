@@ -17,7 +17,6 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 	 * @var array A set of default attributes for this shortcode only.
 	 */
 	public $local_extended_atts = array(
-		'organization' => '',
 		'entity' => '',
 		'project' => '',
 		'publication' => '',

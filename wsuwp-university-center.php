@@ -1146,14 +1146,14 @@ class WSUWP_University_Center {
 
 	/**
 	 * Adds custom query vars to allow the filtering of REST API results by
-	 * organization, person, publication, or project.
+	 * entity, person, publication, or project.
 	 *
 	 * @since 0.8.0
 	 */
 	public function add_query_vars() {
 		global $wp;
 
-		$wp->add_query_var( 'uc_organization' );
+		$wp->add_query_var( 'uc_entity' );
 		$wp->add_query_var( 'uc_person' );
 		$wp->add_query_var( 'uc_publication' );
 		$wp->add_query_var( 'uc_project' );
@@ -1173,8 +1173,8 @@ class WSUWP_University_Center {
 		// If we don't remove this filter, we'll start an infinite loop.
 		remove_filter( 'pre_get_posts', array( $this, 'filter_rest_query' ) );
 
-		if ( isset( $query->query['uc_organization'] ) && ! empty( $query->query['uc_organization'] ) ) {
-			$slug = sanitize_title( $query->query['uc_organization'] );
+		if ( isset( $query->query['uc_entity'] ) && ! empty( $query->query['uc_entity'] ) ) {
+			$slug = sanitize_title( $query->query['uc_entity'] );
 			$type = $this->entity_content_type;
 		} elseif ( isset( $query->query['uc_person'] ) && ! empty( $query->query['uc_person'] ) ) {
 			$slug = sanitize_title( $query->query['uc_person'] );
