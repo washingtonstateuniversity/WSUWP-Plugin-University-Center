@@ -8,6 +8,7 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	public $local_default_atts = array(
 		'output' => 'headlines',
 		'host'   => '',
+		'site'   => '',
 		'query'  => 'projects',
 	);
 
@@ -45,6 +46,10 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	 */
 	public function display_shortcode( $atts ) {
 		$atts = $this->process_attributes( $atts );
+
+		if ( '' === $atts['host'] && '' === $atts['site'] ) {
+			$atts['site'] = get_home_url();
+		}
 
 		if ( ! $site_url = $this->get_request_url( $atts ) ) {
 			return '<!-- ' . $this->shortcode_name . ' ERROR - an empty host was supplied -->';
