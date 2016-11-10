@@ -4,6 +4,5 @@
 
     <rule ref="WordPress-Extra">
         <exclude name="WordPress.NamingConventions.ValidFunctionName" />
-        <exclude name="WordPress.CSRF.NonceVerification" />
     </rule>
 </ruleset>
