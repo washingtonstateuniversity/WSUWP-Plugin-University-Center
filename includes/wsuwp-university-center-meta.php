@@ -44,6 +44,7 @@ class WSUWP_University_Center_Meta {
 			$object_url = '';
 		}
 
+		wp_nonce_field( 'save_object_url', '_uc_object_url_nonce' );
 		?>
 		<label for="wsuwp-uc-object-url">URL:</label>
 		<input type="text" class="widefat" id="wsuwp-uc-object-url" name="wsuwp_uc_object_url" value="<?php echo esc_attr( $object_url ); ?>" />
@@ -147,7 +148,19 @@ class WSUWP_University_Center_Meta {
 	 *
 	 * @param int     $post_id The ID of the post being saved.
 	 */
-	public function save_object_url( $post_id ) {
+	public function save_object_url( $post_id, $post ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['_uc_object_url_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_object_url_nonce'], 'save_object_url' ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['wsuwp_uc_object_url'] ) ) {
 			if ( empty( trim( $_POST['wsuwp_uc_object_url'] ) ) ) {
 				delete_post_meta( $post_id, '_wsuwp_uc_object_url' );
@@ -189,8 +202,6 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_project_id', sanitize_text_field( $_POST['wsuwp_uc_project_id'] ) );
 			}
 		}
-
-		$this->save_object_url( $post_id );
 
 		return;
 	}
@@ -289,8 +300,6 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_person_phone', sanitize_text_field( $_POST['wsuwp_uc_person_phone'] ) );
 			}
 		}
-
-		$this->save_object_url( $post_id );
 
 		return;
 	}
