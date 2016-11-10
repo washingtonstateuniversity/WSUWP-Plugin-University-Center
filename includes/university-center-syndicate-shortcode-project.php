@@ -12,6 +12,17 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	);
 
 	/**
+	 * @since 0.8.0
+	 *
+	 * @var array A set of default attributes for this shortcode only.
+	 */
+	public $local_extended_atts = array(
+		'entity' => '',
+		'person' => '',
+		'publication' => '',
+	);
+
+	/**
 	 * @var string Shortcode name.
 	 */
 	public $shortcode_name = 'wsuwp_uc_projects';
