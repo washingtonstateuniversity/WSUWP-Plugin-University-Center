@@ -1176,13 +1176,13 @@ class WSUWP_University_Center {
 		if ( isset( $query->query['uc_organization'] ) && ! empty( $query->query['uc_organization'] ) ) {
 			$slug = sanitize_title( $query->query['uc_organization'] );
 			$type = $this->entity_content_type;
-		} else if ( isset( $query->query['uc_person'] ) && ! empty( $query->query['uc_person'] ) ) {
+		} elseif ( isset( $query->query['uc_person'] ) && ! empty( $query->query['uc_person'] ) ) {
 			$slug = sanitize_title( $query->query['uc_person'] );
 			$type = $this->people_content_type;
-		} else if ( isset( $query->query['uc_publication'] ) && ! empty( $query->query['uc_publication'] ) ) {
+		} elseif ( isset( $query->query['uc_publication'] ) && ! empty( $query->query['uc_publication'] ) ) {
 			$slug = sanitize_title( $query->query['uc_publication'] );
 			$type = $this->publication_content_type;
-		} else if ( isset( $query->query['uc_project'] ) && ! empty( $query->query['uc_project'] ) ) {
+		} elseif ( isset( $query->query['uc_project'] ) && ! empty( $query->query['uc_project'] ) ) {
 			$slug = sanitize_title( $query->query['uc_project'] );
 			$type = $this->project_content_type;
 		} else {
