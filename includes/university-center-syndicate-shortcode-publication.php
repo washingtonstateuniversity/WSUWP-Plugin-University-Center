@@ -73,6 +73,10 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 			$request_url = add_query_arg( array( 'filter[uc_project]' => $slug ), $request_url );
 		}
 
+		if ( ! empty( $atts['offset'] ) ) {
+			$atts['count'] = absint( $atts['count'] ) + absint( $atts['offset'] );
+		}
+
 		if ( $atts['count'] ) {
 			$count = ( 100 < absint( $atts['count'] ) ) ? 100 : $atts['count'];
 			$request_url = add_query_arg( array( 'per_page' => absint( $count ) ), $request_url );
@@ -96,7 +100,14 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 
 		$publications = apply_filters( 'wsuwp_uc_publications_sort_items', $publications, $atts );
 
+		$offset_x = 0;
+
 		foreach ( $publications as $publication ) {
+			if ( $offset_x < absint( $atts['offset'] ) ) {
+				$offset_x++;
+				continue;
+			}
+
 			$content .= $this->generate_item_html( $publication, $atts['output'] );
 		}
 
