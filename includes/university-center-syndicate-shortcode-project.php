@@ -127,18 +127,62 @@ class University_Center_Syndicate_Shortcode_Project extends WSU_Syndicate_Shortc
 	 * @return string The generated HTML for an individual project.
 	 */
 	private function generate_item_html( $project, $type ) {
-		if ( 'headlines' === $type ) {
-			ob_start();
-			?>
-			<div class="content-syndicate-project-container">
-				<div class="uco-syndicate-project-name">
-					<a href="<?php echo esc_url( $project->link ); ?>"><?php echo esc_html( $project->title->rendered ); ?></a>
-				</div>
-			</div>
-			<?php
-			$html = ob_get_contents();
-			ob_end_clean();
+		ob_start();
+		?>
+		<div class="content-syndicate-project-container">
 
+			<?php
+			if ( 'excerpts' === $type || 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-project-thumbnail">
+				<?php
+				if ( ! empty( $project->featured_media ) && isset( $project->_embedded->{'wp:featuredmedia'} ) && 0 < count( $project->_embedded->{'wp:featuredmedia'} ) ) {
+					$feature = $project->_embedded->{'wp:featuredmedia'}[0]->media_details;
+
+					if ( isset( $feature->sizes->{'post-thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'post-thumbnail'}->source_url;
+					} elseif ( isset( $subset_feature->sizes->{'thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'thumbnail'}->source_url;
+					} else {
+						$thumbnail = $project->_embedded->{'wp:featuredmedia'}[0]->source_url;
+					}
+
+					?><img src="<?php echo esc_url( $thumbnail ); ?>"><?php
+				}
+				?>
+				</div>
+				<?php
+			}
+			?>
+
+			<div class="uco-syndicate-project-name">
+				<a href="<?php echo esc_url( $project->link ); ?>"><?php echo esc_html( $project->title->rendered ); ?></a>
+			</div>
+
+			<?php
+			if ( 'excerpts' === $type ) {
+				?>
+				<div class="uco-syndicate-project-excerpt">
+					<?php echo wp_kses_post( $project->excerpt->rendered ); ?>
+					<a class="uco-syndicate-project-read-story" href="<?php echo esc_url( $project->link ); ?>">Read Story</a>
+				</div>
+				<?php
+			} elseif ( 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-project-content">
+					<?php echo wp_kses_post( $project->content->rendered ); ?>
+				</div>
+				<?php
+
+			}
+			?>
+
+		</div>
+		<?php
+
+		$html = ob_get_clean();
+
+		if ( in_array( $type, array( 'headlines', 'excerpts', 'full' ), true ) ) {
 			return $html;
 		}
 

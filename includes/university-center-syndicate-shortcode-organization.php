@@ -127,18 +127,62 @@ class University_Center_Syndicate_Shortcode_Organization extends WSU_Syndicate_S
 	 * @return string The generated HTML for an individual organization.
 	 */
 	private function generate_item_html( $organization, $type ) {
-		if ( 'headlines' === $type ) {
-			ob_start();
-			?>
-			<div class="content-syndicate-organization-container">
-				<div class="uco-syndicate-organization-name">
-					<a href="<?php echo esc_url( $organization->link ); ?>"><?php echo esc_html( $organization->title->rendered ); ?></a>
-				</div>
-			</div>
-			<?php
-			$html = ob_get_contents();
-			ob_end_clean();
+		ob_start();
+		?>
+		<div class="content-syndicate-organization-container">
 
+			<?php
+			if ( 'excerpts' === $type || 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-organization-thumbnail">
+				<?php
+				if ( ! empty( $organization->featured_media ) && isset( $organization->_embedded->{'wp:featuredmedia'} ) && 0 < count( $organization->_embedded->{'wp:featuredmedia'} ) ) {
+					$feature = $organization->_embedded->{'wp:featuredmedia'}[0]->media_details;
+
+					if ( isset( $feature->sizes->{'post-thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'post-thumbnail'}->source_url;
+					} elseif ( isset( $subset_feature->sizes->{'thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'thumbnail'}->source_url;
+					} else {
+						$thumbnail = $organization->_embedded->{'wp:featuredmedia'}[0]->source_url;
+					}
+
+					?><img src="<?php echo esc_url( $thumbnail ); ?>"><?php
+				}
+				?>
+				</div>
+				<?php
+			}
+			?>
+
+			<div class="uco-syndicate-organization-name">
+				<a href="<?php echo esc_url( $organization->link ); ?>"><?php echo esc_html( $organization->title->rendered ); ?></a>
+			</div>
+
+			<?php
+			if ( 'excerpts' === $type ) {
+				?>
+				<div class="uco-syndicate-organization-excerpt">
+					<?php echo wp_kses_post( $organization->excerpt->rendered ); ?>
+					<a class="uco-syndicate-organization-read-story" href="<?php echo esc_url( $organization->link ); ?>">Read Story</a>
+				</div>
+				<?php
+			} elseif ( 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-organization-content">
+					<?php echo wp_kses_post( $organization->content->rendered ); ?>
+				</div>
+				<?php
+
+			}
+			?>
+
+		</div>
+		<?php
+
+		$html = ob_get_clean();
+
+		if ( in_array( $type, array( 'headlines', 'excerpts', 'full' ), true ) ) {
 			return $html;
 		}
 
