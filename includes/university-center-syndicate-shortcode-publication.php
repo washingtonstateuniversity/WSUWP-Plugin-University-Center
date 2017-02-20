@@ -73,6 +73,10 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 			$request_url = add_query_arg( array( 'filter[uc_project]' => $slug ), $request_url );
 		}
 
+		if ( ! empty( $atts['offset'] ) ) {
+			$atts['count'] = absint( $atts['count'] ) + absint( $atts['offset'] );
+		}
+
 		if ( $atts['count'] ) {
 			$count = ( 100 < absint( $atts['count'] ) ) ? 100 : $atts['count'];
 			$request_url = add_query_arg( array( 'per_page' => absint( $count ) ), $request_url );
@@ -96,7 +100,14 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 
 		$publications = apply_filters( 'wsuwp_uc_publications_sort_items', $publications, $atts );
 
+		$offset_x = 0;
+
 		foreach ( $publications as $publication ) {
+			if ( $offset_x < absint( $atts['offset'] ) ) {
+				$offset_x++;
+				continue;
+			}
+
 			$content .= $this->generate_item_html( $publication, $atts['output'] );
 		}
 
@@ -116,18 +127,62 @@ class University_Center_Syndicate_Shortcode_Publication extends WSU_Syndicate_Sh
 	 * @return string The generated HTML for an individual publication.
 	 */
 	private function generate_item_html( $publication, $type ) {
-		if ( 'headlines' === $type ) {
-			ob_start();
-			?>
-			<div class="content-syndicate-publication-container">
-				<div class="uco-syndicate-publication-name">
-					<a href="<?php echo esc_url( $publication->link ); ?>"><?php echo esc_html( $publication->title->rendered ); ?></a>
-				</div>
-			</div>
-			<?php
-			$html = ob_get_contents();
-			ob_end_clean();
+		ob_start();
+		?>
+		<div class="content-syndicate-publication-container">
 
+			<?php
+			if ( 'excerpts' === $type || 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-publication-thumbnail">
+				<?php
+				if ( ! empty( $publication->featured_media ) && isset( $publication->_embedded->{'wp:featuredmedia'} ) && 0 < count( $publication->_embedded->{'wp:featuredmedia'} ) ) {
+					$feature = $publication->_embedded->{'wp:featuredmedia'}[0]->media_details;
+
+					if ( isset( $feature->sizes->{'post-thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'post-thumbnail'}->source_url;
+					} elseif ( isset( $subset_feature->sizes->{'thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'thumbnail'}->source_url;
+					} else {
+						$thumbnail = $publication->_embedded->{'wp:featuredmedia'}[0]->source_url;
+					}
+
+					?><img src="<?php echo esc_url( $thumbnail ); ?>"><?php
+				}
+				?>
+				</div>
+				<?php
+			}
+			?>
+
+			<div class="uco-syndicate-publication-name">
+				<a href="<?php echo esc_url( $publication->link ); ?>"><?php echo esc_html( $publication->title->rendered ); ?></a>
+			</div>
+
+			<?php
+			if ( 'excerpts' === $type ) {
+				?>
+				<div class="uco-syndicate-publication-excerpt">
+					<?php echo wp_kses_post( $publication->excerpt->rendered ); ?>
+					<a class="uco-syndicate-publication-read-story" href="<?php echo esc_url( $publication->link ); ?>">Read Story</a>
+				</div>
+				<?php
+			} elseif ( 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-publication-content">
+					<?php echo wp_kses_post( $publication->content->rendered ); ?>
+				</div>
+				<?php
+
+			}
+			?>
+
+		</div>
+		<?php
+
+		$html = ob_get_clean();
+
+		if ( in_array( $type, array( 'headlines', 'excerpts', 'full' ), true ) ) {
 			return $html;
 		}
 

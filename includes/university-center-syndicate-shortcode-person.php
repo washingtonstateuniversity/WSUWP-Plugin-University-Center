@@ -73,6 +73,10 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 			$request_url = add_query_arg( array( 'filter[uc_publication]' => $slug ), $request_url );
 		}
 
+		if ( ! empty( $atts['offset'] ) ) {
+			$atts['count'] = absint( $atts['count'] ) + absint( $atts['offset'] );
+		}
+
 		if ( $atts['count'] ) {
 			$count = ( 100 < absint( $atts['count'] ) ) ? 100 : $atts['count'];
 			$request_url = add_query_arg( array( 'per_page' => absint( $count ) ), $request_url );
@@ -96,7 +100,14 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 
 		$people = apply_filters( 'wsuwp_uc_people_sort_items', $people, $atts );
 
+		$offset_x = 0;
+
 		foreach ( $people as $person ) {
+			if ( $offset_x < absint( $atts['offset'] ) ) {
+				$offset_x++;
+				continue;
+			}
+
 			$content .= $this->generate_item_html( $person, $atts['output'] );
 		}
 
@@ -116,18 +127,62 @@ class University_Center_Syndicate_Shortcode_Person extends WSU_Syndicate_Shortco
 	 * @return string The generated HTML for an individual person.
 	 */
 	private function generate_item_html( $person, $type ) {
-		if ( 'headlines' === $type ) {
-			ob_start();
-			?>
-			<div class="content-syndicate-person-container">
-				<div class="uco-syndicate-person-name">
-					<a href="<?php echo esc_url( $person->link ); ?>"><?php echo esc_html( $person->title->rendered ); ?></a>
-				</div>
-			</div>
-			<?php
-			$html = ob_get_contents();
-			ob_end_clean();
+		ob_start();
+		?>
+		<div class="content-syndicate-person-container">
 
+			<?php
+			if ( 'excerpts' === $type || 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-person-thumbnail">
+				<?php
+				if ( ! empty( $person->featured_media ) && isset( $person->_embedded->{'wp:featuredmedia'} ) && 0 < count( $person->_embedded->{'wp:featuredmedia'} ) ) {
+					$feature = $person->_embedded->{'wp:featuredmedia'}[0]->media_details;
+
+					if ( isset( $feature->sizes->{'post-thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'post-thumbnail'}->source_url;
+					} elseif ( isset( $subset_feature->sizes->{'thumbnail'} ) ) {
+						$thumbnail = $feature->sizes->{'thumbnail'}->source_url;
+					} else {
+						$thumbnail = $person->_embedded->{'wp:featuredmedia'}[0]->source_url;
+					}
+
+					?><img src="<?php echo esc_url( $thumbnail ); ?>"><?php
+				}
+				?>
+				</div>
+				<?php
+			}
+			?>
+
+			<div class="uco-syndicate-person-name">
+				<a href="<?php echo esc_url( $person->link ); ?>"><?php echo esc_html( $person->title->rendered ); ?></a>
+			</div>
+
+			<?php
+			if ( 'excerpts' === $type ) {
+				?>
+				<div class="uco-syndicate-person-excerpt">
+					<?php echo wp_kses_post( $person->excerpt->rendered ); ?>
+					<a class="uco-syndicate-person-read-story" href="<?php echo esc_url( $person->link ); ?>">Read Story</a>
+				</div>
+				<?php
+			} elseif ( 'full' === $type ) {
+				?>
+				<div class="uco-syndicate-person-content">
+					<?php echo wp_kses_post( $person->content->rendered ); ?>
+				</div>
+				<?php
+
+			}
+			?>
+
+		</div>
+		<?php
+
+		$html = ob_get_clean();
+
+		if ( in_array( $type, array( 'headlines', 'excerpts', 'full' ), true ) ) {
 			return $html;
 		}
 
