@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1 (February 20, 2017)
+
+* Add support for the `offset` attribute in shortcodes.
+* Add support for `excerpt` and `full` output.
+
 ## 0.8.0 (November 10, 2016)
 
 * Provide ability to filter by object association in shortcodes.
