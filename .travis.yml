@@ -54,7 +54,7 @@ before_script:
       nvm install stable
       npm install -g grunt-cli
       npm install
-      npm prune
+      composer install
       npm --version
       node --version
     fi
