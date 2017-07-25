@@ -168,8 +168,6 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_object_url', esc_url_raw( $_POST['wsuwp_uc_object_url'] ) );
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -202,8 +200,6 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_project_id', sanitize_text_field( $_POST['wsuwp_uc_project_id'] ) );
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -300,8 +296,6 @@ class WSUWP_University_Center_Meta {
 				update_post_meta( $post_id, '_wsuwp_uc_person_phone', sanitize_text_field( $_POST['wsuwp_uc_person_phone'] ) );
 			}
 		}
-
-		return;
 	}
 
 	/**
