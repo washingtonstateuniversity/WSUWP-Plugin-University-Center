@@ -153,8 +153,8 @@ class WSUWP_University_Center {
 	 */
 	public function set_default_support() {
 		if ( false === current_theme_supports( 'wsuwp_uc_project' ) &&
-			 false === current_theme_supports( 'wsuwp_uc_person' )  &&
-			 false === current_theme_supports( 'wsuwp_uc_entity' )  &&
+			 false === current_theme_supports( 'wsuwp_uc_person' ) &&
+			 false === current_theme_supports( 'wsuwp_uc_entity' ) &&
 			 false === current_theme_supports( 'wsuwp_uc_publication' ) ) {
 			add_theme_support( 'wsuwp_uc_project' );
 			add_theme_support( 'wsuwp_uc_person' );
@@ -168,7 +168,9 @@ class WSUWP_University_Center {
 	 */
 	public function display_settings() {
 		register_setting( 'general', 'wsuwp_uc_names', array( $this, 'sanitize_names' ) );
-		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names' ), 'general', 'default', array( 'label_for' => 'wsuwp_uc_names' ) );
+		add_settings_field( 'wsuwp-uc-names', 'University Center Names', array( $this, 'general_settings_names' ), 'general', 'default', array(
+			'label_for' => 'wsuwp_uc_names',
+		) );
 	}
 
 	/**
@@ -221,10 +223,22 @@ class WSUWP_University_Center {
 			$names['publication'] = array();
 		}
 
-		$display_names['project'] = wp_parse_args( $names['project'], array( 'singular' => 'Project', 'plural' => 'Projects' ) );
-		$display_names['people'] = wp_parse_args( $names['people'], array( 'singular' => 'Person', 'plural' => 'People' ) );
-		$display_names['entity'] = wp_parse_args( $names['entity'], array( 'singular' => 'Entity', 'plural' => 'Entities' ) );
-		$display_names['publication'] = wp_parse_args( $names['publication'], array( 'singular' => 'Publication', 'plural' => 'Publications' ) );
+		$display_names['project'] = wp_parse_args( $names['project'], array(
+			'singular' => 'Project',
+			'plural' => 'Projects',
+		) );
+		$display_names['people'] = wp_parse_args( $names['people'], array(
+			'singular' => 'Person',
+			'plural' => 'People',
+		) );
+		$display_names['entity'] = wp_parse_args( $names['entity'], array(
+			'singular' => 'Entity',
+			'plural' => 'Entities',
+		) );
+		$display_names['publication'] = wp_parse_args( $names['publication'], array(
+			'singular' => 'Publication',
+			'plural' => 'Publications',
+		) );
 		?>
 		<div class="wsuwp-uc-settings-names">
 			<p>Changing the settings here will override the default labels for the content types provided by the University Center Objects plugin. The default labels are listed to the left of each field. The <strong>singular</strong> label will also be used as a slug in URLs.</p>
@@ -306,7 +320,10 @@ class WSUWP_University_Center {
 			return false;
 		}
 
-		return array( 'singular' => esc_html( $names[ $object_type ]['singular'] ), 'plural' => esc_html( $names[ $object_type ]['plural'] ) );
+		return array(
+			'singular' => esc_html( $names[ $object_type ]['singular'] ),
+			'plural' => esc_html( $names[ $object_type ]['plural'] ),
+		);
 	}
 
 	/**
@@ -589,7 +606,9 @@ class WSUWP_University_Center {
 			'show_ui' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			'rewrite' => array( 'slug' => 'entity-type' ),
+			'rewrite' => array(
+				'slug' => 'entity-type',
+			),
 		);
 		$args = apply_filters( 'wsuwp_uc_regiter_entity_type_taxonomy_args', $args );
 
@@ -625,7 +644,9 @@ class WSUWP_University_Center {
 			'show_ui' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			'rewrite' => array( 'slug' => 'topic' ),
+			'rewrite' => array(
+				'slug' => 'topic',
+			),
 		);
 		$args = apply_filters( 'wsuwp_uc_regiter_topic_taxonomy_args', $args );
 
@@ -1013,7 +1034,10 @@ class WSUWP_University_Center {
 			}
 
 			$all_object_data = array();
-			$all_data = get_posts( array( 'post_type' => $post_type, 'posts_per_page' => 1000 ) );
+			$all_data = get_posts( array(
+				'post_type' => $post_type,
+				'posts_per_page' => 1000,
+			) );
 
 			foreach ( $all_data as $data ) {
 				$unique_data_id = get_post_meta( $data->ID, '_wsuwp_uc_unique_id', true );
@@ -1209,7 +1233,10 @@ class WSUWP_University_Center {
 			return;
 		}
 
-		$posts = get_posts( array( 'post_type' => $type, 'name' => $slug ) );
+		$posts = get_posts( array(
+			'post_type' => $type,
+			'name' => $slug,
+		) );
 
 		if ( 0 === count( $posts ) ) {
 			$query->set( 'post__in', array( 0 ) );
