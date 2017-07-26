@@ -38,6 +38,11 @@ Other filters are provided to modify the names used when registering the plugin'
 * `wsuwp_uc_entity_type_names`
 * `wsuwp_uc_publication_type_names`
 
+The plugin provides 2 taxonomies by default, topics and entity types. Filters can be used to disable these taxonomies:
+
+* `wsuwp_uc_topic_taxonomy_enabled`
+* `wsuwp_uc_entity_type_taxonomy_enabled`
+
 When a list of associated objects is displayed on another object's view, a filter can be used to determine which of those associated objects should be listed (if any at all).
 
 * `wsuwp_uc_people_to_add_to_content`
