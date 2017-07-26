@@ -1,6 +1,46 @@
 # University Center Objects
 
-A WordPress plugin that provides content objects and relationships common to a center, institute, or other organization at a university.
+A WordPress plugin to associate people, projects, organizations, and publications.
+
+People from organizations work together on projects and publish their research. This plugin makes it easy to associate these 4 content types with each other. Through a set of filters it's possible to customize this completely to change the included content types and redefine them entirely.
+
+By default, University Center Objects provides 4 custom post types that are common to a center, institute, or other organization at a university:
+
+* People
+* Organization (entity)
+* Project
+* Publication
+
+Once associated with each other, lists of these objects will appear on their respective individual front-end views that show the association.
+
+## Theme support
+
+All content types will show up in all themes by default. No explicit theme support is required. It is possible to limit the number of content types supported by the theme by explicitly registering theme support. If at least one content type is explicitly added, the content types not explicitly added will no longer appear.
+
+* `add_theme_support( 'wsuwp_uc_person' )`
+* `add_theme_support( 'wsuwp_uc_project' )`
+* `add_theme_support( 'wsuwp_uc_entity' )`
+* `add_theme_support( 'wsuwp_uc_publication' )`
+
+## Filters
+
+Content type filters are `false` by default. Use the filter to return a `string` containing a post type's slug to replace that content type with one of your own.
+
+* `wsuwp_uc_people_content_type`
+* `wsuwp_uc_project_content_type`
+* `wsuwp_uc_entity_content_type`
+* `wsuwp_uc_publication_content_type`
+
+Other filters are provided to modify the names used when registering the plugin's built in content types. For example, the word "Publication" is used by default for the publication post type. This can be changed to "Paper" or "Abstract" using the provided filter.
+
+* `wsuwp_uc_project_type_names`
+* `wsuwp_uc_people_type_names`
+* `wsuwp_uc_entity_type_names`
+* `wsuwp_uc_publication_type_names`
+
+When a list of associated objects is displayed on another object's view, a filter can be used to determine which of those associated objects should be listed (if any at all).
+
+* `wsuwp_uc_people_to_add_to_content`
 
 ## Extending WSUWP Content Syndicate
 
