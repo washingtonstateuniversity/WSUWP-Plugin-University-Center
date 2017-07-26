@@ -612,6 +612,10 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		if ( false === apply_filters( 'wsuwp_uc_entity_type_taxonomy_enabled', true ) ) {
+			return;
+		}
+
 		$args = array(
 			'labels' => array(
 				'name' => __( 'Organization Types', 'wsuwp_uc' ),
@@ -647,6 +651,10 @@ class WSUWP_University_Center {
 	public function register_topic_taxonomy() {
 		// Only register the topic taxonomy if projects are supported.
 		if ( false === current_theme_supports( 'wsuwp_uc_project' ) ) {
+			return;
+		}
+
+		if ( false === apply_filters( 'wsuwp_uc_topic_taxonomy_enabled', true ) ) {
 			return;
 		}
 
