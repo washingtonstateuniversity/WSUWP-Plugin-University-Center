@@ -335,6 +335,12 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$existing_content_type = apply_filters( 'wsuwp_uc_project_content_type', false );
+		if ( $existing_content_type ) {
+			$this->project_content_type = $existing_content_type;
+			return;
+		}
+
 		$default_labels = array(
 			'name'               => __( 'Projects', 'wsuwp_uc' ),
 			'singular_name'      => __( 'Project', 'wsuwp_uc' ),
@@ -395,6 +401,12 @@ class WSUWP_University_Center {
 	public function register_people_content_type() {
 		// Only register the people content type if supported by the theme.
 		if ( false === current_theme_supports( 'wsuwp_uc_person' ) ) {
+			return;
+		}
+
+		$existing_content_type = apply_filters( 'wsuwp_uc_people_content_type', false );
+		if ( $existing_content_type ) {
+			$this->people_content_type = $existing_content_type;
 			return;
 		}
 
@@ -462,6 +474,12 @@ class WSUWP_University_Center {
 			return;
 		}
 
+		$existing_content_type = apply_filters( 'wsuwp_uc_publication_content_type', false );
+		if ( $existing_content_type ) {
+			$this->publication_content_type = $existing_content_type;
+			return;
+		}
+
 		$default_labels = array(
 			'name'               => __( 'Publications', 'wsuwp_uc' ),
 			'singular_name'      => __( 'Publications', 'wsuwp_uc' ),
@@ -522,6 +540,12 @@ class WSUWP_University_Center {
 	public function register_entity_content_type() {
 		// Only register the entity content type if supported by the theme.
 		if ( false === current_theme_supports( 'wsuwp_uc_entity' ) ) {
+			return;
+		}
+
+		$existing_content_type = apply_filters( 'wsuwp_uc_entity_content_type', false );
+		if ( $existing_content_type ) {
+			$this->entity_content_type = $existing_content_type;
 			return;
 		}
 

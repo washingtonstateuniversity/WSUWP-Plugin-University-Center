@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0 (TBD)
+
+* Provide ability to filter the post type used for each center object.
+
 ## 0.8.1 (February 20, 2017)
 
 * Add support for the `offset` attribute in shortcodes.
