@@ -100,6 +100,11 @@ class WSUWP_University_Center {
 		add_action( 'init', array( $this, 'add_query_vars' ), 10 );
 		add_action( 'pre_get_posts', array( $this, 'filter_rest_query' ), 10 );
 		add_action( 'pre_get_posts', array( $this, 'filter_query' ), 10 );
+		add_action( 'pre_get_posts', array( $this, 'sort_list_table' ), 10 );
+
+		add_action( 'manage_' . $this->people_content_type . '_posts_columns', array( $this, 'manage_people_posts_columns' ), 10, 1 );
+		add_action( 'manage_' . $this->people_content_type . '_posts_custom_column', array( $this, 'manage_people_posts_custom_column' ), 10, 2 );
+		add_action( 'manage_edit-' . $this->people_content_type . '_sortable_columns', array( $this, 'manage_people_sortable_columns' ), 10, 1 );
 	}
 
 	/**
@@ -1317,6 +1322,103 @@ class WSUWP_University_Center {
 		if ( $query->is_post_type_archive( $post_types ) && $query->is_post_type_archive( $this->people_content_type ) ) {
 			$query->set( 'meta_key', '_wsuwp_uc_person_last_name' );
 			$query->set( 'orderby', 'meta_value' );
+			$query->set( 'order', 'ASC' );
+		}
+	}
+
+	/**
+	 * Alter post columns for the people content type.
+	 *
+	 * @param $post_columns
+	 *
+	 * @return mixed
+	 */
+	public function manage_people_posts_columns( $post_columns ) {
+		unset( $post_columns['cb'] );
+		unset( $post_columns['tags'] );
+		unset( $post_columns['date'] );
+
+		$new_post_columns = array(
+			'cb' => '<input type="checkbox" />',
+			'person_last_name' => 'Last Name',
+			'person_first_name' => 'First Name',
+		);
+		$post_columns = array_merge( $new_post_columns, $post_columns );
+
+		return $post_columns;
+	}
+
+	/**
+	 * Manage the output of custom column data for the people content type list view.
+	 *
+	 * @param string $column_name Column data being displayed.
+	 * @param int    $post_id     ID of the post from the current row.
+	 */
+	public function manage_people_posts_custom_column( $column_name, $post_id ) {
+		if ( 'person_first_name' === $column_name ) {
+			$first_name = get_post_meta( $post_id, '_wsuwp_uc_person_first_name', true );
+			if ( empty( $first_name ) ) {
+				echo 'Not Entered';
+			} else {
+				echo esc_html( $first_name );
+			}
+		}
+
+		if ( 'person_last_name' === $column_name ) {
+			$last_name = get_post_meta( $post_id, '_wsuwp_uc_person_last_name', true );
+			if ( empty( $last_name ) ) {
+				echo 'Not Entered';
+			} else {
+				echo esc_html( $last_name );
+			}
+		}
+	}
+
+	public function manage_people_sortable_columns( $sortable_columns ) {
+		$sortable_columns['person_first_name'] = 'first_name';
+		$sortable_columns['person_last_name'] = 'last_name';
+		return $sortable_columns;
+	}
+
+	/**
+	 * @param WP_Query $query
+	 */
+	public function sort_list_table( $query ) {
+		// Only sort in the admin on the main query.
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+
+		// Only sort on the people content type list table.
+		if ( 'edit-' . $this->people_content_type !== get_current_screen()->id ) {
+			return;
+		}
+
+		if ( isset( $_GET['orderby'] ) && 'first_name' === $_GET['orderby'] ) {
+			$query->set( 'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key' => '_wsuwp_uc_person_first_name',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key' => '_wsuwp_uc_person_first_name',
+					'compare' => '!=',
+					'value' => '1',
+				)
+			));
+			$query->set( 'meta_key', '_wsuwp_uc_person_first_name' );
+			$query->set( 'orderby', 'meta_value' );
+		}
+
+		if ( isset( $_GET['orderby'] ) && 'last_name' === $_GET['orderby'] ) {
+			$query->set( 'meta_key', '_wsuwp_uc_person_last_name' );
+			$query->set( 'orderby', 'meta_value' );
+		}
+
+		if ( isset( $_GET['order'] ) && 'desc' === $_GET['order'] ) {
+			$query->set( 'order', 'DESC' );
+		} else {
 			$query->set( 'order', 'ASC' );
 		}
 	}
