@@ -38,7 +38,7 @@ Other filters are provided to modify the names used when registering the plugin'
 * `wsuwp_uc_entity_type_names`
 * `wsuwp_uc_publication_type_names`
 
-The plugin provides 2 taxonomies by default, topics and entity types. Filters can be used to disalbe these taxonomies:
+The plugin provides 2 taxonomies by default, topics and entity types. Filters can be used to disable these taxonomies:
 
 * `wsuwp_uc_topic_taxonomy_enabled`
 * `wsuwp_uc_entity_type_taxonomy_enabled`
