@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0 (TBD)
+## 0.9.0 (July 26, 2017)
 
 * Provide ability to filter the post type used for each center object.
 
