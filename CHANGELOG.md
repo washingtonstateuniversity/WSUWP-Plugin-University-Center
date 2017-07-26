@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1 (July 26, 2017)
+
+* Add a filter to enable/disable built in taxonomies.
+* Remove unused taxonomy registration filters.
+
 ## 0.9.0 (July 26, 2017)
 
 * Provide ability to filter the post type used for each center object.
