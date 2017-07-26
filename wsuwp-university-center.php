@@ -634,7 +634,6 @@ class WSUWP_University_Center {
 				'slug' => 'entity-type',
 			),
 		);
-		$args = apply_filters( 'wsuwp_uc_regiter_entity_type_taxonomy_args', $args );
 
 		register_taxonomy( $this->entity_type_taxonomy, $this->entity_content_type, $args );
 	}
@@ -672,7 +671,6 @@ class WSUWP_University_Center {
 				'slug' => 'topic',
 			),
 		);
-		$args = apply_filters( 'wsuwp_uc_regiter_topic_taxonomy_args', $args );
 
 		register_taxonomy( $this->topics_taxonomy, array( $this->project_content_type ), $args );
 	}
