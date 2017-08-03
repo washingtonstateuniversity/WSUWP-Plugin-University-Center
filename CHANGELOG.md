@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD
+## 0.9.2 (August 3, 2017)
 
 * Add filters to disable project and person meta boxes.
 
