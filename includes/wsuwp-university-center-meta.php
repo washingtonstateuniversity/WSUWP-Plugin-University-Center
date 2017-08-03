@@ -21,11 +21,11 @@ class WSUWP_University_Center_Meta {
 			return;
 		}
 
-		if ( wsuwp_uc_get_object_type_slug( 'people' ) === $post_type ) {
+		if ( wsuwp_uc_get_object_type_slug( 'people' ) === $post_type && true === apply_filters( 'wsuwp_uc_display_person_information_meta_box', true ) ) {
 			add_meta_box( 'wsuwp_uc_person_info', 'Information', array( $this, 'display_person_information_meta_box' ), null, 'normal', 'default' );
 		}
 
-		if ( wsuwp_uc_get_object_type_slug( 'project' ) === $post_type ) {
+		if ( wsuwp_uc_get_object_type_slug( 'project' ) === $post_type && true === apply_filters( 'wsuwp_uc_display_project_information_metabox', true ) ) {
 			add_meta_box( 'wsuwp_uc_project_info', 'Information', array( $this, 'display_project_information_meta_box' ) , null, 'normal', 'default' );
 		}
 	}
@@ -189,6 +189,10 @@ class WSUWP_University_Center_Meta {
 			return;
 		}
 
+		if ( true !== apply_filters( 'wsuwp_uc_display_project_information_metabox', true ) ) {
+			return;
+		}
+
 		if ( ! isset( $_POST['_uc_project_information_nonce'] ) || false === wp_verify_nonce( $_POST['_uc_project_information_nonce'], 'save_project_information' ) ) {
 			return;
 		}
@@ -218,6 +222,10 @@ class WSUWP_University_Center_Meta {
 		}
 
 		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( true !== apply_filters( 'wsuwp_uc_display_person_information_meta_box', true ) ) {
 			return;
 		}
 

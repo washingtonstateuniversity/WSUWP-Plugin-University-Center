@@ -1,5 +1,9 @@
 # Changelog
 
+## TBD
+
+* Add filters to disable project and person meta boxes.
+
 ## 0.9.1 (July 26, 2017)
 
 * Add a filter to enable/disable built in taxonomies.
