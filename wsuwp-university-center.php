@@ -1187,6 +1187,7 @@ class WSUWP_University_Center {
 
 		}
 
+		$projects = apply_filters( 'wsuwp_uc_projects_to_add_to_content', $projects, get_the_ID() );
 		if ( false !== $projects && ! empty( $projects ) ) {
 			$labels = get_post_type_object( $this->project_content_type );
 			$added_html .= '<div class="wsuwp-uc-projects"><h3>' . $labels->labels->name . '</h3><ul>';
