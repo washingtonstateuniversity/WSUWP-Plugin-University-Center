@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3 (August 8, 2017)
+
+* Ad filter to disable project output on other objects.
+
 ## 0.9.2 (August 3, 2017)
 
 * Add filters to disable project and person meta boxes.
