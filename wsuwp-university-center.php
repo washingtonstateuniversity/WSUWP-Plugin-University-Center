@@ -4,7 +4,7 @@ Plugin Name: University Center Objects
 Plugin URI: https://github.com/washingtonstateuniversity/WSUWP-Plugin-University-Center
 Description: Associate people, projects, organizations, and publications.
 Author: washingtonstateuniversity, jeremyfelt
-Version: 0.9.2
+Version: 0.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -19,7 +19,7 @@ class WSUWP_University_Center {
 	 *
 	 * @var string
 	 */
-	var $plugin_version = '0.9.2';
+	var $plugin_version = '0.9.3';
 
 	/**
 	 * The slug used to register the project custom content type.
