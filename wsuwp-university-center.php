@@ -1216,7 +1216,7 @@ class WSUWP_University_Center {
 			$added_html .= '</ul></div>';
 		}
 
-		return $content . $added_html;
+		return $content . apply_filters( 'wsuwp_university_center_objects', $added_html );
 	}
 
 	/**
